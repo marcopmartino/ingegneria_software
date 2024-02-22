@@ -124,7 +124,7 @@ class LoginWindow(QMainWindow):
         self.outerVBoxLayout.setObjectName("outerVBoxLayout")
         self.outerVBoxLayout.addWidget(self.titleLabel)  # Aggiunge il titolo
         self.outerVBoxLayout.addLayout(self.inputVBoxLayout)  # Aggiunge il layout dei campi di input
-        self.outerVBoxLayout.addWidget(self.submitButton)  # Aggiunge il layout del pulsante di Login
+        self.outerVBoxLayout.addWidget(self.submitButton)  # Aggiunge il pulsante di Login
 
         # Finestra
         self.setObjectName("MainWindow")
@@ -156,8 +156,8 @@ class LoginWindow(QMainWindow):
         self.passwordLineEdit.setClearButtonEnabled(True)
 
         # Logica quando il testo cambia
-        self.emailLineEdit.textChanged.connect(self.onEmailChanged)
-        self.passwordLineEdit.textChanged.connect(self.onPasswordChanged)
+        self.emailLineEdit.textChanged.connect(self.on_email_changed)
+        self.passwordLineEdit.textChanged.connect(self.on_password_changed)
 
     def on_email_changed(self, text):
         if text:
