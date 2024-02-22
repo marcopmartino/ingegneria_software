@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication
 
-from LoginWindow import LoginWindow
+from lib.view.LoginWindow import LoginWindow
 from res.Dimensions import FontDimensions
 
 # Main

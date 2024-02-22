@@ -24,7 +24,8 @@ class FormDimensions:
 
 # Spacer
 class SpacerDimensions:
-    DEFAULT = 20
+    DEFAULT_PRIMARY = 50
+    DEFAULT_SECONDARY = 20
 
 
 # Window

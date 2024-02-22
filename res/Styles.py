@@ -25,7 +25,7 @@ ACCESS_MAIN_WINDOW = """/* Set style for MainWindow */\n
                     border-image: """ + Config.image("access_background.jpg") + """;\n
                 }\n
                 /* Set style for QWidget */\n
-                #widget {\n
+                #layout {\n
                     background: #FFF;\n
                     border-radius: 20px\n
                 }\n"""
@@ -50,3 +50,16 @@ ACCESS_PUSH_BUTTON = """/* Set style for QPushButton */\n
                 }\n"""
 
 ACCESS = ACCESS_LABEL + ACCESS_LINE_EDIT + ACCESS_MAIN_WINDOW + ACCESS_PUSH_BUTTON
+
+ERROR_COLOR = "color: #FF0000;"
+
+ERROR_LABEL = """/* Set style for QLabel */
+                QLabel {\n
+                    """ + ERROR_COLOR + """\n
+                }\n"""
+
+ERROR_LABEL_INPUT = """/* Set style for QLabel */
+                QLabel {\n
+                    """ + ERROR_COLOR + """\n
+                    margin-top: 4px;\n
+                }\n"""
