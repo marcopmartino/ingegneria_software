@@ -9,11 +9,18 @@ class LineEditDimensions:
     DEFAULT_TEXT_FONT_SIZE = 12
 
 
-# Font
-class FontDimensions:
+# FontSize
+class FontSize:
     DEFAULT = 12
+    SMALL = 10
     SUBTITLE = 14
     TITLE = 18
+
+
+# FontWeight
+class FontWeight:
+    NORMAL = 50
+    BOLD = 75
 
 
 # Form

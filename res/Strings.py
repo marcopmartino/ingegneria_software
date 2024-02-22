@@ -1,19 +1,4 @@
-# Questo file contiene le codifiche di formattazione e le stringhe usate nell'applicazione
-
-# Codifiche di formattazione
-class Format:
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'  # Termina qualsiasi formattazione applicata
-
-    @staticmethod
-    def bold(text):
-        return Format.BOLD + text + Format.END
-
-    @staticmethod
-    def underline(text):
-        return Format.UNDERLINE + text + Format.END
-
+# Questo file contiene le codifiche di configurazione e le stringhe usate nell'applicazione
 
 # Stringhe di configurazione
 class Config:
@@ -30,8 +15,8 @@ class Config:
 # Stringhe usate nell'applicazione
 # Access
 class AccessStrings:
-    BOTTOM_TEXT_LOGIN = f"Non hai un account? {Format.bold("Registrati")}"
-    BOTTOM_TEXT_SIGN_UP = f"Hai già un account? {Format.bold("Accedi")}"
+    BOTTOM_TEXT_LOGIN = "Non hai un account? Registrati"
+    BOTTOM_TEXT_SIGN_UP = "Hai già un account? Accedi"
     LOGIN = 'Accedi'
     SING_UP = 'Registrati'
     TITLE_LOGIN = "Accedi al tuo account"

@@ -6,8 +6,10 @@ ACCESS_LABEL = """/* Set style for QLabel */\n
                 QLabel {\n
                     color: #767E89\n
                 }\n
-                QLabel#title_label {\n
-                    color: #000\n
+                #bottom_label {\n
+                }\n
+                #bottom_label:hover {\n
+                    text-decoration: underline;\n
                 }\n"""
 
 ACCESS_LINE_EDIT = """/* Set style for QLineEdit */\n
@@ -25,7 +27,7 @@ ACCESS_MAIN_WINDOW = """/* Set style for MainWindow */\n
                     border-image: """ + Config.image("access_background.jpg") + """;\n
                 }\n
                 /* Set style for QWidget */\n
-                #layout {\n
+                #main_widget {\n
                     background: #FFF;\n
                     border-radius: 20px\n
                 }\n"""
@@ -36,7 +38,7 @@ ACCESS_PUSH_BUTTON = """/* Set style for QPushButton */\n
                     border: 2px solid #FFF;\n
                     color: #FFF;\n
                     border-radius: 5px;\n
-                    padding: 6px;\n
+                    padding: 10px;\n
                     margin-top: 10px\n
                 }\n
                 QPushButton:hover {\n

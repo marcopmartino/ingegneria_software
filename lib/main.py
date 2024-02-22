@@ -4,7 +4,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication
 
 from lib.view.LoginWindow import LoginWindow
-from res.Dimensions import FontDimensions
+from res.Dimensions import FontSize
 
 # Main
 if __name__ == '__main__':
@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # Applicazione
     app = QApplication(sys.argv)
     app.setStyle('Fusion')  # Default style
-    app.setFont(QFont('Helvetica', FontDimensions.DEFAULT))  # Default font
+    app.setFont(QFont('Helvetica', FontSize.DEFAULT))  # Default font
 
     # Schermata di login
     window = LoginWindow()
