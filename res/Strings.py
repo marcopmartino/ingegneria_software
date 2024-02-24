@@ -25,10 +25,15 @@ class AccessStrings:
 
 # Form
 class FormStrings:
-    SURNAME = "Cognome"
+    COMPANY_NAME = "Nome azienda"
+    DELIVERY_ADDRESS = "Indirizzo di recapito"
     EMAIL = "Email"
+    IVA_NUMBER = "Partita IVA"
     NAME = "Nome"
     PASSWORD = "Password"
+    PASSWORD_CONFIRM = "Conferma password"
+    PHONE = "Telefono"
+    SURNAME = "Cognome"
 
 
 # Utility

@@ -3,7 +3,7 @@ import sys
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication
 
-from lib.view.LoginWindow import LoginWindow
+from lib.view.AccessWindow import AccessWindow
 from res.Dimensions import FontSize
 
 # Main
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     app.setFont(QFont('Helvetica', FontSize.DEFAULT))  # Default font
 
     # Schermata di login
-    window = LoginWindow()
+    window = AccessWindow()
     window.show()
 
     # Esegue l'applicazione

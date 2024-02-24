@@ -7,7 +7,7 @@ from res.Dimensions import LineEditDimensions, FontWeight
 
 
 # Classe che rappresenta un campo di input testuale personalizzato, costituito da un QVBoxLayout che contiene una
-# QLabel, un qLineEdit ed eventualmente una seconda QLabel per mostrare un messaggio di errore.
+# QLabel, un QLineEdit ed eventualmente una seconda QLabel per mostrare un messaggio di errore.
 # noinspection PyPep8Naming
 class LineEditLayout(QVBoxLayout):
 

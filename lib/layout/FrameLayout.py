@@ -5,7 +5,7 @@ from res import Styles
 from res.Dimensions import LineEditDimensions, SpacerDimensions
 
 
-# Classe che estende un GridLayout, usata per centrare un elemento e gestire il ridimensionamento degli spacers.
+# Classe che estende un QGridLayout, usata per centrare un elemento e gestire il ridimensionamento degli spacers.
 # noinspection PyPep8Naming
 class FrameLayout(QGridLayout):
 
