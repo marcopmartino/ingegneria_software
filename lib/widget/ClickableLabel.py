@@ -9,4 +9,5 @@ class ClickableLabel(QLabel):
         super().__init__(parent_widget)
 
     def mousePressEvent(self, event):
-        self.clicked.emit()
+        if Qt.LeftButton == event.button():
+            self.clicked.emit()

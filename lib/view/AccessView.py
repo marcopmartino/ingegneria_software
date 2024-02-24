@@ -1,6 +1,6 @@
 import abc
 
-from PyQt5.QtCore import Qt, QSize, QObject
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QSizePolicy, QLabel, QVBoxLayout, QPushButton
 
@@ -11,7 +11,7 @@ from res.Dimensions import FontSize, FormDimensions, FontWeight
 from abc import abstractmethod, ABC
 
 
-class AccessViewMeta(type(QObject), type(ABC)):
+class AccessViewMeta(type(QWidget), type(ABC)):
     pass
 
 

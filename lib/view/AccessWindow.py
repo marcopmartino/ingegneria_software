@@ -28,12 +28,12 @@ class AccessWindow(QMainWindow):
         self.outerFrameLayout.setObjectName("outer_layout")
         self.outerFrameLayout.setSpacers(140, 80, QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # Pone il frame esterno come Widget di base della finestra
+        # Pone il Widget più esterno come Widget di base della finestra
         self.setCentralWidget(self.outerWidget)
 
-        # Crea il frame interno con la form
-        self.loginWidget = LoginView()
-        self.signUpWidget = SignUpView()
+        # Crea le due possibili viste del Widget interno con la form
+        self.loginWidget = LoginView(self.outerWidget)
+        self.signUpWidget = SignUpView(self.outerWidget)
 
         # Mostra la form di login
         self.show_login_form()
@@ -47,10 +47,10 @@ class AccessWindow(QMainWindow):
     # Mostra la form di registrazione
     def show_sign_up_form(self):
         self.loginWidget.setHidden(True)
-        self.update_ui(self.signUpWidget) # Per posizionare la form prima di mostrarla
+        self.update_ui(self.signUpWidget)  # Per posizionare la form prima di mostrarla
         self.signUpWidget.setHidden(False)
 
     # Aggiorna la UI con un widget AccessView (login o registrazione)
     def update_ui(self, widget: QWidget):
-        # Pone il frame interno al centro del frame esterno
+        # Pone il Widget interno al centro del frame esterno
         self.outerFrameLayout.setCentralWidget(widget)
