@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit
 
-from lib.layout.LineEditLayout import LineEditLayout
+from lib.layout.LineEditLayout import LineEditLayout, LineEditCompositeLayout
+from lib.validation.FormField import LineEditCompositeFormField
+from lib.validation.ValidationRule import ValidationRule
 from lib.view.AccessView import AccessView
 from res.Strings import FormStrings, AccessStrings
 
@@ -11,26 +13,26 @@ class SignUpView(AccessView):
         super(SignUpView, self).__init__(parent_widget)
 
         # Campo di input Nome azienda
-        self.companyNameLayout = LineEditLayout(FormStrings.COMPANY_NAME, True, self)
+        self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, self)
 
         # Campo di input Partita IVA
-        self.IVANumberLayout = LineEditLayout(FormStrings.IVA_NUMBER, True, self)
+        self.IVANumberLayout = LineEditCompositeLayout(FormStrings.IVA_NUMBER, self)
 
         # Campo di input Indirizzo di recapito
-        self.deliveryAddressLayout = LineEditLayout(FormStrings.DELIVERY_ADDRESS, True, self)
+        self.deliveryAddressLayout = LineEditCompositeLayout(FormStrings.DELIVERY_ADDRESS, self)
 
         # Campo di input Email
-        self.emailLayout = LineEditLayout(FormStrings.EMAIL, True, self)
+        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, self)
 
         # Campo di input Telefono
-        self.phoneLayout = LineEditLayout(FormStrings.PHONE, True, self)
+        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, self)
 
         # Campo di input Password
-        self.passwordLayout = LineEditLayout(FormStrings.PASSWORD, True, self)
+        self.passwordLayout = LineEditCompositeLayout(FormStrings.PASSWORD, self)
         self.passwordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
 
         # Campo di input Conferma password
-        self.confirmPasswordLayout = LineEditLayout(FormStrings.PASSWORD_CONFIRM, True, self)
+        self.confirmPasswordLayout = LineEditCompositeLayout(FormStrings.PASSWORD_CONFIRM, self)
         self.confirmPasswordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
 
         # Aggiunge i campi di input della form al layout
@@ -42,14 +44,26 @@ class SignUpView(AccessView):
         self.inputLayout.addLayout(self.passwordLayout)  # Aggiunge il layout del campo Password
         self.inputLayout.addLayout(self.confirmPasswordLayout)  # Aggiunge il layout del campo Conferma password
 
-        # Testo
+        # Imposta il testo per le Label e il pulsante di submit
         self.titleLabel.setText(AccessStrings.TITLE_SIGN_UP)
         self.submitButton.setText(AccessStrings.SING_UP)
         self.bottomLabel.setText(AccessStrings.BOTTOM_TEXT_SIGN_UP)
 
-    #
-    def on_submit(self):
-        pass
+        # Inizializzo i campi della form per la validazione
+        company_field = LineEditCompositeFormField.LayoutAndRule(self.companyNameLayout, ValidationRule.Required())
+        iva_field = LineEditCompositeFormField.LayoutAndRule(self.IVANumberLayout, ValidationRule.IVANumber())
+        address_field = LineEditCompositeFormField.LayoutAndRule(self.deliveryAddressLayout, ValidationRule.Address())
+        email_field = LineEditCompositeFormField.LayoutAndRule(self.emailLayout, ValidationRule.Email())
+        phone_field = LineEditCompositeFormField.LayoutAndRule(self.phoneLayout, ValidationRule.Phone())
+        password_field = LineEditCompositeFormField.LayoutAndRule(self.passwordLayout, ValidationRule.Password())
+
+        # Aggiungi i campi al FormManager
+        self.form_manager.add_fields(company_field, iva_field, address_field, email_field, phone_field, password_field)
+        self.form_manager.add_submit_button(self.submitButton, self.on_submit)
+
+    # Codice eseguito se la validazione ha successo
+    def on_submit(self, form_data: dict[str, any]):
+        print(form_data)
 
     # Mostra la form di login
     def on_bottom_label_click(self):

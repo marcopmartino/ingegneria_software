@@ -48,3 +48,9 @@ class UtilityStrings:
     LOADING_EXTENDED = "Caricamento in corso"
     LOADING_EXTENDED_DOTS = "Caricamento in corso..."
     WAIT = "Attendere"
+
+
+# Valiadtion
+class ValidationStrings:
+    EMAIL_PASSWORD_WRONG = "Email e\\o password errati"
+    EMAIL_ALREADY_USED = "Email già in uso"

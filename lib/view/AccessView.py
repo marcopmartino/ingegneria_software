@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QSizePolicy, QLabel, QVBoxLayout, QPushButton
 
+from lib.validation.FormManager import FormManager
 from lib.widget.StylisableWidget import StylisableWidget
 from lib.layout.FrameLayout import FrameLayout
 from lib.widget.AccessBottomLabel import AccessBottomLabel
@@ -48,7 +49,6 @@ class AccessView(StylisableWidget, ABC, metaclass=AccessViewMeta):
         self.submitButton = QPushButton(self)
         self.submitButton.setFont(font)
         self.submitButton.setObjectName("submit_button")
-        self.submitButton.clicked.connect(self.on_submit)
 
         # Testo dopo la form
         self.bottomLabel = AccessBottomLabel(self)
@@ -68,9 +68,12 @@ class AccessView(StylisableWidget, ABC, metaclass=AccessViewMeta):
         # Pone il layout della form al centro del frame interno
         self.frameLayout.setCentralLayout(self.contentLayout)
 
+        # Inizializza il FormManager
+        self.form_manager = FormManager()
+
     # Metodo da eseguire al click sul pulsante di submit della form
     @abstractmethod
-    def on_submit(self):
+    def on_submit(self, form_data: dict[str, any]):
         pass
 
     # Metodo da eseguire al click sulla scritta in fondo alla vista
