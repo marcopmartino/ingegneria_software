@@ -1,9 +1,15 @@
-from PyQt5.QtWidgets import QWidget, QLineEdit
+from PyQt5.QtCore import QRegExp, QRegularExpression, Qt
+from PyQt5.QtGui import QRegularExpressionValidator, QFont
+from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel
 
 from lib.layout.LineEditLayout import LineEditLayout
+from lib.validation.FormField import LineEditValidatableFormField
+from lib.validation.ValidationRule import ValidationRule
 from lib.view.AccessView import AccessView
 from lib.view.SignUpView import SignUpView
-from res.Strings import FormStrings, AccessStrings
+from res import Styles
+from res.Dimensions import LineEditDimensions
+from res.Strings import FormStrings, AccessStrings, ValidationStrings
 
 
 class LoginView(AccessView):
@@ -12,26 +18,48 @@ class LoginView(AccessView):
         super(LoginView, self).__init__(parent_widget)
 
         # Campo di input Email
-        self.emailLayout = LineEditLayout(FormStrings.EMAIL, False, self)
+        self.emailLayout = LineEditLayout(FormStrings.EMAIL, self)
 
         # Campo di input Password
-        self.passwordLayout = LineEditLayout(FormStrings.PASSWORD, False, self)
+        self.passwordLayout = LineEditLayout(FormStrings.PASSWORD, self)
         self.passwordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
 
         # Aggiunge i campi di input della form al layout
         self.inputLayout.addLayout(self.emailLayout)  # Aggiunge il layout del campo Email
         self.inputLayout.addLayout(self.passwordLayout)  # Aggiunge il layout del campo Password
 
-        # Testo
+        # Crea Una Label di errore
+        font = QFont()
+        font.setPointSize(LineEditDimensions.DEFAULT_LABEL_FONT_SIZE)
+        self.validation_error_label = QLabel(parent_widget)
+        self.validation_error_label.setFont(font)
+        self.validation_error_label.setObjectName("error_label")
+        self.validation_error_label.setAlignment(Qt.AlignCenter)
+        self.validation_error_label.setStyleSheet(Styles.ERROR_LABEL_INPUT)
+        self.validation_error_label.setHidden(True)  # Nasconde la Label
+
+        # Aggiunge la label di errore al layout che racchiude il contenuto principale
+        self.contentLayout.insertWidget(2, self.validation_error_label)
+
+        # Imposta il testo per le Label e il pulsante di submit
         self.titleLabel.setText(AccessStrings.TITLE_LOGIN)
+        self.validation_error_label.setText(ValidationStrings.EMAIL_PASSWORD_WRONG)
         self.submitButton.setText(AccessStrings.LOGIN)
         self.bottomLabel.setText(AccessStrings.BOTTOM_TEXT_LOGIN)
 
-    #
-    def on_submit(self):
-        pass
+        # Inizializzo i campi della form per la validazione
+        email_field = LineEditValidatableFormField.LayoutAndRule(self.emailLayout, ValidationRule.Email())
+        password_field = LineEditValidatableFormField.LayoutAndRule(self.passwordLayout, ValidationRule.Password())
+
+        # Aggiungi i campi al FormManager
+        self.form_manager.add_fields(email_field, password_field)
+        self.form_manager.add_data_button(self.submitButton, self.on_submit)
+
+    # Codice eseguito se la validazione ha successo
+    def on_submit(self, form_data: dict[str, any]):
+        self.validation_error_label.setHidden(False)
+        print(form_data)
 
     # Mostra la form di registrazione
     def on_bottom_label_click(self):
         self.parent().parent().show_sign_up_form()
-

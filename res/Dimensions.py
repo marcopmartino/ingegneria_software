@@ -35,6 +35,11 @@ class SpacerDimensions:
     DEFAULT_SECONDARY = 20
 
 
+# Validation
+class ValidationDimensions:
+    DEFAULT_MAX_LENGTH = 30
+
+
 # Window
 class WindowDimensions:
     DEFAULT_HEIGHT = 600
