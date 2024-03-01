@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit
 
-from lib.layout.LineEditLayout import LineEditLayout, LineEditCompositeLayout
+from lib.firebaseData import firebase
+from lib.layout.LineEditLayout import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.ValidationRule import ValidationRule
-from lib.view.AccessView import AccessView
+from lib.view.Access.AccessView import AccessView
 from res.Strings import FormStrings, AccessStrings
 
 
@@ -64,6 +65,23 @@ class SignUpView(AccessView):
     # Codice eseguito se la validazione ha successo
     def on_submit(self, form_data: dict[str, any]):
         print(form_data)
+        print("Sign up...")
+        email = self.emailLayout.line_edit.text()
+        password = self.passwordLayout.line_edit.text()
+        try:
+            user = firebase.auth().create_user_with_email_and_password(email, password)
+            uid = user.uid
+            db = firebase.database().child('users').child(uid)
+            data = {
+                "company": self.companyNameLayout.line_edit.text(),
+                "IVA": self.IVANumberLayout.line_edit.text(),
+                "delivery": self.deliveryAddressLayout.line_edit.text(),
+                "phone": self.phoneLayout.line_edit.text()
+            }
+            db.set(data)
+            self.parent().parent().show_main_window()
+        except:
+            self.emailLayout.error_label.setText("Email già in uso.")
 
     # Mostra la form di login
     def on_bottom_label_click(self):

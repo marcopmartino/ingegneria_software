@@ -1,12 +1,12 @@
-from PyQt5.QtCore import QRegExp, QRegularExpression, Qt
-from PyQt5.QtGui import QRegularExpressionValidator, QFont
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel
 
+from lib.firebaseData import firebase
 from lib.layout.LineEditLayout import LineEditLayout
 from lib.validation.FormField import LineEditValidatableFormField
 from lib.validation.ValidationRule import ValidationRule
-from lib.view.AccessView import AccessView
-from lib.view.SignUpView import SignUpView
+from lib.view.Access.AccessView import AccessView
 from res import Styles
 from res.Dimensions import LineEditDimensions
 from res.Strings import FormStrings, AccessStrings, ValidationStrings
@@ -55,10 +55,20 @@ class LoginView(AccessView):
         self.form_manager.add_fields(email_field, password_field)
         self.form_manager.add_data_button(self.submitButton, self.on_submit)
 
-    # Codice eseguito se la validazione ha successo
+    # Prova a effettuare il login e, in caso di successo, mostra la pagina principale
     def on_submit(self, form_data: dict[str, any]):
-        self.validation_error_label.setHidden(False)
         print(form_data)
+        print("Log in...")
+        email = self.emailLayout.line_edit.text()
+        password = self.passwordLayout.line_edit.text()
+        try:
+            user = firebase.auth().sign_in_with_email_and_password(email, password)
+            print("Connesso!")
+            self.parent().parent().show_main_window()
+
+        except:
+            self.validation_error_label.setHidden(False)
+            print("??")
 
     # Mostra la form di registrazione
     def on_bottom_label_click(self):

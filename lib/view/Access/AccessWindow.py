@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QMainWindow, QWidget, QSizePolicy
 
 from lib.layout.FrameLayout import FrameLayout
-from lib.view.AccessView import AccessView
-from lib.view.LoginView import LoginView
-from lib.view.SignUpView import SignUpView
+from lib.view.Access.LoginView import LoginView
+from lib.view.Access.SignUpView import SignUpView
+from lib.view.Main.MainWindow import MainWindow
 from res import Styles
 from res.Strings import Config
 
@@ -54,3 +54,14 @@ class AccessWindow(QMainWindow):
     def update_ui(self, widget: QWidget):
         # Pone il Widget interno al centro del frame esterno
         self.outerFrameLayout.setCentralWidget(widget)
+
+    # Mostra la pagina principale dopo aver fatto il login o la registrazione
+    def show_main_window(self):
+        print("About to create MainWindow")
+        new_window = MainWindow()
+        print("MainWindow created")
+
+        new_window.show()
+        print("MainWindow shown")
+
+        self.close()
