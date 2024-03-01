@@ -28,7 +28,8 @@ class FormManager:
     def validate(self) -> bool:
         validation_successful: bool = True
         for form_field in self.field_list:
-            validation_successful = form_field.validate()  # Possibile grazie alle classi adattatrici
+            if not form_field.validate():  # Possibile grazie alle classi adattatrici
+                validation_successful = False
         return validation_successful
 
     # Estrae i dati dai campi sotto forma di dizionario
@@ -44,7 +45,7 @@ class FormManager:
             self.field_list.append(form_field)
 
     # Eseguito al click su un pulsante di submit: esegue la validazione, poi chiama una funzione di callback
-    def on_submit(self, callback_success, callback_failure):
+    def on_submit(self, callback_success: callable, callback_failure: callable):
         print("About to validate")
         if self.validate():
             print("Validation Successful")

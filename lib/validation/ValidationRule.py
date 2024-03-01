@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QRegularExpression
 from PyQt5.QtGui import QValidator, QRegularExpressionValidator, QIntValidator
 
+
 # Classe che rappresenta una regola di validazione. Essa si traduce in una sottoclasse QValidator e in un messaggio
 # testuale di errore. Si può istanziare la classe usando il costruttore principale o uno dei classmethod predefiniti.
 # noinspection PyPep8Naming
@@ -25,7 +26,7 @@ class ValidationRule:
     @classmethod
     def MinLength(cls, min_length: int, error_message: str = None):
         validator = QRegularExpressionValidator(
-            QRegularExpression("^.{"+str(min_length)+",}$"))
+            QRegularExpression("^.{" + str(min_length) + ",}$"))
 
         error_message = error_message or f"La lunghezza minima è {min_length} caratteri"
 
@@ -43,7 +44,7 @@ class ValidationRule:
     @classmethod
     def Length(cls, min_length: int, max_length: int, error_message: str = None):
         validator = QRegularExpressionValidator(
-            QRegularExpression("^{"+str(min_length)+","+str(max_length)+"}$"))
+            QRegularExpression("^{" + str(min_length) + "," + str(max_length) + "}$"))
 
         error_message = error_message or f"La lunghezza deve essere compresa tra {min_length} è {max_length} caratteri"
 
