@@ -2,6 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel
 
+import lib.firebaseData as firebaseConfig
 from lib.firebaseData import firebase
 from lib.layout.LineEditLayout import LineEditLayout
 from lib.validation.FormField import LineEditValidatableFormField
@@ -62,13 +63,13 @@ class LoginView(AccessView):
         email = self.emailLayout.line_edit.text()
         password = self.passwordLayout.line_edit.text()
         try:
-            user = firebase.auth().sign_in_with_email_and_password(email, password)
+            firebaseConfig.currentUser = firebase.auth().sign_in_with_email_and_password(email, password)
+
             print("Connesso!")
             self.parent().parent().show_main_window()
-
-        except:
+        except Exception as e:
+            print(e)
             self.validation_error_label.setHidden(False)
-            print("??")
 
     # Mostra la form di registrazione
     def on_bottom_label_click(self):

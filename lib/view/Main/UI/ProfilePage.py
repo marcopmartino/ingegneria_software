@@ -2,7 +2,8 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QAbstractTableModel
 from PyQt5.QtWidgets import QFrame, QTableWidgetItem, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QTableWidget, \
     QGridLayout, QSpacerItem, QSizePolicy, QPushButton, QTableView
-from firebase_admin import firestore
+
+import lib.firebaseData as firebaseConfig
 
 from lib.layout.QLabelLayout import QLabelLayout
 from res import Styles
@@ -14,9 +15,8 @@ class ProfileWidget(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        #db = firestore.database().child('users').child(firebase.auth.uid)
-        #data = db.get()
-        #print(data)
+        db = firebase.database().child('users').child(firebaseConfig.currentUser['localId'])
+        data = db.get()
 
         self.setObjectName("Profilo")
         self.setStyleSheet(Styles.PROFILE_PAGE)
@@ -53,7 +53,7 @@ class ProfileWidget(QFrame):
         self.profileInfo.setSpacing(15)
         self.profileInfo.setObjectName("ProfileInfo")
 
-        self.nomeLabel = QLabel("Nome azienda")
+        self.nomeLabel = QLabel(data.val()['company'])
         self.nomeLabel.adjustSize()
         self.nomeLabel.setMinimumSize(450, 50)
         self.nomeLabel.setStyleSheet(Styles.PROFILE_INFO_NAME)
@@ -75,10 +75,10 @@ class ProfileWidget(QFrame):
         self.profileInfoTable.setAlignment(Qt.AlignLeft)
         self.profileInfoTable.setObjectName("ProfileInfoTable")
 
-        self.emailLabel = QLabelLayout("Email", "azienda@mail.com")
-        self.telefonoLabel = QLabelLayout("Telefono", "1234567890")
-        self.indirizzoLabel = QLabelLayout("Indirizzo", "Via delle aziende 1")
-        self.ivaLabel = QLabelLayout("Partita Iva", "86334519757")
+        self.emailLabel = QLabelLayout("Email", firebaseConfig.currentUser['email'])
+        self.telefonoLabel = QLabelLayout("Telefono", data.val()['phone'])
+        self.indirizzoLabel = QLabelLayout("Indirizzo", data.val()['delivery'])
+        self.ivaLabel = QLabelLayout("Partita Iva", data.val()['IVA'])
 
         self.profileInfoTable.addLayout(self.emailLabel)
         self.profileInfoTable.addLayout(self.telefonoLabel)

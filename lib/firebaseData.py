@@ -1,4 +1,6 @@
 # Firebase Config data
+from typing import Any
+
 import pyrebase
 
 firebaseConfig = {
@@ -12,3 +14,10 @@ firebaseConfig = {
 }
 
 firebase = pyrebase.initialize_app(firebaseConfig)
+
+currentUser: Any
+
+
+def init():
+    global currentUser
+    currentUser = None

@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit
 
+import lib.firebaseData as firebaseConfig
 from lib.firebaseData import firebase
 from lib.layout.LineEditLayout import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
@@ -69,18 +70,21 @@ class SignUpView(AccessView):
         email = self.emailLayout.line_edit.text()
         password = self.passwordLayout.line_edit.text()
         try:
-            user = firebase.auth().create_user_with_email_and_password(email, password)
-            uid = user.uid
-            db = firebase.database().child('users').child(uid)
+            firebaseConfig.currentUser = firebase.auth().create_user_with_email_and_password(email, password)
+            uid = firebaseConfig.currentUser['localId']
+            db = firebase.database()
             data = {
                 "company": self.companyNameLayout.line_edit.text(),
                 "IVA": self.IVANumberLayout.line_edit.text(),
                 "delivery": self.deliveryAddressLayout.line_edit.text(),
                 "phone": self.phoneLayout.line_edit.text()
             }
-            db.set(data)
+            print(data)
+            db.child('users').child(uid).set(data)
+            print(self.parent().parent())
             self.parent().parent().show_main_window()
-        except:
+        except Exception as e:
+            print(e)
             self.emailLayout.error_label.setText("Email già in uso.")
 
     # Mostra la form di login

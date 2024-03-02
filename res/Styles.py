@@ -142,6 +142,86 @@ DELETE_BUTTON = """/* Set style for QPushButton */\n
                 }\n
                 QPushButton:pressed {\n
                     background-color: #FFF;\n
+                    color: #0B5ED7;\n
+                    border: 2px solid #ff8566;\n
+                }\n"""
+
+LABEL_TITLE = """/* Set style for Qlabel */
+                QLabel {\n
+                    font-size: 26px;\n
+                }\n"""
+
+LABEL_SUBTITLE = """/* Set style for Qlabel */
+                QLabel {\n
+                    font-size: 12px;\n
+                }\n"""
+
+PAGE_TITLE_FRAME = """/* Set style for QFrame */
+                QFrame {\n
+                    background-color: #ffffff;
+                }\n"""
+
+PROFILE_PAGE = """ /* Set style for QFrame */
+                QFrame {\n
+                    background-color: #ebebeb;
+                }\n"""
+
+PROFILE_INFO_NAME = """ /* Set style for QLabel */
+                QLabel {\n
+                    font-size: 36px;               
+                }\n"""
+
+LABEL_PROFILE_INFO = """/* Set style for Qlabel */
+                QLabel {\n
+                    font-size: 16;
+                    background-color: #ffffff;
+                    border-style: solid;
+                    border-width: 1px;\n
+                }\n"""
+
+TABLE_HEADER = """/* Set style for Qlabel */
+                QLabel {\n
+                    font-size: 18;
+                    background-color: #c0c0c0;
+                    border-style: solid;
+                    border-width: 1px;\n
+                }\n"""
+
+EDIT_BUTTON = """/* Set style for QPushButton */\n
+                QPushButton {\n
+                    background-color: #0D6EFD;\n
+                    border: 2px solid #FFF;\n
+                    color: #FFF;\n
+                    border-radius: 5px;\n
+                    padding: 10px;\n
+                    margin-top: 10px\n
+                }\n
+                QPushButton:hover {\n
+                    background-color: #0B5ED7;\n
+                    border: 2px solid #9AC3FE;\n
+                }\n
+                QPushButton:pressed {\n
+                    background-color: #FFF;\n
+                    color: #0B5ED7;\n
+                    border: 2px solid #9AC3FE;\n
+                }\n"""
+
+
+DELETE_BUTTON = """/* Set style for QPushButton */\n
+                QPushButton {\n
+                    background-color: #ff471a;\n
+                    border: 2px solid #FFF;\n
+                    color: #FFF;\n
+                    border-radius: 5px;\n
+                    padding: 10px;\n
+                    margin-top: 10px\n
+                }\n
+                QPushButton:hover {\n
+                    background-color: #ff3300;\n
+                    border: 2px solid #ff8566;\n
+                }\n
+                QPushButton:pressed {\n
+                    background-color: #FFF;\n
                     color: #ff3300;\n
                     border: 2px solid #ff8566;\n
                 }\n"""

@@ -5,7 +5,6 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication
 
 from lib.view.Access.AccessWindow import AccessWindow
-from lib.view.Main.MainWindow import MainWindow
 from res.Dimensions import FontSize
 
 # Main
@@ -24,8 +23,8 @@ if __name__ == '__main__':
 
     # Schermata di login
     window = AccessWindow()
-    # window = MainWindow()
     window.show()
 
     # Esegue l'applicazione
     sys.exit(app.exec())
+

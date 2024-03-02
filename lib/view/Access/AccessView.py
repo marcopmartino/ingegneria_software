@@ -80,3 +80,7 @@ class AccessView(StylisableWidget, ABC, metaclass=AccessViewMeta):
     @abstractmethod
     def on_bottom_label_click(self):
         pass
+
+    def show_main_window(self):
+        self.parent().show_main_window()
+        
