@@ -1,26 +1,12 @@
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QLabel, QWidget
-
-from lib.widget.ClickableLabel import ClickableLabel
-from res.Dimensions import FontWeight, FontSize
+from PyQt5.QtWidgets import QWidget, QLabel
 
 
-# ClickableLabel che appare in fondo al layout centrale nelle schermate di login e di registrazione
+# QLabel che mostra una sottolineatura al passaggio del puntatore del mouse su di essa
 # noinspection PyPep8Naming
-class AccessBottomLabel(ClickableLabel):
+class FocusableLabel(QLabel):
 
     def __init__(self, parent_widget: QWidget = None):
         super().__init__(parent_widget)
-        self.setFont(self.__initialize_font())
-
-    # Inizializza il font della Label
-    @staticmethod
-    def __initialize_font():
-        font = QFont()
-        font.setPointSize(FontSize.SMALL)
-        font.setWeight(FontWeight.BOLD)
-        return font
 
     # Imposta il font di default della Label
     def setDefaultFont(self):

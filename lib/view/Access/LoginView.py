@@ -1,16 +1,19 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel
+from requests import HTTPError
+from requests import ConnectionError
 
 import lib.firebaseData as firebaseConfig
 from lib.firebaseData import firebase
 from lib.layout.LineEditLayout import LineEditLayout
+from lib.network.HTTPErrorHelper import HTTPErrorHelper, InvalidEmailException
 from lib.validation.FormField import LineEditValidatableFormField
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.Access.AccessView import AccessView
 from res import Styles
 from res.Dimensions import LineEditDimensions
-from res.Strings import FormStrings, AccessStrings, ValidationStrings
+from res.Strings import FormStrings, AccessStrings, ValidationStrings, UtilityStrings
 
 
 class LoginView(AccessView):
@@ -29,22 +32,9 @@ class LoginView(AccessView):
         self.inputLayout.addLayout(self.emailLayout)  # Aggiunge il layout del campo Email
         self.inputLayout.addLayout(self.passwordLayout)  # Aggiunge il layout del campo Password
 
-        # Crea Una Label di errore
-        font = QFont()
-        font.setPointSize(LineEditDimensions.DEFAULT_LABEL_FONT_SIZE)
-        self.validation_error_label = QLabel(parent_widget)
-        self.validation_error_label.setFont(font)
-        self.validation_error_label.setObjectName("error_label")
-        self.validation_error_label.setAlignment(Qt.AlignCenter)
-        self.validation_error_label.setStyleSheet(Styles.ERROR_LABEL_INPUT)
-        self.validation_error_label.setHidden(True)  # Nasconde la Label
-
-        # Aggiunge la label di errore al layout che racchiude il contenuto principale
-        self.contentLayout.insertWidget(2, self.validation_error_label)
 
         # Imposta il testo per le Label e il pulsante di submit
         self.titleLabel.setText(AccessStrings.TITLE_LOGIN)
-        self.validation_error_label.setText(ValidationStrings.EMAIL_PASSWORD_WRONG)
         self.submitButton.setText(AccessStrings.LOGIN)
         self.bottomLabel.setText(AccessStrings.BOTTOM_TEXT_LOGIN)
 
@@ -60,17 +50,27 @@ class LoginView(AccessView):
     def on_submit(self, form_data: dict[str, any]):
         print(form_data)
         print("Log in...")
-        email = self.emailLayout.line_edit.text()
-        password = self.passwordLayout.line_edit.text()
         try:
-            firebaseConfig.currentUser = firebase.auth().sign_in_with_email_and_password(email, password)
+            self.controller().login(form_data)
 
             print("Connesso!")
-            self.parent().parent().show_main_window()
-        except Exception as e:
-            print(e)
-            self.validation_error_label.setHidden(False)
+            self.window().show_main_window()
+
+        except InvalidEmailException:
+            self.on_invalid_credentials_error()
+
+        except ConnectionError:
+            self.on_connection_error()
+
+        except HTTPError:
+            self.on_unexpected_error()
 
     # Mostra la form di registrazione
     def on_bottom_label_click(self):
-        self.parent().parent().show_sign_up_form()
+        self.window().show_sign_up_form()
+
+    # Da eseguire in caso di credenziali errate
+    def on_invalid_credentials_error(self):
+        self.validation_error_label.setText(ValidationStrings.EMAIL_PASSWORD_WRONG)
+        self.validation_error_label.setHidden(False)
+        print("InvalidEmailException")

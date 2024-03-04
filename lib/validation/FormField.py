@@ -27,7 +27,7 @@ class IFormField(ABC):
 
     # Ritorna il nome del campo
     def field_name(self) -> str:
-        return self.input_field.objectName()
+        return self.input_field.objectName().split("_")[0]  # Nome dell'oggetto fino al primo "_"
 
     # Ritorna il dato\contenuto del campo.
     # Questo è il primo metodo adattato: è possibile estrarre il dato del campo indipendentemente dal tipo

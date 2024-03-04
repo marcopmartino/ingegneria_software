@@ -38,19 +38,23 @@ class FormStrings:
 
 # Utility
 class UtilityStrings:
+    CHECK_INTERNET_CONNECTION = "Controllare la propria connessione a Internet"
+    CONNECTION_ERROR = "Impossibile connettersi"
+    NO_INTERNET_CONNECTION = "Connessione Internet assente"
     EMPTY = ""
     ERROR = "Errore"
-    ERROR_EXTENDED = "Errore - Qualcosa è andato storto"
     ERROR_SHORTENED = "ERR"
+    ERROR_SOMETHING_WENT_WRONG = "Errore - Qualcosa è andato storto"
     SPACE = " "
     LOADING = "Caricamento"
     LOADING_DOTS = "Caricamento..."
-    LOADING_EXTENDED = "Caricamento in corso"
-    LOADING_EXTENDED_DOTS = "Caricamento in corso..."
+    LOADING_ONGOING = "Caricamento in corso"
+    LOADING_ONGOING_DOTS = "Caricamento in corso..."
     WAIT = "Attendere"
 
 
-# Valiadtion
+# Validation
 class ValidationStrings:
     EMAIL_PASSWORD_WRONG = "Email e\\o password errati"
     EMAIL_ALREADY_USED = "Email già in uso"
+    PASSWORD_CONFIRM_DIFFERENT = "Le due password non coincidono"

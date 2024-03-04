@@ -1,12 +1,15 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit
 
+from requests import ConnectionError
+
 import lib.firebaseData as firebaseConfig
 from lib.firebaseData import firebase
 from lib.layout.LineEditLayout import LineEditCompositeLayout
+from lib.network.HTTPErrorHelper import HTTPErrorHelper, EmailExistsException
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.Access.AccessView import AccessView
-from res.Strings import FormStrings, AccessStrings
+from res.Strings import FormStrings, AccessStrings, ValidationStrings, UtilityStrings
 
 
 class SignUpView(AccessView):
@@ -58,35 +61,40 @@ class SignUpView(AccessView):
         email_field = LineEditCompositeFormField.LayoutAndRule(self.emailLayout, ValidationRule.Email())
         phone_field = LineEditCompositeFormField.LayoutAndRule(self.phoneLayout, ValidationRule.Phone())
         password_field = LineEditCompositeFormField.LayoutAndRule(self.passwordLayout, ValidationRule.Password())
+        confirm_password_field = LineEditCompositeFormField.Layout(self.confirmPasswordLayout)
 
         # Aggiungi i campi al FormManager
-        self.form_manager.add_fields(company_field, iva_field, address_field, email_field, phone_field, password_field)
+        self.form_manager.add_fields(
+            company_field, iva_field, address_field, email_field, phone_field, password_field, confirm_password_field)
         self.form_manager.add_submit_button(self.submitButton, self.on_submit)
 
     # Codice eseguito se la validazione ha successo
     def on_submit(self, form_data: dict[str, any]):
         print(form_data)
         print("Sign up...")
-        email = self.emailLayout.line_edit.text()
-        password = self.passwordLayout.line_edit.text()
         try:
-            firebaseConfig.currentUser = firebase.auth().create_user_with_email_and_password(email, password)
-            uid = firebaseConfig.currentUser['localId']
-            db = firebase.database()
-            data = {
-                "company": self.companyNameLayout.line_edit.text(),
-                "IVA": self.IVANumberLayout.line_edit.text(),
-                "delivery": self.deliveryAddressLayout.line_edit.text(),
-                "phone": self.phoneLayout.line_edit.text()
-            }
-            print(data)
-            db.child('users').child(uid).set(data)
-            print(self.parent().parent())
-            self.parent().parent().show_main_window()
-        except Exception as e:
-            print(e)
-            self.emailLayout.error_label.setText("Email già in uso.")
+            if form_data['password'] == form_data["conferma"]:
+                self.controller().register(form_data)
+                self.window().show_main_window()
+            else:
+                self.confirmPasswordLayout.error_label.set_error_message(ValidationStrings.PASSWORD_CONFIRM_DIFFERENT)
+                self.confirmPasswordLayout.error_label.setHidden(False)
+
+        except EmailExistsException:
+            self.on_existing_email_error()
+
+        except ConnectionError:
+            self.on_connection_error()
+
+        except HTTPErrorHelper:
+            self.on_unexpected_error()
 
     # Mostra la form di login
     def on_bottom_label_click(self):
-        self.parent().parent().show_login_form()
+        self.window().show_login_form()
+
+    # Da eseguire in caso di email già in uso
+    def on_existing_email_error(self):
+        self.validation_error_label.setText(ValidationStrings.EMAIL_ALREADY_USED)
+        self.validation_error_label.setHidden(False)
+        print("EmailExistsException")
