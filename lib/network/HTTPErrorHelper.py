@@ -20,6 +20,10 @@ class HTTPErrorHelper(object):
             match error_message:
                 case "INVALID_EMAIL":
                     raise InvalidEmailException
+                case "MISSING_PASSWORD":
+                    raise MissingPasswordException
+                case "INVALID_LOGIN_CREDENTIALS":
+                    raise InvalidLoginCredentialsException
                 case "EMAIL_EXISTS":
                     raise EmailExistsException
                 case "EMAIL_NOT_FOUND":
@@ -33,6 +37,14 @@ class HTTPErrorHelper(object):
 
 
 class InvalidEmailException(HTTPError):
+    pass
+
+
+class MissingPasswordException(HTTPError):
+    pass
+
+
+class InvalidLoginCredentialsException(HTTPError):
     pass
 
 

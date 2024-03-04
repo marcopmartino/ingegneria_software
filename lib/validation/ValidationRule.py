@@ -93,7 +93,7 @@ class ValidationRule:
     @classmethod
     def Phone(cls, error_message: str = "Il testo non è un numero di telefono valido"):
         validator = QRegularExpressionValidator(
-            QRegularExpression("^[+]? *[0-9][0-9 ]*$"))
+            QRegularExpression("^[+]? *[0-9][0-9 ]{10,16}$"))
 
         return cls(validator, error_message)
 
@@ -107,7 +107,7 @@ class ValidationRule:
     @classmethod
     def Address(cls, error_message: str = "Il testo non è un indirizzo valido"):
         validator = QRegularExpressionValidator(
-            QRegularExpression("^[a-zA-Z0-9àèéìòù .,'-]+$"))
+            QRegularExpression("^[a-zA-Z0-9àèéìòù .,'-()]+$"))
 
         return cls(validator, error_message)
 

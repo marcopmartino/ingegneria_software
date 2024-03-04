@@ -37,7 +37,7 @@ class SpacerDimensions:
 
 # Validation
 class ValidationDimensions:
-    DEFAULT_MAX_LENGTH = 30
+    DEFAULT_MAX_LENGTH = 50
 
 
 # Window

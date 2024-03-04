@@ -1,19 +1,14 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel
+from PyQt5.QtWidgets import QWidget, QLineEdit
 from requests import HTTPError
 from requests import ConnectionError
 
-import lib.firebaseData as firebaseConfig
-from lib.firebaseData import firebase
 from lib.layout.LineEditLayout import LineEditLayout
-from lib.network.HTTPErrorHelper import HTTPErrorHelper, InvalidEmailException
+from lib.network.HTTPErrorHelper import InvalidEmailException, MissingPasswordException, \
+    InvalidLoginCredentialsException
 from lib.validation.FormField import LineEditValidatableFormField
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.Access.AccessView import AccessView
-from res import Styles
-from res.Dimensions import LineEditDimensions
-from res.Strings import FormStrings, AccessStrings, ValidationStrings, UtilityStrings
+from res.Strings import FormStrings, AccessStrings, ValidationStrings
 
 
 class LoginView(AccessView):
@@ -56,7 +51,7 @@ class LoginView(AccessView):
             print("Connesso!")
             self.window().show_main_window()
 
-        except InvalidEmailException:
+        except InvalidEmailException or MissingPasswordException or InvalidLoginCredentialsException:
             self.on_invalid_credentials_error()
 
         except ConnectionError:

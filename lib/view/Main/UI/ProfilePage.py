@@ -1,4 +1,3 @@
-from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QAbstractTableModel
 from PyQt5.QtWidgets import QFrame, QTableWidgetItem, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QTableWidget, \
     QGridLayout, QSpacerItem, QSizePolicy, QPushButton, QTableView

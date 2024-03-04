@@ -157,7 +157,7 @@ class MainWindow(FramelessWindow):
         self.stackWidget.currentChanged.connect(self.onCurrentInterfaceChanged)
         self.stackWidget.setCurrentIndex(0)
 
-    # Funzione per inizializzare la finestra (dimensione, titolo, logo e stile[dark/light]
+    # Funzione per inizializzare la finestra (dimensione, titolo, logo e stile[dark/light])
     def initWindow(self):
         self.resize(1008, 600)
         self.setWindowIcon(QIcon('resource/logo.png'))

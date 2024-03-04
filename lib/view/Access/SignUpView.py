@@ -3,13 +3,12 @@ from PyQt5.QtWidgets import QWidget, QLineEdit
 from requests import ConnectionError
 
 import lib.firebaseData as firebaseConfig
-from lib.firebaseData import firebase
 from lib.layout.LineEditLayout import LineEditCompositeLayout
 from lib.network.HTTPErrorHelper import HTTPErrorHelper, EmailExistsException
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.Access.AccessView import AccessView
-from res.Strings import FormStrings, AccessStrings, ValidationStrings, UtilityStrings
+from res.Strings import FormStrings, AccessStrings, ValidationStrings
 
 
 class SignUpView(AccessView):
@@ -70,14 +69,17 @@ class SignUpView(AccessView):
 
     # Codice eseguito se la validazione ha successo
     def on_submit(self, form_data: dict[str, any]):
+        print(firebaseConfig.currentUser)
         print(form_data)
         print("Sign up...")
         try:
-            if form_data['password'] == form_data["conferma"]:
+            if form_data["password"] == form_data["conferma password"]:
+                print("Password combaciano")
                 self.controller().register(form_data)
                 self.window().show_main_window()
             else:
-                self.confirmPasswordLayout.error_label.set_error_message(ValidationStrings.PASSWORD_CONFIRM_DIFFERENT)
+                print("Password non combaciano")
+                self.confirmPasswordLayout.error_label.setText(ValidationStrings.PASSWORD_CONFIRM_DIFFERENT)
                 self.confirmPasswordLayout.error_label.setHidden(False)
 
         except EmailExistsException:
@@ -88,6 +90,9 @@ class SignUpView(AccessView):
 
         except HTTPErrorHelper:
             self.on_unexpected_error()
+
+        except Exception as e:
+            print(e)
 
     # Mostra la form di login
     def on_bottom_label_click(self):
