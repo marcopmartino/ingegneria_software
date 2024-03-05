@@ -27,7 +27,6 @@ class LoginView(AccessView):
         self.inputLayout.addLayout(self.emailLayout)  # Aggiunge il layout del campo Email
         self.inputLayout.addLayout(self.passwordLayout)  # Aggiunge il layout del campo Password
 
-
         # Imposta il testo per le Label e il pulsante di submit
         self.titleLabel.setText(AccessStrings.TITLE_LOGIN)
         self.submitButton.setText(AccessStrings.LOGIN)
@@ -51,7 +50,7 @@ class LoginView(AccessView):
             print("Connesso!")
             self.window().show_main_window()
 
-        except InvalidEmailException or MissingPasswordException or InvalidLoginCredentialsException:
+        except (InvalidEmailException, MissingPasswordException, InvalidLoginCredentialsException):
             self.on_invalid_credentials_error()
 
         except ConnectionError:

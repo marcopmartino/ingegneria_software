@@ -16,6 +16,7 @@ class HTTPErrorHelper(object):
         try:
             return request()
         except HTTPError as e:
+            print(e)
             error_message: str = HTTPErrorHelper.extract_message(e)
             match error_message:
                 case "INVALID_EMAIL":
