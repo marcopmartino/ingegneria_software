@@ -2,29 +2,26 @@ import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QApplication
 
-from lib.Access.AccessWindow import AccessWindow
+from lib.Application import Application
 from res.Dimensions import FontSize
 
-# Main
+# main
 if __name__ == '__main__':
-
     # Impostazioni applicazione
     # Abilita lo scaling automatico in base alla densità di pixel (DPI) del monitor
-    QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    Application.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    Application.setAttribute(Qt.AA_EnableHighDpiScaling)
+    Application.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     # Applicazione
-    app = QApplication(sys.argv)
+    app = Application(sys.argv)
     app.setStyle('Fusion')  # Default style
     app.setFont(QFont('Helvetica', FontSize.DEFAULT))  # Default font
 
-    # Schermata di login
-    window = AccessWindow()
-    window.show()
-
     # Esegue l'applicazione
+    app.run()
+
+    # Avvia il ciclo degli eventi e si bloccherà fino alla chiusura dell'applicazione
     sys.exit(app.exec())
 

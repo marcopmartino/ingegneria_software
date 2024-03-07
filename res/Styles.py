@@ -116,16 +116,49 @@ EDIT_PROFILE_PAGE = EDIT_PROFILE_PAGE + EDIT_PROFILE_LINE_EDIT + EDIT_PROFILE_LA
 
 PROFILE_INFO_NAME = """ /* Set style for QLabel */
                 QLabel {\n
-                    font-size: 36px;               
+                    font-size: 36px;"""
+
+BASE_WIDGET = """/* Set style for sub interface */\n
+                #header_frame {\n
+                    background-color: #fff;\n
+                    border: 1px solid black;\n
+                    border-right: none;\n
+                }\n
+                #central_frame {\n
+                    background-color: #fff;\n
+                    border: 1px solid black;\n
+                    border-top: none;\n
+                    border-bottom: none;\n
+                    border-right: none;\n
+                }\n
+                #sidebar_frame {\n
+                    background-color: #fff;\n
+                    border: 1px solid black;\n
+                    border-top: none;\n
+                    border-bottom: none;\n
+                    border-right: none;\n
                 }\n"""
 
-LABEL_PROFILE_INFO = """/* Set style for Qlabel */
-                QLabel {\n
-                    font-size: 16;
-                    background-color: #ffffff;
-                    border-style: solid;
-                    border-width: 1px;\n
+BASE_WIDGET_2 = """/* Set style for sub interface */\n
+                #header_frame {\n
+                    border: 1px solid;\n
+                    border-right: none;\n
+                }\n
+                #central_frame {\n
+                    border: 1px solid;\n
+                    border-top: none;\n
+                    border-bottom: none;\n
+                    border-right: none;\n
+                }\n
+                #sidebar_frame {\n
+                    border: 1px solid;\n
+                    border-top: none;\n
+                    border-bottom: none;\n
+                    border-right: none;\n
                 }\n"""
+
+TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
+                QTableWidget {\n"""
 
 TABLE_HEADER = """/* Set style for Qlabel */
                 QLabel {\n
@@ -163,10 +196,16 @@ DELETE_BUTTON = """/* Set style for QPushButton */\n
                     padding: 10px;\n
                     margin-top: 10px\n
                 }\n
+                QTableWidget::item {\n
+                    border-bottom: 2px solid #dddddd;\n
                 QPushButton:hover {\n
                     background-color: #FF3300;\n
                     border: 2px solid #FF8566;\n
                 }\n
+                QHeaderView {\n
+                    background-color: #dddddd;\n
+                    font-size: 11pt;\n
+                    font-weight: bold;\n
                 QPushButton:pressed {\n
                     background-color: #FFF;\n
                     color: #0B5ED7;\n
