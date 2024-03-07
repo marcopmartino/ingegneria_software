@@ -7,7 +7,7 @@ from lib.layout.LineEditLayout import LineEditCompositeLayout
 from lib.network.HTTPErrorHelper import HTTPErrorHelper, EmailExistsException
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.ValidationRule import ValidationRule
-from lib.view.Access.AccessView import AccessView
+from lib.mvc.access.view.AccessView import AccessView
 from res.Strings import FormStrings, AccessStrings, ValidationStrings
 
 

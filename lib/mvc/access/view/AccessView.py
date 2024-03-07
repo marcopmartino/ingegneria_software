@@ -108,15 +108,10 @@ class AccessView(StylisableWidget, ABC, metaclass=AccessViewMeta):
         self.validation_error_label.setHidden(False)
         print("HTTPError")
 
-    # Ritorna la finestra in cui la view è inserita
-    def window(self):
-        return self.parent().parent()
-
-    # Ritorna il controller associato alla finestra in cui la view è inserita
+    # Ritorna il controller associato alla finestra in cui la mvc è inserita
     def controller(self):
         return self.window().controller
 
-
+    # Mostra la finestra principale dell'applicazione
     def show_main_window(self):
-        self.parent().show_main_window()
-        
+        self.window().show_main_window()

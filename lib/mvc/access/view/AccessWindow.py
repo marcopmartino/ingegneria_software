@@ -1,15 +1,16 @@
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QWidget, QSizePolicy
 
-from lib.controller.AccessController import AccessController
+from lib.mvc.access.controller.AccessController import AccessController
 from lib.layout.FrameLayout import FrameLayout
-from lib.view.Access.LoginView import LoginView
-from lib.view.Access.SignUpView import SignUpView
-from lib.view.Main.MainWindow import MainWindow
+from lib.mvc.access.view.LoginView import LoginView
+from lib.mvc.access.view.SignUpView import SignUpView
 from res import Styles
 from res.Strings import Config
 
 
 class AccessWindow(QMainWindow):
+    login = pyqtSignal()
 
     def __init__(self):
         super(AccessWindow, self).__init__()
@@ -59,13 +60,8 @@ class AccessWindow(QMainWindow):
         # Pone il Widget interno al centro del frame esterno
         self.outerFrameLayout.setCentralWidget(widget)
 
-    # Mostra la pagina principale dopo aver fatto il login o la registrazione
+    # Mostra la schermata principale dopo aver fatto il login o la registrazione
     def show_main_window(self):
         print("About to create MainWindow")
-        new_window = MainWindow()
-        print("MainWindow created")
-
-        new_window.show()
+        self.login.emit()
         print("MainWindow shown")
-
-        self.close()

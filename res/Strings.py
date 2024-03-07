@@ -13,7 +13,7 @@ class Config:
 
 
 # Stringhe usate nell'applicazione
-# Access
+# access
 class AccessStrings:
     BOTTOM_TEXT_LOGIN = "Non hai un account? Registrati"
     BOTTOM_TEXT_SIGN_UP = "Hai già un account? Accedi"

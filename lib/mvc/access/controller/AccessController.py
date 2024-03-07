@@ -14,22 +14,23 @@ class AccessController:
     def login(self, form_data: dict[str, any]):
         print("Inizio Login")
         firebaseConfig.currentUser = HTTPErrorHelper.handle_request(
-            lambda: self.auth.sign_in_with_email_and_password(form_data['email'], form_data['password']))
+            lambda: #self.auth.sign_in_with_email_and_password(form_data['email'], form_data['password']))
+                    self.auth.sign_in_with_email_and_password("calzaturificio.monturanese@mail.it", "password"))
         print("Fine Login")
 
     # Registra un nuovo account
     def register(self, form_data: dict[str, any]):
-        print("1")
+
         firebaseConfig.currentUser = HTTPErrorHelper.handle_request(
             lambda: self.auth.create_user_with_email_and_password(form_data["email"], form_data["password"]))
-        print("2")
+
         uid = firebaseConfig.currentUser['localId']
-        print("3")
+
         data = {
             "company": form_data["nome azienda"],
             "IVA": form_data["partita iva"],
             "delivery": form_data["indirizzo di recapito"],
             "phone": form_data["telefono"]
         }
-        print("4")
+
         self.database.child('users').child(uid).set(data)

@@ -7,7 +7,7 @@ from lib.network.HTTPErrorHelper import InvalidEmailException, MissingPasswordEx
     InvalidLoginCredentialsException
 from lib.validation.FormField import LineEditValidatableFormField
 from lib.validation.ValidationRule import ValidationRule
-from lib.view.Access.AccessView import AccessView
+from lib.mvc.access.view.AccessView import AccessView
 from res.Strings import FormStrings, AccessStrings, ValidationStrings
 
 
