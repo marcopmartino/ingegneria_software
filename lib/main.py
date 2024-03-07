@@ -4,8 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QApplication
 
-from lib.view.Access.AccessWindow import AccessWindow
-from lib.view.Main.MainWindow import MainWindow
+from lib.Access.AccessWindow import AccessWindow
 from res.Dimensions import FontSize
 
 # Main

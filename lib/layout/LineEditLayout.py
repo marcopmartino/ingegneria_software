@@ -12,7 +12,7 @@ from res.Dimensions import LineEditDimensions, FontWeight
 # noinspection PyPep8Naming
 class LineEditLayout(QVBoxLayout):
 
-    def __init__(self, field_name: str, parent_widget: QWidget = None):
+    def __init__(self, field_name: str, default: str = None, parent_widget: QWidget = None):
         super().__init__(parent_widget)
 
         lowercase_field_name = field_name.lower()
@@ -33,19 +33,22 @@ class LineEditLayout(QVBoxLayout):
         font.setPointSize(LineEditDimensions.DEFAULT_TEXT_FONT_SIZE)
         self.line_edit = QLineEdit(parent_widget)
         self.line_edit.setFont(font)
-        self.line_edit.setPlaceholderText(field_name)
         self.line_edit.setObjectName(f"{lowercase_field_name}_line_edit")
         self.line_edit.setMinimumSize(QSize(LineEditDimensions.DEFAULT_MINIMUM_WIDTH, 0))
-        self.line_edit.setClearButtonEnabled(True)  # Abilita il pulsante per lo svuotamento del campo
+        self.line_edit.textChanged.connect(self.__on_text_changed)  # Logica quando il testo cambia
+        self.line_edit.setPlaceholderText(field_name)
+        if default is not None:
+            self.line_edit.setText(default)
+            self.__on_text_changed(default)
+            self.line_edit.textChanged.connect(self.__on_text_changed)  # Logica quando il testo cambia
+        else:
+            self.line_edit.setClearButtonEnabled(True)  # Abilita il pulsante per lo svuotamento del campo
 
         # Imposta l'oggetto Layout stesso
         self.setObjectName(f"{lowercase_field_name}_layout")
         self.setSpacing(LineEditDimensions.DEFAULT_SPACING)  # Spazio tra Label e LineEdit
         self.addWidget(self.label)  # Aggiunge la Label al layout del campo di input
         self.addWidget(self.line_edit)  # Aggiunge il LineEdit al layout del campo di input
-
-        # Logica quando il testo cambia
-        self.line_edit.textChanged.connect(self.__on_text_changed)
 
     # Quando è presente del testo nel LineEdit, il testo della Label viene mostrato.
     # Altrimenti il testo della Label viene nascosto.
@@ -59,10 +62,9 @@ class LineEditLayout(QVBoxLayout):
 # Estensione di LineEditLayout che oltre a una QLabel e a un QLineEdit contiene una seconda QLabel per mostrare un
 # messaggio di errore; è utile nelle form per la validazione.
 class LineEditCompositeLayout(LineEditLayout):
-    def __init__(self, field_name: str, parent_widget: QWidget = None):
-
+    def __init__(self, field_name: str, default: str = None, parent_widget: QWidget = None):
         # Imposta il layout, la Label e il LineEdit
-        super().__init__(field_name, parent_widget)
+        super().__init__(field_name, default, parent_widget)
 
         # Seconda Label per mostrare un errore di input, utile nella validazione
         font = QFont()

@@ -68,6 +68,7 @@ ERROR_LABEL_INPUT = """/* Set style for QLabel */
 
 LABEL_TITLE = """/* Set style for Qlabel */
                 QLabel {\n
+                    color: black;\n
                     font-size: 26px;\n
                 }\n"""
 
@@ -83,8 +84,35 @@ PAGE_TITLE_FRAME = """/* Set style for QFrame */
 
 PROFILE_PAGE = """ /* Set style for QFrame */
                 QFrame {\n
-                    background-color: #ebebeb;
+                    background-color: #EBEBEB;
                 }\n"""
+
+EDIT_PROFILE_PAGE = """ /* Set style for QFrame */
+                    QMainWindow {\n
+                        background-color: white;
+                    }\n"""
+
+EDIT_PROFILE_LABEL = """/* Set style for QLabel */\n
+                        QLabel {\n
+                            color: #767E89;\n
+                        }\n
+                        #bottom_label {\n
+                        }\n
+                        #bottom_label:hover {\n
+                            text-decoration: underline;\n
+                        }\n"""
+
+EDIT_PROFILE_LINE_EDIT = """/* Set style for QLineEdit */\n
+                            QLineEdit {\n
+                                border: none;\n
+                                border-bottom: 2px solid #CCCCCC;\n
+                                height: 30px;\n
+                            }\n
+                            QLineEdit:focus {\n
+                                border-bottom: 2px solid #28A2A2;\n
+                            }\n"""
+
+EDIT_PROFILE_PAGE = EDIT_PROFILE_PAGE + EDIT_PROFILE_LINE_EDIT + EDIT_PROFILE_LABEL
 
 PROFILE_INFO_NAME = """ /* Set style for QLabel */
                 QLabel {\n
@@ -102,7 +130,7 @@ LABEL_PROFILE_INFO = """/* Set style for Qlabel */
 TABLE_HEADER = """/* Set style for Qlabel */
                 QLabel {\n
                     font-size: 18;
-                    background-color: #c0c0c0;
+                    background-color: #C0C0C0;
                     border-style: solid;
                     border-width: 1px;\n
                 }\n"""
@@ -126,10 +154,9 @@ EDIT_BUTTON = """/* Set style for QPushButton */\n
                     border: 2px solid #9AC3FE;\n
                 }\n"""
 
-
 DELETE_BUTTON = """/* Set style for QPushButton */\n
                 QPushButton {\n
-                    background-color: #ff471a;\n
+                    background-color: #FF471A;\n
                     border: 2px solid #FFF;\n
                     color: #FFF;\n
                     border-radius: 5px;\n
@@ -137,91 +164,12 @@ DELETE_BUTTON = """/* Set style for QPushButton */\n
                     margin-top: 10px\n
                 }\n
                 QPushButton:hover {\n
-                    background-color: #ff3300;\n
-                    border: 2px solid #ff8566;\n
+                    background-color: #FF3300;\n
+                    border: 2px solid #FF8566;\n
                 }\n
                 QPushButton:pressed {\n
                     background-color: #FFF;\n
                     color: #0B5ED7;\n
-                    border: 2px solid #ff8566;\n
+                    border: 2px solid #FF8566;\n
                 }\n"""
 
-LABEL_TITLE = """/* Set style for Qlabel */
-                QLabel {\n
-                    font-size: 26px;\n
-                }\n"""
-
-LABEL_SUBTITLE = """/* Set style for Qlabel */
-                QLabel {\n
-                    font-size: 12px;\n
-                }\n"""
-
-PAGE_TITLE_FRAME = """/* Set style for QFrame */
-                QFrame {\n
-                    background-color: #ffffff;
-                }\n"""
-
-PROFILE_PAGE = """ /* Set style for QFrame */
-                QFrame {\n
-                    background-color: #ebebeb;
-                }\n"""
-
-PROFILE_INFO_NAME = """ /* Set style for QLabel */
-                QLabel {\n
-                    font-size: 36px;               
-                }\n"""
-
-LABEL_PROFILE_INFO = """/* Set style for Qlabel */
-                QLabel {\n
-                    font-size: 16;
-                    background-color: #ffffff;
-                    border-style: solid;
-                    border-width: 1px;\n
-                }\n"""
-
-TABLE_HEADER = """/* Set style for Qlabel */
-                QLabel {\n
-                    font-size: 18;
-                    background-color: #c0c0c0;
-                    border-style: solid;
-                    border-width: 1px;\n
-                }\n"""
-
-EDIT_BUTTON = """/* Set style for QPushButton */\n
-                QPushButton {\n
-                    background-color: #0D6EFD;\n
-                    border: 2px solid #FFF;\n
-                    color: #FFF;\n
-                    border-radius: 5px;\n
-                    padding: 10px;\n
-                    margin-top: 10px\n
-                }\n
-                QPushButton:hover {\n
-                    background-color: #0B5ED7;\n
-                    border: 2px solid #9AC3FE;\n
-                }\n
-                QPushButton:pressed {\n
-                    background-color: #FFF;\n
-                    color: #0B5ED7;\n
-                    border: 2px solid #9AC3FE;\n
-                }\n"""
-
-
-DELETE_BUTTON = """/* Set style for QPushButton */\n
-                QPushButton {\n
-                    background-color: #ff471a;\n
-                    border: 2px solid #FFF;\n
-                    color: #FFF;\n
-                    border-radius: 5px;\n
-                    padding: 10px;\n
-                    margin-top: 10px\n
-                }\n
-                QPushButton:hover {\n
-                    background-color: #ff3300;\n
-                    border: 2px solid #ff8566;\n
-                }\n
-                QPushButton:pressed {\n
-                    background-color: #FFF;\n
-                    color: #ff3300;\n
-                    border: 2px solid #ff8566;\n
-                }\n"""

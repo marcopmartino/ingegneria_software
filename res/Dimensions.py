@@ -44,3 +44,8 @@ class ValidationDimensions:
 class WindowDimensions:
     DEFAULT_HEIGHT = 600
     DEFAULT_WIDTH = 1000
+
+
+# Generico
+class GenericDimensions:
+    MAX_BUTTON_WIDTH = 150

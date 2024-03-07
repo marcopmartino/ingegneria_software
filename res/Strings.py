@@ -31,9 +31,24 @@ class FormStrings:
     IVA_NUMBER = "Partita IVA"
     NAME = "Nome"
     PASSWORD = "Password"
+    NEW_PASSWORD = "Nuova password"
     PASSWORD_CONFIRM = "Conferma password"
+    NEW_PASSWORD_CONFIRM = "Conferma nuova password"
     PHONE = "Telefono"
+    AGE = "Età"
+    BIRTH_DATE = "Data di nascità"
     SURNAME = "Cognome"
+    CF = "Codice fiscale"
+    SAVE_EDIT = "Salva modifiche"
+    DELETE_EDIT = "Annulla modifiche"
+
+
+# Profilo
+class ProfileStrings:
+    PROFILE = "PROFILO"
+    PROFILE_DETAILS = "Dettagli profilo"
+    EDIT_BUTTON = "Modifica profilo"
+    DELETE_BUTTON = "Elimina profilo"
 
 
 # Utility
@@ -58,3 +73,5 @@ class ValidationStrings:
     EMAIL_PASSWORD_WRONG = "Email e\\o password errati"
     EMAIL_ALREADY_USED = "Email già in uso"
     PASSWORD_CONFIRM_DIFFERENT = "Le due password non coincidono"
+    FIELD_REQUIRED = "Campo richiesto"
+    MIN_PASSWORD_ERROR = "La password deve essere lunga almeno 6 caratteri"
