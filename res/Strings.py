@@ -39,6 +39,8 @@ class FormStrings:
     BIRTH_DATE = "Data di nascità"
     SURNAME = "Cognome"
     CF = "Codice fiscale"
+    WORKER_TEXT = "Operaio"
+    ADMIN_TEXT = "Manager"
     SAVE_EDIT = "Salva modifiche"
     DELETE_EDIT = "Annulla modifiche"
 
