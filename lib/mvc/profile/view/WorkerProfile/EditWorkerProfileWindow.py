@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, Q
     QRadioButton
 
 import lib.firebaseData as firebaseConfig
-from lib.mvc.profile.Controller.ProfileController import ProfileController
+from lib.mvc.profile.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayout import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
