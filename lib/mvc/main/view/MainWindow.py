@@ -1,86 +1,46 @@
 # coding:utf-8
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QFrame, QStackedWidget, QHBoxLayout, QLabel
 
-from qfluentwidgets import (NavigationInterface, NavigationItemPosition, isDarkTheme, qrouter)
+from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter)
 from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, TitleBar
+
+from lib.mvc.main.view.BaseWidget import BaseWidget
+from lib.mvc.orderlist.view.OrderListView import OrderListView
 
 from lib.mvc.profile.view.AdminProfile import AdminProfilePage
 from lib.mvc.profile.view.UserProfile import UserProfilePage
 from lib.mvc.profile.view.WorkerProfile import WorkerProfilePage
 
 
-class Widget(QFrame):
-
-    def __init__(self, text: str, parent=None):
-        super().__init__(parent=parent)
-        self.setObjectName(text.replace(' ', '-'))
-        self.label = QLabel(text, self)
-        self.label.setAlignment(Qt.AlignCenter)
-        self.hBoxLayout = QHBoxLayout(self)
-        self.hBoxLayout.addWidget(self.label, 1, Qt.AlignCenter)
-
-        # leave some space for title bar
-        self.hBoxLayout.setContentsMargins(0, 32, 0, 0)
-
-
-'''class AvatarWidget(NavigationWidget):
-    """ Avatar widget """
-
-    def __init__(self, parent=None):
-        super().__init__(isSelectable=False, parent=parent)
-        self.avatar = QImage('resource/shoko.png').scaled(
-            24, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-
-    def paintEvent(self, e):
-        painter = QPainter(self)
-        painter.setRenderHints(
-            QPainter.SmoothPixmapTransform | QPainter.Antialiasing)
-
-        painter.setPen(Qt.NoPen)
-
-        if self.isPressed:
-            painter.setOpacity(0.7)
-
-        # draw background
-        if self.isEnter:
-            c = 255 if isDarkTheme() else 0
-            painter.setBrush(QColor(c, c, c, 10))
-            painter.drawRoundedRect(self.rect(), 5, 5)
-
-        # draw avatar
-        painter.setBrush(QBrush(self.avatar))
-        painter.translate(8, 6)
-        painter.drawEllipse(0, 0, 24, 24)
-        painter.translate(-8, -6)
-
-        if not self.isCompacted:
-            painter.setPen(Qt.white if isDarkTheme() else Qt.black)
-            font = QFont('Segoe UI')
-            font.setPixelSize(14)
-            painter.setFont(font)
-            painter.drawText(QRect(44, 0, 255, 36), Qt.AlignVCenter, 'zhiyiYo')'''
-
-
+# Widget per la Title Bar
+# noinspection PyPep8Naming
 class CustomTitleBar(TitleBar):
     """ Title bar with icon and title """
 
     def __init__(self, parent):
         super().__init__(parent)
-        # add window icon
+
+        self.setStyleSheet("background-color: white")
+
+        # Inizializza e aggiunge l'icona
         self.iconLabel = QLabel(self)
         self.iconLabel.setFixedSize(18, 18)
         self.hBoxLayout.insertSpacing(0, 10)
-        self.hBoxLayout.insertWidget(1, self.iconLabel, 0, Qt.AlignLeft | Qt.AlignBottom)
+        self.hBoxLayout.insertWidget(1, self.iconLabel, 0, Qt.AlignLeft | Qt.AlignCenter)
         self.window().windowIconChanged.connect(self.setIcon)
 
-        # add title label
+        # Inizializza e aggiunge il titolo
         self.titleLabel = QLabel(self)
-        self.hBoxLayout.insertWidget(2, self.titleLabel, 0, Qt.AlignLeft | Qt.AlignBottom)
+        self.hBoxLayout.insertSpacing(2, 10)
+        self.hBoxLayout.insertWidget(3, self.titleLabel, 0, Qt.AlignLeft | Qt.AlignCenter)
         self.titleLabel.setObjectName('titleLabel')
+        font = QFont()
+        font.setPointSize(10)
+        self.titleLabel.setFont(font)
         self.window().windowTitleChanged.connect(self.setTitle)
 
     def setTitle(self, title):
@@ -92,33 +52,32 @@ class CustomTitleBar(TitleBar):
 
 
 class MainWindow(FramelessWindow):
+    logout = pyqtSignal()
 
-    def __init__(self, tipo: str):
+    def __init__(self, tipo:str):
         super().__init__()
         self.setTitleBar(CustomTitleBar(self))
 
-        # use dark theme mode
-        # setTheme(Theme.DARK)
-
+        # Layout orizzontale che contiene il menù (NavigationInterface) e la lista dei Widget associati (QStackedWidget)
         self.hBoxLayout = QHBoxLayout(self)
-        self.navigationInterface = NavigationInterface(
-            self, showReturnButton=True, collapsible=False)
+        self.navigationInterface = NavigationInterface(self, showReturnButton=True, collapsible=False)
         self.navigationInterface.panel.setExpandWidth(200)
         self.navigationInterface.panel.setFixedWidth(200)
         self.navigationInterface.resize(25, self.height())
-        self.stackWidget = QStackedWidget(self)
+        self.stackedWidget = QStackedWidget(self)
 
         # create sub interface
-        if tipo == "user":
+        if tipo == 'user':
             self.profileInterface = UserProfilePage.ProfileWidget(self)
-        elif tipo == "worker":
+        elif tipo == 'worker':
             self.profileInterface = WorkerProfilePage.ProfileWidget(self)
         else:
             self.profileInterface = AdminProfilePage.ProfileWidget(self)
-        self.musicInterface = Widget('Cringe', self)
-        self.videoInterface = Widget('Video Interface', self)
-        self.folderInterface = Widget('Folder Interface', self)
-        self.settingInterface = Widget('Setting Interface', self)
+        self.orderListInterface = OrderListView(self)
+        self.musicInterface = BaseWidget('Cringe', self)
+        self.videoInterface = BaseWidget('Video Interface', self)
+        # self.folderInterface = BaseWidget('Folder Interface', self)
+        # self.settingInterface = BaseWidget('Setting Interface', self)
 
         # initialize layout
         self.initLayout()
@@ -128,12 +87,13 @@ class MainWindow(FramelessWindow):
 
         self.initWindow()
 
+    # Inizializza il layout che contiene il menù (NavigationInterface) e la lista dei Widget associati (QStackedWidget)
     def initLayout(self):
         self.hBoxLayout.setSpacing(0)
         self.hBoxLayout.setContentsMargins(0, 32, 0, 0)
         self.hBoxLayout.addWidget(self.navigationInterface)
-        self.hBoxLayout.addWidget(self.stackWidget)
-        self.hBoxLayout.setStretchFactor(self.stackWidget, 1)
+        self.hBoxLayout.addWidget(self.stackedWidget)
+        self.hBoxLayout.setStretchFactor(self.stackedWidget, 1)  # In questo modo sono i Widget a espandersi
 
         self.titleBar.raise_()
         self.navigationInterface.displayModeChanged.connect(self.titleBar.raise_)
@@ -146,23 +106,13 @@ class MainWindow(FramelessWindow):
         self.addSubInterface(self.profileInterface, FIF.PEOPLE, 'Profilo')
         self.addSubInterface(self.musicInterface, FIF.MUSIC, 'Gestione dipendenti')
         self.addSubInterface(self.videoInterface, FIF.VIDEO, 'Video library')
+        self.addSubInterface(self.orderListInterface, FIF.DOCUMENT, 'Lista ordini')
 
-        '''self.navigationInterface.addWidget(
-            routeKey='avatar',
-            widget=AvatarWidget(),
-            onClick=self.showMessageBox,
-            position=NavigationItemPosition.BOTTOM
-        )
-
-        self.navigationInterface.addSeparator()
-
-        self.addSubInterface(self.settingInterface, FIF.SETTING, 'Settings', NavigationItemPosition.BOTTOM)
-'''
         # !IMPORTANT: don't forget to set the default route key
-        qrouter.setDefaultRouteKey(self.stackWidget, self.profileInterface.objectName())
+        qrouter.setDefaultRouteKey(self.stackedWidget, self.profileInterface.objectName())
 
-        self.stackWidget.currentChanged.connect(self.onCurrentInterfaceChanged)
-        self.stackWidget.setCurrentIndex(0)
+        self.stackedWidget.currentChanged.connect(self.onCurrentInterfaceChanged)
+        self.stackedWidget.setCurrentIndex(0)
 
     # Funzione per inizializzare la finestra (dimensione, titolo, logo e stile[dark/light])
     def initWindow(self):
@@ -175,12 +125,10 @@ class MainWindow(FramelessWindow):
         w, h = desktop.width(), desktop.height()
         self.move(w // 2 - self.width() // 2, h // 2 - self.height() // 2)
 
-        self.setQss()
-
     # Funzione per aggiungere le pagine ai pulsanti della sidebar
     def addSubInterface(self, interface, icon, text: str, position=NavigationItemPosition.TOP):
         """ add sub interface """
-        self.stackWidget.addWidget(interface)
+        self.stackedWidget.addWidget(interface)
         print(interface.objectName())
         self.navigationInterface.addItem(
             routeKey=interface.objectName(),
@@ -191,16 +139,16 @@ class MainWindow(FramelessWindow):
             tooltip=text
         )
 
-    # Funzione per impostare il tema della window
-    def setQss(self):
-        color = 'dark' if isDarkTheme() else 'light'
-        #with open(f'lib/view/Main/resource/{color}/demo.qss', encoding='utf-8') as f:
-            #self.setStyleSheet(f.read())
-
     def switchTo(self, widget):
-        self.stackWidget.setCurrentWidget(widget)
+        self.stackedWidget.setCurrentWidget(widget)
 
     def onCurrentInterfaceChanged(self, index):
-        widget = self.stackWidget.widget(index)
+        widget = self.stackedWidget.widget(index)
         self.navigationInterface.setCurrentItem(widget.objectName())
-        qrouter.push(self.stackWidget, widget.objectName())
+        qrouter.push(self.stackedWidget, widget.objectName())
+
+    # Mostra la schermata di accesso dopo aver effettuato il logout
+    def show_access_window(self):
+        print("About to create AccessWindow")
+        self.logout.emit()
+        print("AccessWindow shown")

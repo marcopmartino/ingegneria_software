@@ -17,26 +17,26 @@ class SignUpView(AccessView):
         super(SignUpView, self).__init__(parent_widget)
 
         # Campo di input Nome azienda
-        self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, self)
+        self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, parent_widget=self)
 
         # Campo di input Partita IVA
-        self.IVANumberLayout = LineEditCompositeLayout(FormStrings.IVA_NUMBER, self)
+        self.IVANumberLayout = LineEditCompositeLayout(FormStrings.IVA_NUMBER, parent_widget=self)
 
         # Campo di input Indirizzo di recapito
-        self.deliveryAddressLayout = LineEditCompositeLayout(FormStrings.DELIVERY_ADDRESS, self)
+        self.deliveryAddressLayout = LineEditCompositeLayout(FormStrings.DELIVERY_ADDRESS, parent_widget=self)
 
         # Campo di input Email
-        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, self)
+        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, parent_widget=self)
 
         # Campo di input Telefono
-        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, self)
+        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, parent_widget=self)
 
         # Campo di input Password
-        self.passwordLayout = LineEditCompositeLayout(FormStrings.PASSWORD, self)
+        self.passwordLayout = LineEditCompositeLayout(FormStrings.PASSWORD, parent_widget=self)
         self.passwordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
 
         # Campo di input Conferma password
-        self.confirmPasswordLayout = LineEditCompositeLayout(FormStrings.PASSWORD_CONFIRM, self)
+        self.confirmPasswordLayout = LineEditCompositeLayout(FormStrings.PASSWORD_CONFIRM, parent_widget=self)
         self.confirmPasswordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
 
         # Aggiunge i campi di input della form al layout

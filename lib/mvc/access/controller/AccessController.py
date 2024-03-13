@@ -6,7 +6,6 @@ from lib.network.HTTPErrorHelper import HTTPErrorHelper
 class AccessController:
     def __init__(self):
         super().__init__()
-        firebaseConfig.init()
         self.auth = firebase.auth()
         self.database = firebase.database()
 

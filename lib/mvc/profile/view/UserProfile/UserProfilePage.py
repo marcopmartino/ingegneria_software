@@ -20,7 +20,7 @@ class ProfileWidget(QFrame):
         self.edit_window = None
         self.controller = ProfileController()
 
-        data = self.controller.getData()
+        data = self.controller.getData(firebaseConfig.currentUser['localId'])
 
         self.setObjectName("Profilo")
         self.setStyleSheet(Styles.PROFILE_PAGE)

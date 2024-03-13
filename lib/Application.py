@@ -2,6 +2,7 @@ from typing import List
 
 from PyQt5.QtWidgets import QApplication
 
+from lib.mvc.access.controller.AccessController import AccessController
 from lib.mvc.access.view.AccessWindow import AccessWindow
 from lib.mvc.main.view.MainWindow import MainWindow
 
@@ -39,7 +40,8 @@ class Application(QApplication):
 
     # Crea e mostra la schermata principale
     def show_main_window(self):
-        self.main_window = MainWindow()
+        controller = AccessController()
+        self.main_window = MainWindow(controller.getUserRole())
         self.main_window.logout.connect(self.show_access_window)
         self.access_window.close()
         self.main_window.show()

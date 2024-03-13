@@ -118,21 +118,29 @@ PROFILE_INFO_NAME = """ /* Set style for QLabel */
                 QLabel {\n
                     font-size: 36px;"""
 
+LABEL_PROFILE_INFO = """/* Set style for Qlabel */
+                QLabel {\n
+                    font-size: 16;
+                    background-color: #FFFFFF;
+                    border-style: solid;
+                    border-width: 1px;\n
+                }\n"""
+
 BASE_WIDGET = """/* Set style for sub interface */\n
                 #header_frame {\n
-                    background-color: #fff;\n
+                    background-color: #FFF;\n
                     border: 1px solid black;\n
                     border-right: none;\n
                 }\n
                 #central_frame {\n
-                    background-color: #fff;\n
+                    background-color: #FFF;\n
                     border: 1px solid black;\n
                     border-top: none;\n
                     border-bottom: none;\n
                     border-right: none;\n
                 }\n
                 #sidebar_frame {\n
-                    background-color: #fff;\n
+                    background-color: #FFF;\n
                     border: 1px solid black;\n
                     border-top: none;\n
                     border-bottom: none;\n
@@ -158,7 +166,17 @@ BASE_WIDGET_2 = """/* Set style for sub interface */\n
                 }\n"""
 
 TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
-                QTableWidget {\n"""
+                QTableWidget {\n
+
+                }\n
+                QTableWidget::item {\n
+                    border-bottom: 2px solid #dddddd;\n
+                }\n
+                QHeaderView {\n
+                    background-color: #dddddd;\n
+                    font-size: 11pt;\n
+                    font-weight: bold;\n
+                }\n"""
 
 TABLE_HEADER = """/* Set style for Qlabel */
                 QLabel {\n
@@ -197,13 +215,13 @@ DELETE_BUTTON = """/* Set style for QPushButton */\n
                     margin-top: 10px\n
                 }\n
                 QTableWidget::item {\n
-                    border-bottom: 2px solid #dddddd;\n
+                    border-bottom: 2px solid #DDDDDD;\n
                 QPushButton:hover {\n
                     background-color: #FF3300;\n
                     border: 2px solid #FF8566;\n
                 }\n
                 QHeaderView {\n
-                    background-color: #dddddd;\n
+                    background-color: #DDDDDD;\n
                     font-size: 11pt;\n
                     font-weight: bold;\n
                 QPushButton:pressed {\n
