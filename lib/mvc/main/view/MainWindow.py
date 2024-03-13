@@ -8,6 +8,8 @@ from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter
 from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, TitleBar
 
+from res.CustomIcon import CustomIcon as CustomFIF
+
 from lib.mvc.main.view.BaseWidget import BaseWidget
 from lib.mvc.orderlist.view.OrderListView import OrderListView
 
@@ -54,7 +56,8 @@ class CustomTitleBar(TitleBar):
 class MainWindow(FramelessWindow):
     logout = pyqtSignal()
 
-    def __init__(self, tipo:str):
+    def __init__(self, tipo: str):
+        self.tipo = tipo
         super().__init__()
         self.setTitleBar(CustomTitleBar(self))
 
@@ -67,17 +70,17 @@ class MainWindow(FramelessWindow):
         self.stackedWidget = QStackedWidget(self)
 
         # create sub interface
-        if tipo == 'user':
+        if self.tipo == 'user':
             self.profileInterface = UserProfilePage.ProfileWidget(self)
-        elif tipo == 'worker':
-            self.profileInterface = WorkerProfilePage.ProfileWidget(self)
+            self.orderListInterface = OrderListView(self)
+            self.priceListInterface = BaseWidget('Listino prezzi', self)
         else:
-            self.profileInterface = AdminProfilePage.ProfileWidget(self)
-        self.orderListInterface = OrderListView(self)
-        self.musicInterface = BaseWidget('Cringe', self)
-        self.videoInterface = BaseWidget('Video Interface', self)
-        # self.folderInterface = BaseWidget('Folder Interface', self)
-        # self.settingInterface = BaseWidget('Setting Interface', self)
+            self.profileInterface = WorkerProfilePage.ProfileWidget(self)
+            self.orderListInterface = OrderListView(self)
+            self.storageInterface = BaseWidget('Magazzino', self)
+            self.machineryInterface = BaseWidget('Macchinari', self)
+            if self.tipo == 'admin':
+                self.workerListInterface = BaseWidget('Gestione dipendenti', self)
 
         # initialize layout
         self.initLayout()
@@ -100,13 +103,16 @@ class MainWindow(FramelessWindow):
 
     # Inizializzo la navigation aggiungendo i "pulsanti" sulla barra laterale e le relative interfacce
     def initNavigation(self):
-        # enable acrylic effect
-        # self.navigationInterface.setAcrylicEnabled(True)
 
         self.addSubInterface(self.profileInterface, FIF.PEOPLE, 'Profilo')
-        self.addSubInterface(self.musicInterface, FIF.MUSIC, 'Gestione dipendenti')
-        self.addSubInterface(self.videoInterface, FIF.VIDEO, 'Video library')
+        if self.tipo == 'admin':
+            self.addSubInterface(self.workerListInterface, CustomFIF.WORKER, 'Gestione dipendenti')
         self.addSubInterface(self.orderListInterface, FIF.DOCUMENT, 'Lista ordini')
+        if self.tipo == 'user':
+            self.addSubInterface(self.priceListInterface, CustomFIF.PRICE, 'Listino prezzi')
+        else:
+            self.addSubInterface(self.storageInterface, FIF.LIBRARY, 'Magazzino')
+            self.addSubInterface(self.machineryInterface, CustomFIF.MACHINERY, 'Macchinari')
 
         # !IMPORTANT: don't forget to set the default route key
         qrouter.setDefaultRouteKey(self.stackedWidget, self.profileInterface.objectName())
