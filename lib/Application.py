@@ -7,8 +7,12 @@ from lib.mvc.main.view.MainWindow import MainWindow
 
 
 class Application(QApplication):
+
     def __init__(self, argv: List[str]):
         super().__init__(argv)
+
+        # Inizializzo lo stato
+        self.state = "NOT_RUNNING"
 
         # Inizializza a None le due finestre
         self.main_window = None
@@ -20,14 +24,23 @@ class Application(QApplication):
         self.access_window.login.connect(self.show_main_window)
         self.access_window.show()
 
-    # Chiude eventuali finestre aperte e poi avvia l'applicazione
-    def rerun(self):
+        # Aggiorno lo stato
+        self.state = "RUNNING"
+
+    # Chiude eventuali finestre aperte
+    def stop(self):
         if self.main_window:
             self.main_window.close()
 
         if self.access_window:
             self.access_window.close()
 
+        # Aggiorno lo stato
+        self.state = "STOPPED"
+
+    # Chiude eventuali finestre aperte e poi avvia l'applicazione
+    def rerun(self):
+        self.stop()
         self.run()
 
     # Crea e mostra la schermata di accesso
