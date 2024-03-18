@@ -1,4 +1,7 @@
 # Questo file contiene gli stili usati per personalizzare i Widget
+from lib.utility.ResourceManager import ResourceManager
+from res import Colors
+from res.Dimensions import FontSize
 from res.Strings import Config
 
 # Sezione ACCESS
@@ -24,7 +27,7 @@ ACCESS_LINE_EDIT = """/* Set style for QLineEdit */\n
 
 ACCESS_MAIN_WINDOW = """/* Set style for MainWindow */\n
                 QMainWindow {\n
-                    border-image: """ + Config.image("access_background.jpg") + """;\n
+                    border-image: """ + ResourceManager.image("access_background.jpg") + """;\n
                 }\n
                 /* Set style for QWidget */\n
                 #main_widget {\n
@@ -53,27 +56,58 @@ ACCESS_PUSH_BUTTON = """/* Set style for QPushButton */\n
 
 ACCESS = ACCESS_LABEL + ACCESS_LINE_EDIT + ACCESS_MAIN_WINDOW + ACCESS_PUSH_BUTTON
 
-ERROR_COLOR = "color: #FF0000;"
+# Sezione DIALOG
+DIALOG_WINDOW = """/* Set style for QPushButton */\n
+                QInputDialog {\n
+                    background-color: #FFF;\n
+                    width: 300px;\n
+                    heigth: 150px;\n
+                }\n"""
 
+DIALOG_PUSH_BUTTON = """/* Set style for QPushButton */\n
+                QPushButton {\n
+                    background-color: white;\n
+                    border: 1px solid black;\n
+                    color: black;\n
+                    border-radius: 5px;\n
+                    padding: 8px;\n
+                    margin: 5px;\n
+                    width: 80px;\n
+                }\n
+                QPushButton:hover {\n
+                    background-color: #0B5ED7;\n
+                    color: white;\n
+                    border: 2px solid #9AC3FE;\n
+                }\n
+                QPushButton:pressed {\n
+                    background-color: #FFF;\n
+                    color: white;\n
+                    color: #0B5ED7;\n
+                    border: 2px solid #9AC3FE;\n
+                }\n"""
+
+DIALOG = DIALOG_PUSH_BUTTON
+
+# Sezione ERROR
 ERROR_LABEL = """/* Set style for QLabel */
                 QLabel {\n
-                    """ + ERROR_COLOR + """\n
+                    color: """ + Colors.ERROR_RED + """;\n
                 }\n"""
 
 ERROR_LABEL_INPUT = """/* Set style for QLabel */
                 QLabel {\n
-                    """ + ERROR_COLOR + """\n
+                    color: """ + Colors.ERROR_RED + """;\n
                     margin-top: 4px;\n
                 }\n"""
 
 LABEL_TITLE = """/* Set style for Qlabel */
                 QLabel {\n
-                    font-size: 26px;\n
+                    font-size: """ + str(FontSize.SUB_INTERFACE_TITLE) + """pt;\n
                 }\n"""
 
 LABEL_SUBTITLE = """/* Set style for Qlabel */
                 QLabel {\n
-                    font-size: 12px;\n
+                    font-size: """ + str(FontSize.SUB_INTERFACE_SUBTITLE) + """pt;\n
                 }\n"""
 
 PAGE_TITLE_FRAME = """/* Set style for QFrame */
@@ -186,15 +220,27 @@ BASE_WIDGET_2 = """/* Set style for sub interface */\n
                     border-right: none;\n
                 }\n"""
 
-TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
+STANDARD_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
                 QTableWidget {\n
-                
+                    selection-background-color: white;\n
                 }\n
                 QTableWidget::item {\n
                     border-bottom: 2px solid #dddddd;\n
                 }\n
+                QTableWidget::item:selected {\n 
+                    background-color: #72aa53;\n
+                }\n
                 QHeaderView {\n
                     background-color: #dddddd;\n
-                    font-size: 11pt;\n
+                    font-size: """ + str(FontSize.TABLE_HEADER) + """pt;\n
                     font-weight: bold;\n
+                }\n"""
+
+PRICE_CATALOG_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
+                QTableWidget {\n
+                    selection-background-color: white;\n
+                    gridline-color: black;\n
+                }\n
+                QTableWidget::item:selected {\n 
+                    background-color: #72aa53;\n
                 }\n"""

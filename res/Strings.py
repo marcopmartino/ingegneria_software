@@ -6,14 +6,11 @@ class Config:
     APPLICATION_VERSION = "1.0.0"
     APPLICATION_VERSION_NAME = "First version"
     IMAGES_PATH = "res/images/"
-
-    @staticmethod
-    def image(filename):
-        return f"url({Config.IMAGES_PATH + filename})"
+    ICONS_PATH = "res/images/icons"
 
 
 # Stringhe usate nell'applicazione
-# access
+# Access
 class AccessStrings:
     BOTTOM_TEXT_LOGIN = "Non hai un account? Registrati"
     BOTTOM_TEXT_SIGN_UP = "Hai già un account? Accedi"

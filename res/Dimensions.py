@@ -9,12 +9,15 @@ class LineEditDimensions:
     DEFAULT_TEXT_FONT_SIZE = 12
 
 
-# FontSize
+# FontSize - pt (1 px = 0,75 pt; 1 pt = 1,333 px)
 class FontSize:
     DEFAULT = 12
     SMALL = 10
     SUBTITLE = 14
     TITLE = 18
+    TABLE_HEADER = 11
+    SUB_INTERFACE_TITLE = 20
+    SUB_INTERFACE_SUBTITLE = 10
 
 
 # FontWeight
@@ -33,6 +36,11 @@ class FormDimensions:
 class SpacerDimensions:
     DEFAULT_PRIMARY = 50
     DEFAULT_SECONDARY = 20
+
+
+# Table
+class TableDimensions:
+    DEFAULT_CELL_HEIGHT = 40
 
 
 # Validation
