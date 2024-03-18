@@ -1,6 +1,8 @@
-from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtCore import QObject
+from PyQt5.QtWidgets import QPushButton, QLayout, QWidget
 
-from lib.validation.FormField import IFormField
+from lib.validation.FormField import IFormField, CheckBoxFormField, SpinBoxFormField, ComboBoxFormField, \
+    LineEditFormField
 
 
 # Classe per la gestione delle form. Automatizza il processo di validazione dei campi e di estrazione dei loro dati.
@@ -42,7 +44,41 @@ class FormManager:
     # Aggiunge elementi alla lista dei campi
     def add_fields(self, *form_fields: IFormField):
         for form_field in form_fields:
-            self.field_list.append(form_field)
+            self.add_field(form_field)
+
+    # Aggiunge un elemento alla lista dei campi
+    def add_field(self, form_field: IFormField):
+        self.field_list.append(form_field)
+
+    # Aggiunge elementi alla lista dei campi
+    def add_objects(self, *objects: QObject):
+        for obj in objects:
+            self.add_object(obj)
+
+    # Aggiunge un elemento alla lista dei campi
+    def add_object(self, obj: QObject):
+        match type(obj).__name__:
+            case "QCheckBox" | "CheckBox":
+                self.add_fields(CheckBoxFormField(obj))
+            case "QSpinBox" | "SpinBox":
+                self.add_fields(SpinBoxFormField(obj))
+            case "QComboBox" | "ComboBox":
+                self.add_fields(ComboBoxFormField(obj))
+            case "QLineEdit" | "LineEdit":
+                self.add_fields(LineEditFormField(obj))
+
+    # Cerca e aggiunge i campi di input figli di un Widget
+    def add_widget_fields(self, *widgets: QWidget):
+        for widget in widgets:
+            for child in widget.children():
+                self.add_object(child)
+
+    # Cerca e aggiunge i campi di input contenuti in un Layout
+    def add_layout_fields(self, *layouts: QLayout):
+        for layout in layouts:
+            for index in range(0, layout.count() - 1):
+                item = layout.itemAt(index).widget()
+                self.add_object(item)
 
     # Eseguito al click su un pulsante di submit: esegue la validazione, poi chiama una funzione di callback
     def on_submit(self, callback_success: callable, callback_failure: callable):

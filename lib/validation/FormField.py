@@ -4,7 +4,7 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QValidator
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QComboBox, QCheckBox, QButtonGroup, QSpinBox
 
-from lib.layout.LineEditLayout import LineEditLayout, LineEditCompositeLayout
+from lib.layout.LineEditLayouts import LineEditLayout, LineEditCompositeLayout
 from lib.validation.ValidationRule import ValidationRule
 from res.Dimensions import ValidationDimensions
 
@@ -152,7 +152,7 @@ class ComboBoxFormField(IFormField):
         super().__init__(combo_box)
 
     def data(self):
-        return self.input_field.currentText()
+        return self.input_field.currentData()
 
 
 # Classe adattatrice per QCheckBox
