@@ -5,12 +5,13 @@ from res import Styles
 
 
 # Widget ereditato da tutte le sotto-interfacce della MainWindow
+# noinspection PyPep8Naming
 class BaseWidget(QWidget):
     def __init__(self, name: str, parent_widget: QWidget = None):
         super().__init__(parent_widget)
 
         # Base Widget - il widget Base include il frame Header e il widget Body
-        self.setObjectName(name.lower().replace(' ', '_'))
+        self.setObjectName(name.lower().replace(' ', '_'))  # ObjectName unico
         self.setStyleSheet(Styles.BASE_WIDGET)
 
         # Base Layout
@@ -42,9 +43,9 @@ class BaseWidget(QWidget):
         self.header_subtitle_label.setObjectName("header_subtitle_label")
         self.header_subtitle_label.setStyleSheet(Styles.LABEL_SUBTITLE)
 
+        # Aggiungo titolo e sottotitolo al layout dell'header
         self.header_layout.addWidget(self.header_title_label)
         self.header_layout.addWidget(self.header_subtitle_label)
-        self.base_layout.addWidget(self.header_frame)
 
         # Body Widget - il widget Body include i frame Central e Sidebar
         self.body_widget = QWidget(self)
@@ -81,12 +82,30 @@ class BaseWidget(QWidget):
         self.sidebar_layout.setObjectName("sidebar_layout")
         self.sidebar_layout.setContentsMargins(16, 12, 16, 12)
 
+        # Aggiungo i frame centrale e laterale al layout del Body
         self.body_layout.addWidget(self.central_frame)
         self.body_layout.addWidget(self.sidebar_frame)
 
+        # Aggiungo il frame header e il Body al layout di base
+        self.base_layout.addWidget(self.header_frame)
         self.base_layout.addWidget(self.body_widget)
 
-        # Testo
-        self.setWindowTitle("BaseWidget")
-        self.header_title_label.setText("Titolo")
-        self.header_subtitle_label.setText("Sottotitolo")
+    # Imposta il testo del titolo
+    def setTitleText(self, text):
+        self.header_title_label.setText(text)
+
+    # Imposta il testo del sottotitolo
+    def setSubtitleText(self, text):
+        self.header_subtitle_label.setText(text)
+
+    # Nascone il sottotitolo
+    def hideSubtitle(self):
+        self.header_subtitle_label.setHidden(True)
+
+    # Nascone l'header
+    def hideHeader(self):
+        self.header_frame.setHidden(True)
+
+    # Nascone il sottotitolo
+    def hideSidebar(self):
+        self.sidebar_frame.setHidden(True)

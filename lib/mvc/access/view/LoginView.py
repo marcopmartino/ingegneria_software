@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QWidget, QLineEdit
 from requests import HTTPError
 from requests import ConnectionError
 
-from lib.layout.LineEditLayout import LineEditLayout
+from lib.layout.LineEditLayouts import LineEditLayout
 from lib.network.HTTPErrorHelper import InvalidEmailException, MissingPasswordException, \
     InvalidLoginCredentialsException
 from lib.validation.FormField import LineEditValidatableFormField

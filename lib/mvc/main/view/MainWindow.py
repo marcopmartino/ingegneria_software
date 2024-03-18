@@ -9,7 +9,9 @@ from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, TitleBar
 
 from lib.mvc.main.view.BaseWidget import BaseWidget
-from lib.mvc.orderlist.view.OrderListView import OrderListView
+from lib.mvc.order.view.CreateOrderView import CreateOrderView
+from lib.mvc.order.view.OrderListView import OrderListView
+from lib.mvc.pricecatalog.view.PriceListView import PriceListView
 from lib.mvc.profile.view import ProfilePage
 
 
@@ -68,7 +70,11 @@ class MainWindow(FramelessWindow):
         # create sub interface
         self.profileInterface = ProfilePage.ProfileWidget(self)
         self.orderListInterface = OrderListView(self)
-        self.musicInterface = BaseWidget('Cringe', self)
+        try:
+            self.musicInterface = CreateOrderView(self)
+            self.priceListView = PriceListView(self)
+        except Exception as e:
+            print(e)
         self.videoInterface = BaseWidget('Video Interface', self)
         #self.folderInterface = BaseWidget('Folder Interface', self)
         #self.settingInterface = BaseWidget('Setting Interface', self)
@@ -99,6 +105,7 @@ class MainWindow(FramelessWindow):
         self.addSubInterface(self.musicInterface, FIF.MUSIC, 'Gestione dipendenti')
         self.addSubInterface(self.videoInterface, FIF.VIDEO, 'Video library')
         self.addSubInterface(self.orderListInterface, FIF.DOCUMENT, 'Lista ordini')
+        self.addSubInterface(self.priceListView, FIF.DOCUMENT, 'Listino prezzi formificio')
 
         '''self.navigationInterface.addWidget(
             routeKey='avatar',

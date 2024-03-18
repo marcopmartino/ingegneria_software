@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QWidget, QLineEdit
 from requests import ConnectionError
 
 import lib.firebaseData as firebaseConfig
-from lib.layout.LineEditLayout import LineEditCompositeLayout
+from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.network.HTTPErrorHelper import HTTPErrorHelper, EmailExistsException
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.ValidationRule import ValidationRule

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget, QSizePolicy, QLabel, QVBoxLayout, QPushButt
 
 from lib.validation.FormManager import FormManager
 from lib.widget.StylisableWidget import StylisableWidget
-from lib.layout.FrameLayout import FrameLayout
+from lib.layout.FrameLayouts import FrameLayout
 from lib.widget.InteractiveLabel import InteractiveLabel
 from res import Styles
 from res.Dimensions import FontSize, FormDimensions, FontWeight, LineEditDimensions
@@ -31,7 +31,7 @@ class AccessView(StylisableWidget, ABC, metaclass=AccessViewMeta):
         # Widget più interno - Layout
         self.frameLayout = FrameLayout(self)
         self.frameLayout.setObjectName("main_layout")
-        self.frameLayout.setSpacers(70, 40, QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.frameLayout.setSpacerDimensionsAndPolicy(70, 40, QSizePolicy.Fixed)
 
         # Titolo della form
         font = QFont()
