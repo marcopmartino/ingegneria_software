@@ -1,6 +1,7 @@
 # Firebase Config data
 from typing import Any
 
+import firebase_admin
 import pyrebase
 
 firebaseConfig = {
@@ -14,7 +15,9 @@ firebaseConfig = {
 }
 
 firebase = pyrebase.initialize_app(firebaseConfig)
-
+cred = firebase_admin.credentials.Certificate('lib/firebaseKey.json')
+firebase_users = firebase_admin.initialize_app(cred, {
+    'database_url': firebaseConfig.get('databaseURL')})
 currentUser: Any
 
 

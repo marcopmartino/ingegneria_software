@@ -103,6 +103,7 @@ ERROR_LABEL_INPUT = """/* Set style for QLabel */
 LABEL_TITLE = """/* Set style for Qlabel */
                 QLabel {\n
                     font-size: """ + str(FontSize.SUB_INTERFACE_TITLE) + """pt;\n
+                    color: black;\n
                 }\n"""
 
 LABEL_SUBTITLE = """/* Set style for Qlabel */
@@ -117,18 +118,44 @@ PAGE_TITLE_FRAME = """/* Set style for QFrame */
 
 PROFILE_PAGE = """ /* Set style for QFrame */
                 QFrame {\n
-                    background-color: #ebebeb;
+                    background-color: #EBEBEB;
                 }\n"""
+
+EDIT_PROFILE_PAGE = """ /* Set style for QFrame */
+                    QMainWindow {\n
+                        background-color: white;
+                    }\n"""
+
+EDIT_PROFILE_LABEL = """/* Set style for QLabel */\n
+                        QLabel {\n
+                            color: #767E89;\n
+                        }\n
+                        #bottom_label {\n
+                        }\n
+                        #bottom_label:hover {\n
+                            text-decoration: underline;\n
+                        }\n"""
+
+EDIT_PROFILE_LINE_EDIT = """/* Set style for QLineEdit */\n
+                            QLineEdit {\n
+                                border: none;\n
+                                border-bottom: 2px solid #CCCCCC;\n
+                                height: 30px;\n
+                            }\n
+                            QLineEdit:focus {\n
+                                border-bottom: 2px solid #28A2A2;\n
+                            }\n"""
+
+EDIT_PROFILE_PAGE = EDIT_PROFILE_PAGE + EDIT_PROFILE_LINE_EDIT + EDIT_PROFILE_LABEL
 
 PROFILE_INFO_NAME = """ /* Set style for QLabel */
                 QLabel {\n
-                    font-size: 36px;               
-                }\n"""
+                    font-size: 36px;"""
 
 LABEL_PROFILE_INFO = """/* Set style for Qlabel */
                 QLabel {\n
                     font-size: 16;
-                    background-color: #ffffff;
+                    background-color: #FFFFFF;
                     border-style: solid;
                     border-width: 1px;\n
                 }\n"""
@@ -183,19 +210,19 @@ DELETE_BUTTON = """/* Set style for QPushButton */\n
 
 BASE_WIDGET = """/* Set style for sub interface */\n
                 #header_frame {\n
-                    background-color: #fff;\n
+                    background-color: #FFF;\n
                     border: 1px solid black;\n
                     border-right: none;\n
                 }\n
                 #central_frame {\n
-                    background-color: #fff;\n
+                    background-color: #FFF;\n
                     border: 1px solid black;\n
                     border-top: none;\n
                     border-bottom: none;\n
                     border-right: none;\n
                 }\n
                 #sidebar_frame {\n
-                    background-color: #fff;\n
+                    background-color: #FFF;\n
                     border: 1px solid black;\n
                     border-top: none;\n
                     border-bottom: none;\n
@@ -244,3 +271,4 @@ PRICE_CATALOG_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
                 QTableWidget::item:selected {\n 
                     background-color: #72aa53;\n
                 }\n"""
+

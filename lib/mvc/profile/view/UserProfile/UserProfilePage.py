@@ -1,12 +1,13 @@
-from PyQt5.QtCore import Qt, QAbstractTableModel
-from PyQt5.QtWidgets import QFrame, QTableWidgetItem, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QTableWidget, \
-    QGridLayout, QSpacerItem, QSizePolicy, QPushButton, QTableView
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QHBoxLayout, QPushButton
 
 import lib.firebaseData as firebaseConfig
 
 from lib.layout.QLabelLayout import QLabelLayout
+from lib.mvc.profile.view.UserProfile.EditUserProfileWindow import EditProfileWindow
+from lib.mvc.profile.controller.ProfileController import ProfileController
 from res import Styles
-from lib.firebaseData import firebase
+from res.Strings import FormStrings, ProfileStrings
 
 
 class ProfileWidget(QFrame):
@@ -14,8 +15,12 @@ class ProfileWidget(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        db = firebase.database().child('users').child(firebaseConfig.currentUser['localId'])
-        data = db.get()
+        # Inizializzo una reference da una eventuale pagina di modifica, senza fare questo la pagina si chiuderebbe
+        # appena aperta perché il garbage collector la eliminerebbe
+        self.edit_window = None
+        self.controller = ProfileController()
+
+        data = self.controller.getData(firebaseConfig.currentUser['localId'])
 
         self.setObjectName("Profilo")
         self.setStyleSheet(Styles.PROFILE_PAGE)
@@ -31,9 +36,9 @@ class ProfileWidget(QFrame):
         self.title.setSpacing(3)
         self.title.setObjectName("TitleVerticalBox")
 
-        self.displayTitle = QLabel("PROFILO", self)
+        self.displayTitle = QLabel(ProfileStrings.PROFILE, self)
         self.displayTitle.setStyleSheet(Styles.LABEL_TITLE)
-        self.displaySubtitle = QLabel("Dettagli profilo", self)
+        self.displaySubtitle = QLabel(ProfileStrings.PROFILE_DETAILS, self)
         self.displaySubtitle.setStyleSheet(Styles.LABEL_SUBTITLE)
 
         self.title.addWidget(self.displayTitle)
@@ -52,18 +57,18 @@ class ProfileWidget(QFrame):
         self.profileInfo.setSpacing(15)
         self.profileInfo.setObjectName("ProfileInfo")
 
-        self.nomeLabel = QLabel(data.val()['company'])
-        self.nomeLabel.adjustSize()
-        self.nomeLabel.setMinimumSize(450, 50)
-        self.nomeLabel.setStyleSheet(Styles.PROFILE_INFO_NAME)
+        self.companyNameLabel = QLabel(data['company'])
+        self.companyNameLabel.adjustSize()
+        self.companyNameLabel.setMinimumSize(450, 50)
+        self.companyNameLabel.setStyleSheet(Styles.PROFILE_INFO_NAME)
 
-        self.profileInfo.addWidget(self.nomeLabel)
-        self.profileInfo.setAlignment(self.nomeLabel, Qt.AlignLeft)
+        self.profileInfo.addWidget(self.companyNameLabel)
+        self.profileInfo.setAlignment(self.companyNameLabel, Qt.AlignLeft)
 
         self.separator = QFrame()
         self.separator.setFrameShape(QFrame.HLine)
         self.separator.setFrameShadow(QFrame.Raised)
-        self.separator.setMinimumSize(self.nomeLabel.width(), 1)
+        self.separator.setMinimumSize(self.companyNameLabel.width(), 1)
 
         self.profileInfo.addWidget(self.separator)
         self.profileInfo.setAlignment(self.separator, Qt.AlignLeft)
@@ -74,21 +79,21 @@ class ProfileWidget(QFrame):
         self.profileInfoTable.setAlignment(Qt.AlignLeft)
         self.profileInfoTable.setObjectName("ProfileInfoTable")
 
-        self.emailLabel = QLabelLayout("Email", firebaseConfig.currentUser['email'])
-        self.telefonoLabel = QLabelLayout("Telefono", data.val()['phone'])
-        self.indirizzoLabel = QLabelLayout("Indirizzo", data.val()['delivery'])
-        self.ivaLabel = QLabelLayout("Partita Iva", data.val()['IVA'])
+        self.emailLabel = QLabelLayout(FormStrings.EMAIL, firebaseConfig.currentUser['email'])
+        self.phoneLayout = QLabelLayout(FormStrings.PHONE, data['phone'])
+        self.deliveryAddressLabel = QLabelLayout(FormStrings.DELIVERY_ADDRESS, data['delivery'])
+        self.IVANumberLayout = QLabelLayout(FormStrings.IVA_NUMBER, data['IVA'])
 
         self.profileInfoTable.addLayout(self.emailLabel)
-        self.profileInfoTable.addLayout(self.telefonoLabel)
-        self.profileInfoTable.addLayout(self.indirizzoLabel)
-        self.profileInfoTable.addLayout(self.ivaLabel)
+        self.profileInfoTable.addLayout(self.phoneLayout)
+        self.profileInfoTable.addLayout(self.deliveryAddressLabel)
+        self.profileInfoTable.addLayout(self.IVANumberLayout)
 
-        self.profileInfoTable.setAlignment(self.nomeLabel, Qt.AlignLeft)
+        self.profileInfoTable.setAlignment(self.companyNameLabel, Qt.AlignLeft)
         self.profileInfoTable.setAlignment(self.emailLabel, Qt.AlignLeft)
-        self.profileInfoTable.setAlignment(self.telefonoLabel, Qt.AlignLeft)
-        self.profileInfoTable.setAlignment(self.indirizzoLabel, Qt.AlignLeft)
-        self.profileInfoTable.setAlignment(self.ivaLabel, Qt.AlignLeft)
+        self.profileInfoTable.setAlignment(self.phoneLayout, Qt.AlignLeft)
+        self.profileInfoTable.setAlignment(self.deliveryAddressLabel, Qt.AlignLeft)
+        self.profileInfoTable.setAlignment(self.IVANumberLayout, Qt.AlignLeft)
 
         self.profileInfo.addLayout(self.profileInfoTable)
         self.profileInfo.setAlignment(self.profileInfoTable, Qt.AlignLeft)
@@ -97,10 +102,12 @@ class ProfileWidget(QFrame):
         self.buttonsBox.setSpacing(13)
         self.buttonsBox.setObjectName("ButtonsBox")
 
-        self.editButton = QPushButton("Modifica profilo")
+        self.editButton = QPushButton(ProfileStrings.EDIT_BUTTON)
+        self.editButton.clicked.connect(self.open_edit_window)
         self.editButton.setStyleSheet(Styles.EDIT_BUTTON)
         self.editButton.setObjectName("EditButton")
-        self.deleteButton = QPushButton("Elimina profilo")
+        self.deleteButton = QPushButton(ProfileStrings.DELETE_BUTTON)
+        self.deleteButton.clicked.connect(self.open_delete_window)
         self.deleteButton.setStyleSheet(Styles.DELETE_BUTTON)
         self.deleteButton.setObjectName("DeleteButton")
 
@@ -116,3 +123,19 @@ class ProfileWidget(QFrame):
         self.outerLayout.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(self.outerLayout)
+
+    def update_data(self):
+        print(":)")
+        pass
+
+    def open_edit_window(self):
+        self.edit_window = EditProfileWindow(prevWindow=self)
+        self.setEnabled(False)
+        self.edit_window.show()
+
+    def open_delete_window(self):
+        pass
+
+    def activateWindow(self):
+        print(":)")
+        self.update_data()

@@ -3,13 +3,20 @@ import traceback
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel
+from PyQt5.QtWidgets import QApplication, QFrame, QStackedWidget, QHBoxLayout, QLabel
 
 from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter)
 from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, TitleBar
 
+from res.CustomIcon import CustomIcon as CustomFIF
+
 from lib.mvc.main.view.BaseWidget import BaseWidget
+from lib.mvc.orderlist.view.OrderListView import OrderListView
+
+from lib.mvc.profile.view.AdminProfile import AdminProfilePage
+from lib.mvc.profile.view.UserProfile import UserProfilePage
+from lib.mvc.profile.view.WorkerProfile import WorkerProfilePage
 from lib.mvc.order.view.CreateOrderView import CreateOrderView
 from lib.mvc.order.view.OrderListView import OrderListView
 from lib.mvc.pricecatalog.view.PriceCatalogView import PriceCatalogView
@@ -56,7 +63,8 @@ class CustomTitleBar(TitleBar):
 class MainWindow(FramelessWindow):
     logout = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, tipo: str):
+        self.tipo = tipo
         super().__init__()
         self.setTitleBar(CustomTitleBar(self))
 
@@ -69,16 +77,17 @@ class MainWindow(FramelessWindow):
         self.stackedWidget = QStackedWidget(self)
 
         # create sub interface
-        self.profileInterface = ProfilePage.ProfileWidget(self)
-        self.orderListInterface = OrderListView(self)
-        try:
-            self.musicInterface = CreateOrderView(self)
-            self.priceListView = PriceCatalogView(self)
-        except Exception as e:
-            traceback.print_exc()
-        self.videoInterface = BaseWidget('Video Interface', self)
-        #self.folderInterface = BaseWidget('Folder Interface', self)
-        #self.settingInterface = BaseWidget('Setting Interface', self)
+        if self.tipo == 'user':
+            self.profileInterface = UserProfilePage.ProfileWidget(self)
+            self.orderListInterface = OrderListView(self)
+            self.priceListInterface = BaseWidget('Listino prezzi', self)
+        else:
+            self.profileInterface = WorkerProfilePage.ProfileWidget(self)
+            self.orderListInterface = OrderListView(self)
+            self.storageInterface = BaseWidget('Magazzino', self)
+            self.machineryInterface = BaseWidget('Macchinari', self)
+            if self.tipo == 'admin':
+                self.workerListInterface = BaseWidget('Gestione dipendenti', self)
 
         # initialize layout
         self.initLayout()
@@ -103,22 +112,16 @@ class MainWindow(FramelessWindow):
     def initNavigation(self):
 
         self.addSubInterface(self.profileInterface, FIF.PEOPLE, 'Profilo')
-        self.addSubInterface(self.musicInterface, FIF.MUSIC, 'Gestione dipendenti')
-        self.addSubInterface(self.videoInterface, FIF.VIDEO, 'Video library')
+        if self.tipo == 'admin':
+            self.addSubInterface(self.workerListInterface, CustomFIF.WORKER, 'Gestione dipendenti')
         self.addSubInterface(self.orderListInterface, FIF.DOCUMENT, 'Lista ordini')
+        if self.tipo == 'user':
+            self.addSubInterface(self.priceListInterface, CustomFIF.PRICE, 'Listino prezzi')
+        else:
+            self.addSubInterface(self.storageInterface, FIF.LIBRARY, 'Magazzino')
+            self.addSubInterface(self.machineryInterface, CustomFIF.MACHINERY, 'Macchinari')
         self.addSubInterface(self.priceListView, FIF.DOCUMENT, 'Listino prezzi formificio')
 
-        '''self.navigationInterface.addWidget(
-            routeKey='avatar',
-            widget=AvatarWidget(),
-            onClick=self.showMessageBox,
-            position=NavigationItemPosition.BOTTOM
-        )
-
-        self.navigationInterface.addSeparator()
-
-        self.addSubInterface(self.settingInterface, FIF.SETTING, 'Settings', NavigationItemPosition.BOTTOM)
-'''
         # !IMPORTANT: don't forget to set the default route key
         qrouter.setDefaultRouteKey(self.stackedWidget, self.profileInterface.objectName())
 
@@ -129,7 +132,7 @@ class MainWindow(FramelessWindow):
     def initWindow(self):
         self.resize(1008, 600)
         self.setWindowIcon(QIcon('resource/logo.png'))
-        self.setWindowTitle('PyQt-Fluent-Widgets')
+        self.setWindowTitle('Shoe LastFactory Manager')
         self.titleBar.setAttribute(Qt.WA_StyledBackground)
 
         desktop = QApplication.desktop().availableGeometry()

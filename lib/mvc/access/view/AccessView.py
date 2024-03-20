@@ -1,5 +1,3 @@
-import abc
-
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QSizePolicy, QLabel, QVBoxLayout, QPushButton

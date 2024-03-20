@@ -30,3 +30,4 @@ if __name__ == '__main__':
 
     # Avvia il ciclo degli eventi da cui uscirà solo alla chiusura dell'applicazione
     sys.exit(app.exec())
+
