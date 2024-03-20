@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QLibraryInfo, QLocale, QTranslator
 from PyQt5.QtGui import QFont
 
 from lib.Application import Application
@@ -19,8 +19,14 @@ if __name__ == '__main__':
     app.setStyle('Fusion')  # Default style
     app.setFont(QFont('Helvetica', FontSize.DEFAULT))  # Default font
 
+    # Installo un traduttore per il testo predefinito nei componenti Qt (QDialog, QMessageBox etc.)
+    translator = QTranslator(app)
+    path = QLibraryInfo.location(QLibraryInfo.TranslationsPath)
+    translator.load('qtbase_it', path)
+    app.installTranslator(translator)
+
     # Esegue l'applicazione
     app.run()
 
-    # Avvia il ciclo degli eventi e si bloccherà fino alla chiusura dell'applicazione
+    # Avvia il ciclo degli eventi da cui uscirà solo alla chiusura dell'applicazione
     sys.exit(app.exec())
