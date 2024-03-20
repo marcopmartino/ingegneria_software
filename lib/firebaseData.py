@@ -18,6 +18,11 @@ firebase = pyrebase.initialize_app(firebaseConfig)
 currentUser: Any
 
 
+# noinspection PyPep8Naming
+def currentUserId():
+    return currentUser["localId"]
+
+
 def init():
     global currentUser
     currentUser = None
