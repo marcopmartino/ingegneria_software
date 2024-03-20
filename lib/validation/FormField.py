@@ -3,6 +3,7 @@ from abc import abstractmethod, ABC
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QValidator
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QComboBox, QCheckBox, QButtonGroup, QSpinBox
+from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit
 
 from lib.layout.LineEditLayouts import LineEditLayout, LineEditCompositeLayout
 from lib.validation.ValidationRule import ValidationRule
@@ -39,8 +40,15 @@ class IFormField(ABC):
     def data_dict(self) -> dict[str: any]:
         return {self.field_name(): self.data()}
 
+    # Ritorna il segnale che viene normalmente emesso quando il dato del campo cambia.
+    # Questo è il secondo metodo adattato: è possibile rispondere al segnale sempre allo stesso modo, nonostante esso
+    # assuma nomi diversi in campi diversi
+    @abstractmethod
+    def data_changed(self):
+        pass
+
     # Esegue la validazione del campo.
-    # Questo è il secondo metodo adattato: è possibile validare un campo indipendentemente dal tipo, anche se in realtà
+    # Questo è il terzo metodo adattato: è possibile validare un campo indipendentemente dal tipo, anche se in realtà
     # è privo di validazione (per assenza di necessità o di possibilità)
     def validate(self) -> bool:
         # Trattandosi di un campo non necessariamente\non possibilmente validabile, esso passa sempre la validazione
@@ -148,30 +156,40 @@ class ICompositeFormField(IValidatableFormField, ABC):
 # Classe adattatrice per QComboBox
 class ComboBoxFormField(IFormField):
 
-    def __init__(self, combo_box: QComboBox):
+    def __init__(self, combo_box: QComboBox | ComboBox):
         super().__init__(combo_box)
 
     def data(self):
-        return self.input_field.currentData()
+        data = self.input_field.currentData()
+        return data if data is not None else self.input_field.currentText()
+
+    def data_changed(self):
+        return self.input_field.currentIndexChanged
 
 
 # Classe adattatrice per QCheckBox
 class CheckBoxFormField(IFormField):
 
-    def __init__(self, check_box: QCheckBox):
+    def __init__(self, check_box: QCheckBox | CheckBox):
         super().__init__(check_box)
 
     def data(self):
         return self.input_field.isChecked()
 
+    def data_changed(self):
+        return self.input_field.stateChanged
+
 
 # Classe adattatrice per QSpinBox
 class SpinBoxFormField(IFormField):
-    def __init__(self, spin_box: QSpinBox):
+    def __init__(self, spin_box: QSpinBox | SpinBox):
         super().__init__(spin_box)
 
     def data(self):
         return self.input_field.value()
+
+    def data_changed(self):
+        return self.input_field.valueChanged
 
 
 # Classe adattatrice per QButtonGroup
@@ -182,24 +200,21 @@ class RadioGroupFormField(IFormField):
     def data(self):
         return self.input_field.checkedButton().text()
 
-
-# Classe adattatrice per QLabel
-class LabelFormField(IFormField):
-    def __init__(self, label: QLabel):
-        super().__init__(label)
-
-    def data(self):
-        return self.input_field.text()
+    def data_changed(self):
+        return self.input_field.buttonClicked
 
 
 # Classe adattatrice per QLineEdit senza validatore
 # noinspection PyPep8Naming
 class LineEditFormField(IFormField):
-    def __init__(self, line_edit: QLineEdit):
+    def __init__(self, line_edit: QLineEdit | LineEdit):
         super().__init__(line_edit)
 
     def data(self):
         return self.input_field.text()
+
+    def data_changed(self):
+        return self.input_field.textChanged
 
     # Costruttore secondario che istanza la classe impostando il QLineEdit di un LineEditLayout
     @classmethod
