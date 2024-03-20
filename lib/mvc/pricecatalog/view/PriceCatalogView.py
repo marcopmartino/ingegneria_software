@@ -1,9 +1,9 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QFont, QBrush, QColor
-from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QInputDialog, QDialog
+from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QInputDialog, QDialog, QLabel
 
 from lib.mvc.main.view.BaseWidget import BaseWidget
-from lib.mvc.pricecatalog.controller.PriceListController import PriceListController
+from lib.mvc.pricecatalog.controller.PriceCatalogController import PriceListController
 from lib.network.PriceCatalogNetwork import PriceCatalogNetwork
 from lib.utility.ObserverClasses import Observable
 from lib.widget.TableWidgets import PriceCatalogTable, NamedTableItem, PriceCatalogTableBuilder, TitleAndSubtitleSection, \
@@ -12,7 +12,7 @@ from res import Styles
 from res.Dimensions import FontWeight, FontSize
 
 
-class PriceListView(BaseWidget):
+class PriceCatalogView(BaseWidget):
     def __init__(self, parent_widget: QWidget = None):
         super().__init__("price_list_view", parent_widget)
 
@@ -22,6 +22,8 @@ class PriceListView(BaseWidget):
         # Titolo e sottotitolo
         self.setTitleText("Listino prezzi formificio")
         self.setSubtitleText("Gli importi sono espressi in euro e si riferiscono al paio di forme")
+
+        self.sidebar_layout.addWidget(QLabel("Clicca su un importo per modificarlo"))
 
         # Costruisco la tabella del listino prezzi usando un PriceListTableBuilder
         table_builder = PriceCatalogTableBuilder(self.central_frame)
@@ -375,22 +377,14 @@ class PriceListView(BaseWidget):
 
         # Metodo per aggiornare il listino prezzi ogni volta che ci sono cambiamenti al model
         def update_prices_callback(message):
-            event: str = message["event"]
             data: dict = message["data"]
-            match event:
-                # Prima volta - scarica l'intero listino
-                case "put":
-                    self.table.updateAllNamedItems(data)
-                # Ad ogni successiva modifica di un importo del listino
-                case "patch":
-                    self.table.updateNamedItem(next(iter(data.keys())), next(iter(data.values())))
-                # Se per qualche motivo il collegamento fallisce
-                case "cancel":
-                    pass
-                    ''' Da gestire in qualche modo '''
+            self.table.updateNamedItem(next(iter(data.keys())), next(iter(data.values())))
 
         # Aggiorno i dati della tabella ogni volta che cambiano
-        self.controller.price_list.observe(update_prices_callback)
+        self.controller.price_catalog.observe(update_prices_callback)
+
+        # Aggiorna l'intero listino
+        self.table.updateAllNamedItems(self.controller.get_price_catalog())
 
         # Connetto il segnale "itemClicked" allo slot "on_item_clicked"
         self.table.itemClicked.connect(self.on_item_clicked)
@@ -420,7 +414,6 @@ class PriceListView(BaseWidget):
             if dialog.exec_() == QDialog.Accepted:
                 # Prendo il valore
                 new_value = dialog.doubleValue()
-                print(new_value)
 
                 # Aggiorno il valore se è diverso
                 if new_value != current_value:
