@@ -9,18 +9,14 @@ from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter
 from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, TitleBar
 
+from lib.mvc.order.view.CreateOrderView import CreateOrderView
+from lib.mvc.pricecatalog.view.PriceCatalogView import PriceCatalogView
 from res.CustomIcon import CustomIcon as CustomFIF
 
 from lib.mvc.main.view.BaseWidget import BaseWidget
-from lib.mvc.orderlist.view.OrderListView import OrderListView
-
-from lib.mvc.profile.view.AdminProfile import AdminProfilePage
 from lib.mvc.profile.view.UserProfile import UserProfilePage
 from lib.mvc.profile.view.WorkerProfile import WorkerProfilePage
-from lib.mvc.order.view.CreateOrderView import CreateOrderView
 from lib.mvc.order.view.OrderListView import OrderListView
-from lib.mvc.pricecatalog.view.PriceCatalogView import PriceCatalogView
-from lib.mvc.profile.view import ProfilePage
 
 
 # Widget per la Title Bar
@@ -80,10 +76,11 @@ class MainWindow(FramelessWindow):
         if self.tipo == 'user':
             self.profileInterface = UserProfilePage.ProfileWidget(self)
             self.orderListInterface = OrderListView(self)
-            self.priceListInterface = BaseWidget('Listino prezzi', self)
+            self.priceCatalogInterface = PriceCatalogView(self)
         else:
             self.profileInterface = WorkerProfilePage.ProfileWidget(self)
             self.orderListInterface = OrderListView(self)
+            self.priceCatalogInterface = PriceCatalogView(self)
             self.storageInterface = BaseWidget('Magazzino', self)
             self.machineryInterface = BaseWidget('Macchinari', self)
             if self.tipo == 'admin':
@@ -116,11 +113,14 @@ class MainWindow(FramelessWindow):
             self.addSubInterface(self.workerListInterface, CustomFIF.WORKER, 'Gestione dipendenti')
         self.addSubInterface(self.orderListInterface, FIF.DOCUMENT, 'Lista ordini')
         if self.tipo == 'user':
-            self.addSubInterface(self.priceListInterface, CustomFIF.PRICE, 'Listino prezzi')
+            pass
         else:
             self.addSubInterface(self.storageInterface, FIF.LIBRARY, 'Magazzino')
             self.addSubInterface(self.machineryInterface, CustomFIF.MACHINERY, 'Macchinari')
-        self.addSubInterface(self.priceListView, FIF.DOCUMENT, 'Listino prezzi formificio')
+        self.addSubInterface(self.priceCatalogInterface, FIF.DOCUMENT, 'Listino prezzi')
+
+        # A fini di testing
+        self.addSubInterface(CreateOrderView(), FIF.SEND, "Nuovo ordine")
 
         # !IMPORTANT: don't forget to set the default route key
         qrouter.setDefaultRouteKey(self.stackedWidget, self.profileInterface.objectName())
