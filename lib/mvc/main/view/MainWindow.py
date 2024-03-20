@@ -1,4 +1,5 @@
 # coding:utf-8
+import traceback
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
@@ -11,7 +12,7 @@ from qframelesswindow import FramelessWindow, TitleBar
 from lib.mvc.main.view.BaseWidget import BaseWidget
 from lib.mvc.order.view.CreateOrderView import CreateOrderView
 from lib.mvc.order.view.OrderListView import OrderListView
-from lib.mvc.pricecatalog.view.PriceListView import PriceListView
+from lib.mvc.pricecatalog.view.PriceCatalogView import PriceCatalogView
 from lib.mvc.profile.view import ProfilePage
 
 
@@ -72,9 +73,9 @@ class MainWindow(FramelessWindow):
         self.orderListInterface = OrderListView(self)
         try:
             self.musicInterface = CreateOrderView(self)
-            self.priceListView = PriceListView(self)
+            self.priceListView = PriceCatalogView(self)
         except Exception as e:
-            print(e)
+            traceback.print_exc()
         self.videoInterface = BaseWidget('Video Interface', self)
         #self.folderInterface = BaseWidget('Folder Interface', self)
         #self.settingInterface = BaseWidget('Setting Interface', self)

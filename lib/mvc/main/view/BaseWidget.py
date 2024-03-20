@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QWidget, QFrame, QVBoxLayout, QLabel, QSizePolicy, QHBoxLayout
 
 from res import Styles
@@ -72,7 +72,7 @@ class BaseWidget(QWidget):
         # Sidebar Frame
         self.sidebar_frame = QFrame(self.body_widget)
         self.sidebar_frame.setSizePolicy(QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred))
-        self.sidebar_frame.setMinimumSize(QSize(250, 0))
+        self.sidebar_frame.setFixedWidth(250)
         self.sidebar_frame.setFrameShape(QFrame.StyledPanel)
         self.sidebar_frame.setFrameShadow(QFrame.Plain)
         self.sidebar_frame.setObjectName("sidebar_frame")

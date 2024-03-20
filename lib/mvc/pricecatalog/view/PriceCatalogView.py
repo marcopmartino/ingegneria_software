@@ -1,4 +1,4 @@
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtGui import QFont, QBrush, QColor
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QInputDialog, QDialog, QLabel
 
@@ -23,7 +23,10 @@ class PriceCatalogView(BaseWidget):
         self.setTitleText("Listino prezzi formificio")
         self.setSubtitleText("Gli importi sono espressi in euro e si riferiscono al paio di forme")
 
-        self.sidebar_layout.addWidget(QLabel("Clicca su un importo per modificarlo"))
+        self.sidebar_label = QLabel("Clicca su un importo per modificarlo")
+        self.sidebar_label.setWordWrap(True)
+        self.sidebar_label.setAlignment(Qt.AlignCenter)
+        self.sidebar_layout.addWidget(self.sidebar_label)
 
         # Costruisco la tabella del listino prezzi usando un PriceListTableBuilder
         table_builder = PriceCatalogTableBuilder(self.central_frame)
