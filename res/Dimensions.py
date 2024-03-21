@@ -19,6 +19,9 @@ class FontSize:
     SUB_INTERFACE_TITLE = 20
     SUB_INTERFACE_SUBTITLE = 10
 
+    FLUENT_DEFAULT = 11
+    FLUENT_WIDGET_DEFAULT = 10
+
 
 # FontWeight
 class FontWeight:

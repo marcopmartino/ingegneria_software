@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # Applicazione
     app = Application(sys.argv)
     app.setStyle('Fusion')  # Default style
-    app.setFont(QFont('Helvetica', FontSize.DEFAULT))  # Default font
+    app.setFont(QFont('Segoe UI', FontSize.DEFAULT))  # Default font
 
     # Installo un traduttore per il testo predefinito nei componenti Qt (QDialog, QMessageBox etc.)
     translator = QTranslator(app)
