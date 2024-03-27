@@ -42,6 +42,11 @@ class FormStrings:
     DELETE_EDIT = "Annulla modifiche"
 
 
+# PriceCatalog
+class PriceCatalogStrings:
+    FREE = "Gratuito"
+
+
 # Profilo
 class ProfileStrings:
     PROFILE = "PROFILO"

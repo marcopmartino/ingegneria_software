@@ -163,7 +163,7 @@ LABEL_PROFILE_INFO = """/* Set style for Qlabel */
 TABLE_HEADER = """/* Set style for Qlabel */
                 QLabel {\n
                     font-size: 18;
-                    background-color: #c0c0c0;
+                    background-color: """ + Colors.GREY + """;
                     border-style: solid;
                     border-width: 1px;\n
                 }\n"""

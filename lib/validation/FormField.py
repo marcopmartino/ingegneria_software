@@ -170,7 +170,7 @@ class ComboBoxFormField(IFormField):
 # Classe adattatrice per QCheckBox
 class CheckBoxFormField(IFormField):
 
-    def __init__(self, check_box: QCheckBox | CheckBox):
+    def __init__(self, check_box: QCheckBox):
         super().__init__(check_box)
 
     def data(self):
@@ -182,7 +182,7 @@ class CheckBoxFormField(IFormField):
 
 # Classe adattatrice per QSpinBox
 class SpinBoxFormField(IFormField):
-    def __init__(self, spin_box: QSpinBox | SpinBox):
+    def __init__(self, spin_box: QSpinBox):
         super().__init__(spin_box)
 
     def data(self):
@@ -207,7 +207,7 @@ class RadioGroupFormField(IFormField):
 # Classe adattatrice per QLineEdit senza validatore
 # noinspection PyPep8Naming
 class LineEditFormField(IFormField):
-    def __init__(self, line_edit: QLineEdit | LineEdit):
+    def __init__(self, line_edit: QLineEdit):
         super().__init__(line_edit)
 
     def data(self):

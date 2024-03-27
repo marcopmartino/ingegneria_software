@@ -68,7 +68,7 @@ class FormManager(QObject):
                 self.add_fields(SpinBoxFormField(obj))
             case "QComboBox" | "ComboBox":
                 self.add_fields(ComboBoxFormField(obj))
-            case "QLineEdit" | "LineEdit":
+            case "QLineEdit" | "LineEdit" | "SearchLineEdit":
                 self.add_fields(LineEditFormField(obj))
 
     # Cerca e aggiunge i campi di input figli di un Widget
