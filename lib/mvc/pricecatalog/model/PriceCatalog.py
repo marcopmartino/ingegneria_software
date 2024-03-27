@@ -27,7 +27,6 @@ class PriceCatalog(Observable, metaclass=ObservableSingleton):
                 ''' Da gestire in qualche modo '''
 
         # Notifico gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-        message["notifier"] = "PriceList"
         self.notify(message)
 
         '''for key in message.keys():
@@ -35,7 +34,7 @@ class PriceCatalog(Observable, metaclass=ObservableSingleton):
 
     # Ritorna il listino prezzi
     def get(self) -> dict[str, float]:
-        return self.__price_catalog
+        return self.__price_catalog.copy()
 
     # Aggiorna il listino prezzi
     @staticmethod

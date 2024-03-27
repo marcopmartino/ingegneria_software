@@ -1,15 +1,19 @@
 from abc import abstractmethod, ABC
 from enum import Enum
+from typing import Callable
 
 from PyQt5.QtCore import Qt, QObject
 from PyQt5.QtGui import QBrush, QColor, QFont
 from PyQt5.QtWidgets import QTableWidget, QWidget, QFrame, QAbstractItemView, QHeaderView, QStyledItemDelegate, \
     QTableWidgetItem
 
+from lib.mvc.order.model.Order import Order
 from lib.mvc.pricecatalog.model.PriceCatalog import PriceCatalog
-from lib.utility.Singleton import singleton
+from lib.utility.Singleton import singleton, Singleton
+from lib.validation.FormManager import FormManager
 from res import Styles
 from res.Dimensions import TableDimensions, FontWeight, FontSize
+from res.Strings import PriceCatalogStrings
 
 
 # StyledItemDelegate per allineare al centro il testo di ogni cella
@@ -33,7 +37,7 @@ class NamedTableItem(QTableWidgetItem):
 
 # Widget tabella esteso con una lista di NamedTableItem e nuovi metodi
 # noinspection PyPep8Naming
-class TableWidget(QTableWidget):
+class ExtendedTableWidget(QTableWidget):
     def __init__(self, parent_widget: QWidget = None):
         super().__init__(parent_widget)
         self.namedItems: list[NamedTableItem] = []
@@ -50,7 +54,7 @@ class TableWidget(QTableWidget):
         self.setColumnCount(len(headers))
         self.setHorizontalHeaderLabels(headers)
 
-    # Nascone gli header
+    # Nasconde gli header
     def hideHeaders(self):
         self.horizontalHeader().hide()
         self.verticalHeader().hide()
@@ -101,7 +105,7 @@ class TableWidget(QTableWidget):
 
 # Tabella standard usata nell'applicazione
 # noinspection PyPep8Naming
-class StandardTable(TableWidget):
+class StandardTable(ExtendedTableWidget):
 
     def __init__(self, parent_widget: QWidget = None):
         super().__init__(parent_widget)
@@ -124,9 +128,108 @@ class StandardTable(TableWidget):
         self.setItemDelegate(AlignCenterDelegate(self))  # Imposta l'allineamento al centro per il testo delle celle
 
 
+# noinspection PyPep8Naming
+class SimpleTableAdapter(ABC):
+
+    def __init__(self, table: QTableWidget):
+        super().__init__()
+
+        self.table: QTableWidget = table
+        self.key_column: int = 0
+
+    @abstractmethod
+    def adaptData(self, element: any) -> list[str]:
+        pass
+
+    def setKeyColumn(self, column_index: int):
+        self.key_column = column_index
+
+    def hideKeyColumn(self):
+        self.table.hideColumn(self.key_column)
+
+    def showKeyColumn(self):
+        self.table.showColumn(self.key_column)
+
+    def getSelectedItemKey(self) -> str:
+        return self.table.item(self.table.currentRow(), self.key_column).text()
+
+    def removeRowByKey(self, key: str):
+        for row in range(self.table.rowCount()):
+            if self.table.item(row, self.key_column).text() == key:
+                self.table.removeRow(row)
+                break
+
+    def setData(self, data: list[any]):
+        self.table.setRowCount(len(data))
+
+        for row in range(0, self.table.rowCount()):
+            element: list = self.adaptData(data[row])
+
+            for column in range(0, self.table.columnCount()):
+                self.table.setItem(row, column, QTableWidgetItem(element[column]))
+
+    def addData(self, data: list[any]):
+        row_count: int = self.table.rowCount()
+        self.table.setRowCount(row_count + len(data))
+
+        index: int = 0
+        for row in range(row_count, self.table.rowCount()):
+            element: list = self.adaptData(data[index])
+
+            for column in range(0, self.table.columnCount()):
+                self.table.setItem(row, column, QTableWidgetItem(element[column]))
+
+            index += 1
+
+    def updateData(self, data: list[any]):
+        for element in data:
+            element: list = self.adaptData(element)
+            key_column: int = self.key_column
+            element_key: str = element[key_column]
+
+            for row in range(0, self.table.rowCount()):
+                if self.table.item(row, key_column).text() == element_key:
+                    for column in range(0, self.table.columnCount()):
+                        self.table.setItem(row, column, QTableWidgetItem(element[column]))
+
+                    break
+
+    def updateDataColumns(self, data: list[any], columns: list[int]):
+        for element in data:
+            element: list = self.adaptData(element)
+            key_column: int = self.key_column
+            element_key: str = element[key_column]
+
+            for row in range(0, self.table.rowCount()):
+                if self.table.item(row, key_column).text() == element_key:
+                    for column in columns:
+                        self.table.setItem(row, column, QTableWidgetItem(element[column]))
+
+                    break
+
+
+# noinspection PyPep8Naming
+class AdvancedTableAdapter(SimpleTableAdapter, ABC):
+
+    def __init__(self, table: QTableWidget, form_manager: FormManager):
+        super().__init__(table)
+
+        self.form_manager: FormManager = form_manager
+
+    @abstractmethod
+    def filterData(self, data: list[any], filters: dict[str, any]) -> list[any]:
+        pass
+
+    def setData(self, data: list[any]):
+        super().setData(self.filterData(data, self.form_manager.data()))
+
+    def addData(self, data: list[any]):
+        super().addData(self.filterData(data, self.form_manager.data()))
+
+
 # Tabella usata per rappresentare i listini prezzi
 # noinspection PyPep8Naming
-class PriceCatalogTable(TableWidget):
+class PriceCatalogTable(ExtendedTableWidget):
 
     def __init__(self, parent_widget: QWidget = None):
         super().__init__(parent_widget)
@@ -163,8 +266,7 @@ class PriceCatalogTable(TableWidget):
 
 
 # Singleton con i font e i brush usati nelle PriceListTableSection
-@singleton
-class PriceCatalogTableStyle:
+class PriceCatalogTableStyle(metaclass=Singleton):
 
     def __init__(self):
         self.primary_bold_font = QFont()
@@ -360,9 +462,13 @@ class HorizontalTreeSection(PriceCatalogTableSection):
             table.setSpan(row, 2, 1, 3)
             table.setItem(row, 2, QTableWidgetItem(self.leaves_text[iteration]))
 
+            # Cella con l'importo
             table.setSpan(row, 5, 1, 2)
-            if (not iteration) and self.first_free:
-                table.setItem(row, 5, QTableWidgetItem(self.data_names[iteration]))
+            if self.first_free:
+                if not iteration:
+                    table.setItem(row, 5, QTableWidgetItem(PriceCatalogStrings.FREE))
+                else:
+                    table.setNamedItem(row, 5, NamedTableItem(self.data_names[iteration-1]))
             else:
                 table.setNamedItem(row, 5, NamedTableItem(self.data_names[iteration]))
             table.item(row, 5).setForeground(brown_brush)
