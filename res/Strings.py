@@ -6,7 +6,7 @@ class Config:
     APPLICATION_VERSION = "1.0.0"
     APPLICATION_VERSION_NAME = "First version"
     IMAGES_PATH = "res/images/"
-    ICONS_PATH = "res/images/icons"
+    ICONS_PATH = "res/images/icons/"
 
 
 # Stringhe usate nell'applicazione

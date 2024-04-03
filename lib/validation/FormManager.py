@@ -29,6 +29,11 @@ class FormManager(QObject):
     def reset_field_list(self) -> None:
         self.field_list = []
 
+    # Esegue il reset dei campi
+    def clear_fields(self):
+        for field in self.field_list:
+            field.clear()
+
     # Esegue la validazione dei campi. Ritorna True solo se la validazione di ogni campo ha successo.
     def validate(self) -> bool:
         validation_successful: bool = True

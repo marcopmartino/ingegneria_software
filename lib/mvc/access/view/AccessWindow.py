@@ -63,3 +63,9 @@ class AccessWindow(QMainWindow):
     # Mostra la schermata principale dopo aver fatto il login o la registrazione
     def show_main_window(self):
         self.login.emit()
+
+    # Esegue il reset della finestra
+    def reset(self):
+        self.show_login_form()
+        self.loginWidget.form_manager.clear_fields()
+        self.signUpWidget.form_manager.clear_fields()

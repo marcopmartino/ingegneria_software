@@ -12,7 +12,7 @@ from res.Dimensions import LineEditDimensions, FontWeight
 # noinspection PyPep8Naming
 class LineEditLayout(QVBoxLayout):
 
-    def __init__(self, field_name: str, default: str = None, parent_widget: QWidget = None):
+    def __init__(self, field_name: str, text: str = "", parent_widget: QWidget = None):
         super().__init__(parent_widget)
 
         lowercase_field_name = field_name.lower()
@@ -37,11 +37,9 @@ class LineEditLayout(QVBoxLayout):
         self.line_edit.setMinimumSize(QSize(LineEditDimensions.DEFAULT_MINIMUM_WIDTH, 0))
         self.line_edit.textChanged.connect(self.__on_text_changed)  # Logica quando il testo cambia
         self.line_edit.setPlaceholderText(field_name)
-        if default is not None:
-            self.line_edit.setText(default)
-            self.__on_text_changed(default)
-            self.line_edit.textChanged.connect(self.__on_text_changed)  # Logica quando il testo cambia
-        else:
+        self.line_edit.setText(text)
+
+        if not text:
             self.line_edit.setClearButtonEnabled(True)  # Abilita il pulsante per lo svuotamento del campo
 
         # Imposta l'oggetto Layout stesso
@@ -58,13 +56,17 @@ class LineEditLayout(QVBoxLayout):
         else:
             self.label.setHidden(True)
 
+    # Svuota il LineEdit
+    def clear(self):
+        self.line_edit.clear()
+
 
 # Estensione di LineEditLayout che oltre a una QLabel e a un QLineEdit contiene una seconda QLabel per mostrare un
 # messaggio di errore; è utile nelle form per la validazione.
 class LineEditCompositeLayout(LineEditLayout):
-    def __init__(self, field_name: str, default: str = None, parent_widget: QWidget = None):
+    def __init__(self, field_name: str, text: str = None, parent_widget: QWidget = None):
         # Imposta il layout, la Label e il LineEdit
-        super().__init__(field_name, default, parent_widget)
+        super().__init__(field_name, text, parent_widget)
 
         # Seconda Label per mostrare un errore di input, utile nella validazione
         font = QFont()
@@ -75,3 +77,8 @@ class LineEditCompositeLayout(LineEditLayout):
         self.error_label.setStyleSheet(Styles.ERROR_LABEL_INPUT)
         self.error_label.setHidden(True)  # Nasconde la Label
         self.addWidget(self.error_label)
+
+    # Svuota il LineEdit e nasconde la Label di errore
+    def clear(self):
+        super().clear()
+        self.error_label.setHidden(True)

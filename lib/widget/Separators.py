@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import QFrame, QWidget, QSizePolicy
+from PyQt5.QtWidgets import QFrame, QWidget, QSizePolicy, QSpacerItem
 
 from res import Colors
+from res.Dimensions import SpacerDimensions
 
 
 # Separatore costituito da una linea orizzontale
@@ -23,3 +24,16 @@ class VerticalLine(QFrame):
         self.setStyleSheet("color: " + Colors.GREY)
         self.setFrameShape(QFrame.VLine)
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+
+# Spacer orizzontale
+class HorizontalSpacer(QSpacerItem):
+    def __init__(self, width: int = SpacerDimensions.DEFAULT_PRIMARY, size_policy: QSizePolicy = QSizePolicy.Preferred):
+        super().__init__(width, SpacerDimensions.DEFAULT_SECONDARY, size_policy, QSizePolicy.Minimum)
+
+
+# Spacer Verticale
+class VerticalSpacer(QSpacerItem):
+    def __init__(self, heigth: int = SpacerDimensions.DEFAULT_PRIMARY,
+                 size_policy: QSizePolicy = QSizePolicy.Preferred):
+        super().__init__(SpacerDimensions.DEFAULT_SECONDARY, heigth, QSizePolicy.Minimum, size_policy)

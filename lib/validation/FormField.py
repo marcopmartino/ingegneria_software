@@ -54,6 +54,11 @@ class IFormField(ABC):
         # Trattandosi di un campo non necessariamente\non possibilmente validabile, esso passa sempre la validazione
         return True
 
+    # Esegue il reset del campo.
+    # Questo è il quarto metodo adattato: è possibile eseguire il reset di un campo senza conoscerne il tipo
+    @abstractmethod
+    def clear(self):
+        pass
 
 # Classe astratta che rappresenta un campo validabile di una form
 # noinspection PyPep8Naming
@@ -98,6 +103,11 @@ class IValidatableFormField(IFormField, ABC):
     def set_validator(self, validator: QValidator, max_length: int = DEFAULT_MAX_LENGTH):
         self.input_field.setValidator(validator)
         self.input_field.setMaxLength(max_length)
+
+    # Esegue il reset del campo
+    @abstractmethod
+    def clear(self):
+        pass
 
 
 # Classe astratta che rappresenta un campo validabile di una form minuto di una campo di errore
@@ -151,6 +161,11 @@ class ICompositeFormField(IValidatableFormField, ABC):
     def hide_error_message(self):
         self.error_label.setHidden(True)
 
+    # Esegue il reset del campo
+    @abstractmethod
+    def clear(self):
+        pass
+
 
 # Classi Adapter
 # Classe adattatrice per QComboBox
@@ -166,6 +181,9 @@ class ComboBoxFormField(IFormField):
     def data_changed(self):
         return self.input_field.currentIndexChanged
 
+    def clear(self):
+        self.input_field.setCurrentIndex(0)
+
 
 # Classe adattatrice per QCheckBox
 class CheckBoxFormField(IFormField):
@@ -179,6 +197,9 @@ class CheckBoxFormField(IFormField):
     def data_changed(self):
         return self.input_field.stateChanged
 
+    def clear(self):
+        self.input_field.setChecked(False)
+
 
 # Classe adattatrice per QSpinBox
 class SpinBoxFormField(IFormField):
@@ -191,6 +212,9 @@ class SpinBoxFormField(IFormField):
     def data_changed(self):
         return self.input_field.valueChanged
 
+    def clear(self):
+        self.input_field.setValue(int((self.input_field.maximum + self.input_field.minimum)/2))
+
 
 # Classe adattatrice per QButtonGroup
 class RadioGroupFormField(IFormField):
@@ -202,6 +226,9 @@ class RadioGroupFormField(IFormField):
 
     def data_changed(self):
         return self.input_field.buttonClicked
+
+    def clear(self):
+        pass
 
 
 # Classe adattatrice per QLineEdit senza validatore
@@ -227,6 +254,10 @@ class LineEditFormField(IFormField):
     def LayoutAndLength(cls, line_edit_layout: LineEditLayout, max_length: int = DEFAULT_MAX_LENGTH):
         line_edit_layout.line_edit.setMaxLength(max_length)
         return cls(line_edit_layout.line_edit)
+
+    # Svuota il QLineEdit
+    def clear(self):
+        self.input_field.clear()
 
 
 # Classe adattatrice per QLineEdit con validatore
@@ -256,6 +287,10 @@ class LineEditValidatableFormField(IValidatableFormField, LineEditFormField):
     # Esegue la validazione del testo in input
     def validate(self):
         return self.input_field.hasAcceptableInput()
+
+    # Svuota il QLineEdit
+    def clear(self):
+        self.input_field.clear()
 
 
 # Classe adattatrice per QLineEdit con validatore e campo di errore
@@ -302,3 +337,8 @@ class LineEditCompositeFormField(ICompositeFormField, LineEditFormField):
         else:
             self.show_error_message()
             return False
+
+    # Svuota il QLineEdit e nasconde la QLabel di errore
+    def clear(self):
+        self.input_field.clear()
+        self.error_label.setHidden(True)

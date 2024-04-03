@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from PyQt5.QtWidgets import QWidget, QGridLayout, QLayout, QSpacerItem, QSizePolicy, QHBoxLayout, QVBoxLayout
 
+from lib.widget.Separators import HorizontalSpacer, VerticalSpacer
 from res.Dimensions import SpacerDimensions
 
 
@@ -61,9 +62,8 @@ class FrameLayout(QGridLayout, IFrameLayout, metaclass=FrameLayoutMeta):
                                        vertical: int = SpacerDimensions.DEFAULT_PRIMARY,
                                        h_size_policy: QSizePolicy = QSizePolicy.Preferred,
                                        v_size_policy: QSizePolicy = QSizePolicy.Preferred):
-        horizontal_spacer = QSpacerItem(horizontal, SpacerDimensions.DEFAULT_SECONDARY, h_size_policy,
-                                        QSizePolicy.Minimum)
-        vertical_spacer = QSpacerItem(SpacerDimensions.DEFAULT_SECONDARY, vertical, QSizePolicy.Minimum, v_size_policy)
+        horizontal_spacer = HorizontalSpacer(horizontal, h_size_policy)
+        vertical_spacer = VerticalSpacer(vertical, v_size_policy)
         self.addItem(horizontal_spacer, 1, 0, 1, 1)  # Spacer sinistro
         self.addItem(horizontal_spacer, 1, 2, 1, 1)  # Spacer destro
         self.addItem(vertical_spacer, 2, 1, 1, 1)  # Spacer inferiore
@@ -113,8 +113,8 @@ class HFrameLayout(QHBoxLayout, IFrameLayout, metaclass=HFrameLayoutMeta):
                                        right: int = SpacerDimensions.DEFAULT_PRIMARY,
                                        l_size_policy: QSizePolicy = QSizePolicy.Preferred,
                                        r_size_policy: QSizePolicy = QSizePolicy.Preferred):
-        left_spacer = QSpacerItem(left, SpacerDimensions.DEFAULT_SECONDARY, l_size_policy, QSizePolicy.Minimum)
-        right_spacer = QSpacerItem(right, SpacerDimensions.DEFAULT_SECONDARY, r_size_policy, QSizePolicy.Minimum)
+        left_spacer = HorizontalSpacer(left, l_size_policy)
+        right_spacer = HorizontalSpacer(right, r_size_policy)
         self.insertItem(0, left_spacer)  # Spacer sinistro
         self.insertItem(2, right_spacer)  # Spacer destro
 
@@ -163,8 +163,8 @@ class VFrameLayout(QVBoxLayout, IFrameLayout, metaclass=VFrameLayoutMeta):
                                        bottom: int = SpacerDimensions.DEFAULT_PRIMARY,
                                        t_size_policy: QSizePolicy = QSizePolicy.Preferred,
                                        b_size_policy: QSizePolicy = QSizePolicy.Preferred):
-        top_spacer = QSpacerItem(SpacerDimensions.DEFAULT_SECONDARY, top, QSizePolicy.Minimum, t_size_policy)
-        bottom_spacer = QSpacerItem(SpacerDimensions.DEFAULT_SECONDARY, bottom, QSizePolicy.Minimum, b_size_policy)
+        top_spacer = VerticalSpacer(top, t_size_policy)
+        bottom_spacer = VerticalSpacer(bottom, b_size_policy)
         self.insertItem(0, top_spacer)  # Spacer superiore
         self.insertItem(2, bottom_spacer)  # Spacer inferiroe
 

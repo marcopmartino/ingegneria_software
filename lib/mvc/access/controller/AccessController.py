@@ -12,13 +12,13 @@ class AccessController:
     # Esegue il login
     def login(self, form_data: dict[str, any]):
         print("Inizio Login")
-        firebaseConfig.currentUser = HTTPErrorHelper.handle_request(
+        firebaseConfig.currentUser = HTTPErrorHelper.differentiate(
             lambda: self.auth.sign_in_with_email_and_password(form_data['email'], form_data['password']))
         print("Fine Login")
 
     # Registra un nuovo account
     def register(self, form_data: dict[str, any]):
-        firebaseConfig.currentUser = HTTPErrorHelper.handle_request(
+        firebaseConfig.currentUser = HTTPErrorHelper.differentiate(
             lambda: self.auth.create_user_with_email_and_password(form_data["email"], form_data["password"]))
         uid = firebaseConfig.currentUser['localId']
         data = {
@@ -29,9 +29,3 @@ class AccessController:
             "role": "user"
         }
         self.database.child('users').child(uid).set(data)
-
-    # Ottiene il tipo di utente che sta effettuando l'accesso
-    def getUserRole(self):
-        data = HTTPErrorHelper.handle_request(
-            lambda: self.database.child('users').child(firebaseConfig.currentUser['localId'])).get().val()
-        return data['role']

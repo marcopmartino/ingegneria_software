@@ -47,12 +47,11 @@ class ArticleList(Observable, metaclass=ObservableSingleton):
                     pass
 
         # Notifico gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-        message["notifier"] = "ArticleList"
         self.notify(message)
 
     # Ritorna la lista di ordini
     def get(self) -> list[Article]:
-        return self.__article_list
+        return self.__article_list.copy()
 
     # Ritorna un articolo in base al suo numero
     def get_by_id(self, article_serial: str) -> Article:

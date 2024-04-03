@@ -2,7 +2,7 @@ from typing import List
 
 from PyQt5.QtWidgets import QApplication
 
-from lib.mvc.access.controller.AccessController import AccessController
+from lib.firebaseData import init
 from lib.mvc.access.view.AccessWindow import AccessWindow
 from lib.mvc.main.view.MainWindow import MainWindow
 
@@ -12,17 +12,21 @@ class Application(QApplication):
     def __init__(self, argv: List[str]):
         super().__init__(argv)
 
+        #init()
+
         # Inizializzo lo stato
         self.state = "NOT_RUNNING"
 
         # Inizializza a None le due finestre
-        self.main_window = None
-        self.access_window = None
+        self.main_window: MainWindow = MainWindow()
+        self.access_window: AccessWindow = AccessWindow()
+
+        # Imposta la navigazione tra le finestre
+        self.access_window.login.connect(self.show_main_window)
+        self.main_window.logout.connect(self.show_access_window)
 
     # Avvia l'applicazione mostrando la schermata di accesso
     def run(self):
-        self.access_window = AccessWindow()
-        self.access_window.login.connect(self.show_main_window)
         self.access_window.show()
 
         # Aggiorno lo stato
@@ -31,10 +35,12 @@ class Application(QApplication):
     # Chiude eventuali finestre aperte
     def stop(self):
         if self.main_window:
-            self.main_window.close()
+            self.main_window.hide()
+            self.main_window.reset()
 
         if self.access_window:
-            self.access_window.close()
+            self.access_window.hide()
+            self.access_window.reset()
 
         # Aggiorno lo stato
         self.state = "STOPPED"
@@ -46,15 +52,13 @@ class Application(QApplication):
 
     # Crea e mostra la schermata di accesso
     def show_access_window(self):
-        self.access_window = AccessWindow()
-        self.access_window.login.connect(self.show_main_window)
-        self.main_window.close()
+        self.main_window.hide()
+        self.main_window.reset()
         self.access_window.show()
 
     # Crea e mostra la schermata principale
     def show_main_window(self):
-        controller = AccessController()
-        self.main_window = MainWindow(controller.getUserRole())
-        self.main_window.logout.connect(self.show_access_window)
-        self.access_window.close()
+        self.access_window.hide()
+        self.access_window.reset()
+        self.main_window.setup()
         self.main_window.show()

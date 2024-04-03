@@ -27,7 +27,7 @@ ACCESS_LINE_EDIT = """/* Set style for QLineEdit */\n
 
 ACCESS_MAIN_WINDOW = """/* Set style for MainWindow */\n
                 QMainWindow {\n
-                    border-image: """ + ResourceManager.image("access_background.jpg") + """;\n
+                    border-image: url(""" + ResourceManager.image("access_background.jpg") + """);\n
                 }\n
                 /* Set style for QWidget */\n
                 #main_widget {\n
@@ -255,7 +255,7 @@ STANDARD_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
                     border-bottom: 2px solid #dddddd;\n
                 }\n
                 QTableWidget::item:selected {\n 
-                    background-color: #72aa53;\n
+                    background-color: #00A2A2;\n
                 }\n
                 QHeaderView {\n
                     background-color: #dddddd;\n

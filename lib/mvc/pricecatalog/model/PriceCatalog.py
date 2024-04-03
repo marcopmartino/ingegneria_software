@@ -44,7 +44,7 @@ class PriceCatalog(Observable, metaclass=ObservableSingleton):
     # Converte il prezzo in una stringa con due cifre nella parte decimale
     @staticmethod
     def price_format(value: float) -> str:
-        return f"{value:.2f}"
+        return f"{value:.2f}".replace(".", ",")
 
     # Calcola il prezzo di un certo numero di paia con determinate caratteristiche in base agli attuali prezzi di
     # listino

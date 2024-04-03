@@ -119,7 +119,7 @@ class PriceCatalogView(BaseWidget):
     def on_item_clicked(self, item: QTableWidgetItem):
         if type(item).__name__ == "NamedTableItem":
 
-            current_value = float(item.text())
+            current_value = float(item.text().replace(",", "."))
 
             # Imposto il Dialog
             dialog = QInputDialog(self)

@@ -1,6 +1,9 @@
 import json
+import sys
+import traceback
 
-from requests import HTTPError
+from requests import HTTPError, RequestException
+from requests import ConnectionError
 
 
 class HTTPErrorHelper(object):
@@ -12,11 +15,37 @@ class HTTPErrorHelper(object):
         return error_dict['error']['message']
 
     @staticmethod
-    def handle_request(request: callable):
+    def debug(request: callable):
+        try:
+            return request()
+        except RequestException as e:
+            traceback.print_exc()
+            raise e
+
+    @staticmethod
+    def suppress(request: callable, debug: bool = False):
+        try:
+            return request()
+        except RequestException:
+            if debug:
+                traceback.print_exc()
+
+    @staticmethod
+    def handle(request: callable, handlers: dict[type(Exception), callable], debug: bool = False):
+        try:
+            return HTTPErrorHelper.differentiate(request, debug)
+        except Exception as e:
+            for exception, handler in handlers.items():
+                if isinstance(e, exception):
+                    return handler()
+
+    @staticmethod
+    def differentiate(request: callable, debug: bool = False):
         try:
             return request()
         except HTTPError as e:
-            print(e)
+            if debug:
+                traceback.print_exc()
             error_message: str = HTTPErrorHelper.extract_message(e)
             match error_message:
                 case "INVALID_EMAIL":

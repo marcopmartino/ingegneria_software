@@ -127,19 +127,99 @@ class StandardTable(ExtendedTableWidget):
         self.setCellHeight(TableDimensions.DEFAULT_CELL_HEIGHT)  # Imposta l'altezza di cella
         self.setItemDelegate(AlignCenterDelegate(self))  # Imposta l'allineamento al centro per il testo delle celle
 
+    # Imposta il testo per gli Header orizzontali
+    def setHeaders(self, headers: list[str]):
+        self.setHorizontalHeaders(headers)
+
 
 # noinspection PyPep8Naming
-class SimpleTableAdapter(ABC):
+class SingleRowStandardTable(ExtendedTableWidget):
 
-    def __init__(self, table: QTableWidget):
+    def __init__(self, parent_widget: QWidget = None):
+        super().__init__(parent_widget)
+
+        # Tabella
+        self.setStyleSheet(Styles.STANDARD_TABLE)  # Stile
+        self.setFrameStyle(QFrame.NoFrame)  # Nasconde la linea di contorno esterna
+        self.setShowGrid(False)  # Nasconde la griglia interna
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)  # Imposta la selezione per righe anziché celle
+        self.setSelectionMode(QAbstractItemView.NoSelection)  # Imposta la seleziona singola anziché multipla
+        self.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Impedisce di modificare da tastiera le celle
+        self.setSortingEnabled(False)  # Disabilita il sorting automatico delle righe in base ai valori di una colonna
+        self.setRowCount(1)  # Imposta una sola riga per la tabella
+        self.setFixedHeight(TableDimensions.DEFAULT_CELL_HEIGHT * 2)  # Imposta un altezza fissa per la tabella
+
+        # Header
+        self.verticalHeader().hide()  # Nasconde gli header verticali (laterali sinistri)
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)  # Abilita il ridimensionamento automatico
+
+        # Celle
+        self.setCellHeight(TableDimensions.DEFAULT_CELL_HEIGHT)  # Imposta l'altezza di cella
+        self.setItemDelegate(AlignCenterDelegate(self))  # Imposta l'allineamento al centro per il testo delle celle
+
+    # Imposta il testo per gli Header orizzontali
+    def setHeaders(self, headers: list[str]):
+        self.setHorizontalHeaders(headers)
+
+
+# noinspection PyPep8Naming
+class ITableAdapter(ABC):
+    def __init__(self, table: ExtendedTableWidget):
         super().__init__()
 
-        self.table: QTableWidget = table
-        self.key_column: int = 0
+        self.table: ExtendedTableWidget = table
 
     @abstractmethod
     def adaptData(self, element: any) -> list[str]:
         pass
+
+    @abstractmethod
+    def setData(self, data: any):
+        pass
+
+    @abstractmethod
+    def updateData(self, data: any):
+        pass
+
+
+# noinspection PyPep8Naming
+class SingleRowTableAdapter(ITableAdapter, ABC):
+    def __init__(self, table: ExtendedTableWidget):
+        super().__init__(table)
+
+    @classmethod
+    def autoSetup(cls, table_parent: QWidget = None):
+        instance = cls(SingleRowStandardTable(table_parent))
+        return instance, instance.table
+
+    # Inserisce i dati nella riga della tabella
+    def setData(self, data: any):
+        data: list[str] = self.adaptData(data)
+        for column in range(self.table.columnCount()):
+            self.table.setColumnItem(column, QTableWidgetItem(data[column]))
+
+    # Aggiorna i dati della riga della tabella
+    def updateData(self, data: any):
+        data: list[str] = self.adaptData(data)
+        for column in range(self.table.columnCount()):
+            self.table.columnItem(column).setText(data[column])
+
+
+# noinspection PyPep8Naming
+class TableAdapter(ITableAdapter, ABC):
+
+    def __init__(self, table: ExtendedTableWidget):
+        super().__init__(table)
+
+        self.key_column: int = 0
+
+    @classmethod
+    def autoSetup(cls, table_parent: QWidget = None):
+        instance = cls(StandardTable(table_parent))
+        return instance, instance.table
+
+    def onSelection(self, callback: Callable[[str], any]):
+        self.table.itemSelectionChanged.connect(lambda: callback(self.getSelectedItemKey()))
 
     def setKeyColumn(self, column_index: int):
         self.key_column = column_index
@@ -150,8 +230,19 @@ class SimpleTableAdapter(ABC):
     def showKeyColumn(self):
         self.table.showColumn(self.key_column)
 
+    def getItemKey(self, row: int) -> str:
+        return self.table.item(row, self.key_column).text()
+
+    def getItemKeys(self) -> list[str]:
+        keys: list[str] = []
+
+        for row in range(self.table.rowCount()):
+            keys.append(self.getItemKey(row))
+
+        return keys
+
     def getSelectedItemKey(self) -> str:
-        return self.table.item(self.table.currentRow(), self.key_column).text()
+        return self.getItemKey(self.table.currentRow())
 
     def removeRowByKey(self, key: str):
         for row in range(self.table.rowCount()):
@@ -209,12 +300,17 @@ class SimpleTableAdapter(ABC):
 
 
 # noinspection PyPep8Naming
-class AdvancedTableAdapter(SimpleTableAdapter, ABC):
+class AdvancedTableAdapter(TableAdapter, ABC):
 
-    def __init__(self, table: QTableWidget, form_manager: FormManager):
+    def __init__(self, table: ExtendedTableWidget, form_manager: FormManager):
         super().__init__(table)
 
         self.form_manager: FormManager = form_manager
+
+    @classmethod
+    def autoSetupWithFormManager(cls, form_manager: FormManager, table_parent: QWidget = None):
+        instance = cls(StandardTable(table_parent), form_manager)
+        return instance, instance.table
 
     @abstractmethod
     def filterData(self, data: list[any], filters: dict[str, any]) -> list[any]:
@@ -468,7 +564,7 @@ class HorizontalTreeSection(PriceCatalogTableSection):
                 if not iteration:
                     table.setItem(row, 5, QTableWidgetItem(PriceCatalogStrings.FREE))
                 else:
-                    table.setNamedItem(row, 5, NamedTableItem(self.data_names[iteration-1]))
+                    table.setNamedItem(row, 5, NamedTableItem(self.data_names[iteration - 1]))
             else:
                 table.setNamedItem(row, 5, NamedTableItem(self.data_names[iteration]))
             table.item(row, 5).setForeground(brown_brush)

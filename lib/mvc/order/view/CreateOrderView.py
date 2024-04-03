@@ -1,8 +1,8 @@
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSpacerItem, QSizePolicy, QVBoxLayout, QLabel, QGridLayout, \
-    QMessageBox
-from qfluentwidgets import ComboBox, SpinBox, CheckBox, PushButton
+    QMessageBox, QDialog
+from qfluentwidgets import ComboBox, SpinBox, CheckBox, PushButton, PrimaryPushButton
 
 from lib.layout.FrameLayouts import HFrameLayout, VFrameLayout
 from lib.mvc.order.controller.OrderListController import OrderListController
@@ -12,14 +12,14 @@ from res import Styles
 from res.Dimensions import FontWeight, FontSize
 
 
-class CreateOrderView(QWidget):
+class CreateOrderView(QDialog):
     def __init__(self, parent: QWidget = None):
         super().__init__(parent)
 
         # Finestra e widget
         self.setObjectName("create_order_view")
         self.setWindowTitle("Creazione ordine")
-        self.resize(892, 512)
+        self.resize(800, 550)
         self.controller = OrderListController()
 
         # Layout
@@ -274,7 +274,7 @@ class CreateOrderView(QWidget):
         self.button_layout.insertWidget(1, self.refresh_button)
 
         # Pulsante per creare e inviare l'ordine
-        self.create_button = PushButton(self.central_widget)
+        self.create_button = PrimaryPushButton(self.central_widget)
         self.create_button.setObjectName("create_button")
         self.create_button.setFixedSize(200, 40)
         self.button_layout.insertWidget(2, self.create_button)
@@ -364,12 +364,10 @@ class CreateOrderView(QWidget):
             message_box.Yes | message_box.No
         )
 
-        # In caso di conferma, crea l'ordine
+        # In caso di conferma, crea l'ordine e chiude la finestra
         if clicked_button == message_box.Yes:
             self.controller.create_order(form_data, final_price)
-
-        # Chiudo il QMessageBox
-        message_box.close()
+            self.close()
 
     # Aggiorna il prezzo indicato
     def refresh_price(self):

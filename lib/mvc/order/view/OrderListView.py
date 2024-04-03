@@ -1,28 +1,36 @@
+from typing import Callable
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QTableWidget,
-    QTableWidgetItem, QWidget, QHeaderView, QAbstractItemView, QStyledItemDelegate, QFrame, QStyle, QVBoxLayout, QLabel
+    QTableWidgetItem, QWidget, QHeaderView, QAbstractItemView, QStyledItemDelegate, QFrame, QStyle, QVBoxLayout, QLabel,
+    QSpacerItem, QSizePolicy
 )
 from qfluentwidgets import SearchLineEdit, CheckBox, PushButton, SpinBox, ComboBox, PrimaryPushButton
 
 from lib.mvc.main.view.BaseWidget import BaseWidget
 from lib.mvc.order.controller.OrderListController import OrderListController
+from lib.mvc.order.model.Order import Order
+from lib.mvc.order.model.OrderList import OrderList
+from lib.mvc.order.view.CreateOrderView import CreateOrderView
+from lib.mvc.order.view.OrderDetailsView import OrderDetailsView
 from lib.mvc.pricecatalog.model.PriceCatalog import PriceCatalog
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
-from lib.widget.TableWidgets import StandardTable
+from lib.widget.Separators import HorizontalLine, VerticalLine
+from lib.widget.TableWidgets import StandardTable, AdvancedTableAdapter
 from res import Styles
-from res.Dimensions import TableDimensions, ValidationDimensions, FontSize
+from res.Dimensions import TableDimensions, ValidationDimensions, FontSize, SpacerDimensions
 
 
 class OrderListView(BaseWidget):
-    def __init__(self, parent_widget: QWidget = None):
+    def __init__(self, parent_widget: QWidget):
         super().__init__("order_list_view", parent_widget)
         self.controller = OrderListController()
-        #self.central_frame.setMinimumWidth(800)
+        # self.central_frame.setMinimumWidth(800)
 
-        # Testo
+        # Titolo e sottotitolo
         self.setTitleText("I tuoi ordini")
         self.setSubtitleText("Clicca su un ordine per visualizzare maggiori dettagli")
 
@@ -72,97 +80,102 @@ class OrderListView(BaseWidget):
 
         # CheckBox "Non iniziato"
         self.not_started_checkbox = CheckBox(self.sidebar_frame)
-        self.not_started_checkbox.setObjectName("not_started_check_box")
+        self.not_started_checkbox.setObjectName("notstarted_check_box")
         self.not_started_checkbox.setText("Non iniziato")
+        self.not_started_checkbox.setChecked(True)
         self.checkgroup_layout.addWidget(self.not_started_checkbox)
 
         # CheckBox "In lavorazione"
         self.working_check_box = CheckBox(self.sidebar_frame)
         self.working_check_box.setObjectName("working_check_box")
         self.working_check_box.setText("In lavorazione")
+        self.working_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.working_check_box)
 
         # CheckBox "Completato"
         self.completed_check_box = CheckBox(self.sidebar_frame)
         self.completed_check_box.setObjectName("completed_check_box")
         self.completed_check_box.setText("Completato")
+        self.completed_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.completed_check_box)
 
         # CheckBox "Consegnato"
         self.delivered_check_box = CheckBox(self.sidebar_frame)
         self.delivered_check_box.setObjectName("delivered_check_box")
         self.delivered_check_box.setText("Consegnato")
+        self.delivered_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.delivered_check_box)
 
         # Button "Aggiorna lista"
-        self.refresh_button = PrimaryPushButton(self.sidebar_frame)
+        self.refresh_button = PushButton(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
+        self.refresh_button.clicked.connect(self.refresh_order_list)
 
+        # Spacer tra i due pulsanti
+        self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
+
+        # Button "Crea nuovo ordine"
+        self.create_button = PrimaryPushButton(self.sidebar_frame)
+        self.create_button.setText("Crea nuovo ordine")
+        self.create_button.clicked.connect(self.show_order_form)
+
+        # Aggiungo i campi della form al layout della sidebar
         self.sidebar_layout.addWidget(self.search_box)
         self.sidebar_layout.addWidget(self.search_combo_box)
         self.sidebar_layout.addItem(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
+        self.sidebar_layout.addWidget(self.sidebar_spacer)
+        self.sidebar_layout.addWidget(self.create_button)
+
+        # Form Manager
+        self.form_manager = FormManager()
+        self.form_manager.add_widget_fields(self.sidebar_frame)
 
         # Tabella
         self.table = StandardTable(self.central_frame)
-
         headers = ["Ordine", "Articolo", "Data creazione", "Stato", "Quantità (paia)", "Prezzo (euro)"]
+        self.table.setHeaders(headers)
 
-        orders = [
-            {'order': '1', 'article': '1480', 'date': '04/02/2024', 'status': 'Non iniziato', 'quantity': 20,
-             'price': 520.00},
-            {'order': '2', 'article': '1563', 'date': '10/02/2024', 'status': 'Non iniziato', 'quantity': 40,
-             'price': 700.00},
-            {'order': '3', 'article': '1480', 'date': '12/02/2024', 'status': 'Non iniziato', 'quantity': 75,
-             'price': 980.00},
-        ]
+        # Table Adapter
+        self.table_adapter = OrderListAdapter(self.table, self.form_manager)
+        self.table_adapter.setData(self.controller.get_order_list())
+        self.table_adapter.onSelection(self.show_order_details)
 
-        self.table.setRowCount(len(orders))
-        self.table.setHorizontalHeaders(headers)
+        def update_table(message: Order | str):
+            if type(message) is Order:
+                self.table_adapter.addData([message])
+            else:
+                self.table_adapter.removeRowByKey(message)
 
-        # self.table.setColumnWidth(0, 100)
-        # self.table.setColumnWidth(1, 100)
-        # self.table.setColumnWidth(2, 200)
-        # self.table.setColumnWidth(3, 150)
-        # self.table.setColumnWidth(4, 125)
-        # self.table.setColumnWidth(5, 125)
-
-        # self.table.horizontalHeader().setMinimumSectionSize(150)
-        # font = self.table.horizontalHeader().font()
-        # font.setWeight(60)
-        # self.table.horizontalHeader().setFont(font)
-
-        # self.table.resizeColumnsToContents()
-        '''
-        row = 0
-        for order in orders:
-            self.table.setItem(row, 0, QTableWidgetItem(order['order']))
-            self.table.setItem(row, 1, QTableWidgetItem(order['article']))
-            self.table.setItem(row, 2, QTableWidgetItem(order['date']))
-            self.table.setItem(row, 3, QTableWidgetItem(order['status']))
-            self.table.setItem(row, 4, QTableWidgetItem(str(order['quantity'])))
-            self.table.setItem(row, 5, QTableWidgetItem(str(order['price'])))
-            row += 1
-        '''
-
-        def update_table(message: dict[str, any]):
-            order_list = self.controller.order_list.get()
-            self.table.setRowCount(len(order_list))
-
-            row = 0
-            for order in self.controller.order_list.get():
-                self.table.setItem(row, 0, QTableWidgetItem(order.order_serial))
-                self.table.setItem(row, 1, QTableWidgetItem(order.article_serial))
-                self.table.setItem(row, 2, QTableWidgetItem(order.creation_date))
-                self.table.setItem(row, 3, QTableWidgetItem(order.state))
-                self.table.setItem(row, 4, QTableWidgetItem(str(order.quantity)))
-                self.table.setItem(row, 5, QTableWidgetItem(PriceCatalog.price_format(order.price)))
-                row += 1
-
-        update_table({})
         self.controller.order_list.observe(update_table)
 
-        # Form Manager
-        self.form_manager = FormManager().add_widget_fields(self.sidebar_frame)
-
         self.central_layout.addWidget(self.table)
+
+    # Aggiorna la lista degli ordini in base al filtri
+    def refresh_order_list(self):
+        self.table_adapter.setData(self.controller.get_order_list())
+
+    # Mostra la form per la creazione di ordini
+    def show_order_form(self):
+        order_form = CreateOrderView(self)
+        order_form.exec()
+
+    # Mostra la schermata con i dettagli dell'ordine
+    def show_order_details(self, order_serial: str):
+        print(f"Ordine selezionato: {order_serial}")
+        order_details = OrderDetailsView(self, order_serial)
+        self.window().addRemovableSubInterface(order_details, text=f"Ordine {order_serial}")
+
+
+class OrderListAdapter(AdvancedTableAdapter):
+    def adaptData(self, order: Order) -> list[str]:
+        return [order.order_serial,
+                order.article_serial,
+                order.creation_date,
+                order.state,
+                str(order.quantity),
+                PriceCatalog.price_format(order.price)
+                ]
+
+    def filterData(self, order_list: list[Order], filters: dict[str, any]) -> list[Order]:
+        return OrderListController.filter_order_list(order_list, filters)

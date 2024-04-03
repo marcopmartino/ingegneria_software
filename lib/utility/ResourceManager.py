@@ -5,8 +5,8 @@ class ResourceManager:
 
     @staticmethod
     def image(filename):
-        return f"url({Config.IMAGES_PATH + filename})"
+        return Config.IMAGES_PATH + filename
 
     @staticmethod
     def icon(filename):
-        return f"url({Config.ICONS_PATH + filename})"
+        return Config.ICONS_PATH + filename

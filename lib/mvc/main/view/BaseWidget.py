@@ -7,7 +7,7 @@ from res import Styles
 # Widget ereditato da tutte le sotto-interfacce della MainWindow
 # noinspection PyPep8Naming
 class BaseWidget(QWidget):
-    def __init__(self, name: str, parent_widget: QWidget = None):
+    def __init__(self, name: str, parent_widget: QWidget):
         super().__init__(parent_widget)
 
         # Base Widget - il widget Base include il frame Header e il widget Body
@@ -34,7 +34,7 @@ class BaseWidget(QWidget):
 
         # Header Title Label
         self.header_title_label = QLabel(self.header_frame)
-        self.header_title_label.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred))
+        self.header_title_label.setSizePolicy(QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum))
         self.header_title_label.setObjectName("header_title_label")
         self.header_title_label.setStyleSheet(Styles.LABEL_TITLE)
 
