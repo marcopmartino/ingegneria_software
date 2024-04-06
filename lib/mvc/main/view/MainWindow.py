@@ -19,7 +19,8 @@ from lib.widget.Separators import HorizontalLine
 from res.CustomIcon import CustomIcon as CustomFIF
 
 from lib.mvc.main.view.BaseWidget import BaseWidget
-from lib.mvc.profile.view.UserProfile import UserProfilePage
+from lib.mvc.workerlist.view.WorkerListView import WorkerListView
+from lib.mvc.profile.view.CustomerProfile import CustomerProfilePage
 from lib.mvc.profile.view.WorkerProfile import WorkerProfilePage
 from lib.mvc.order.view.OrderListView import OrderListView
 
@@ -170,7 +171,7 @@ class MainWindow(FramelessWindow):
         # Sezione Top
         match user_role:
             case "user":
-                self.insertSubInterface(2, UserProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
+                self.insertSubInterface(2, CustomerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
 
@@ -180,7 +181,7 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
                 self.insertSubInterface(5, BaseWidget('Magazzino', self), FIF.LIBRARY, 'Magazzino')
                 self.insertSubInterface(6, BaseWidget('Macchinari', self), CustomFIF.MACHINERY, 'Macchinari')
-                self.insertSubInterface(7, BaseWidget('Gestione dipendenti', self))
+                self.insertSubInterface(7, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
 
             case "worker":
                 self.insertSubInterface(2, WorkerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')

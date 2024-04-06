@@ -2,9 +2,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow, \
     QRadioButton
 
+import lib.UtilityFunction as utility
 import lib.firebaseData as firebaseConfig
 from lib.mvc.profile.controller.ProfileController import ProfileController
-from lib.layout.LineEditLayout import LineEditCompositeLayout
+from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
@@ -161,6 +162,7 @@ class EditWorkerProfileWindow(QMainWindow):
                                      new_password_field, confirm_new_password_field)
         self.form_manager.add_submit_button(self.saveEditButton, self.on_submit)
 
+    # Funzione che gestisce l'interazione con i radio button
     def btnState(self, button):
         if button.text() == "Operario":
             if not button.isChecked():
@@ -200,10 +202,10 @@ class EditWorkerProfileWindow(QMainWindow):
                 "name": self.nameLayout.line_edit.text(),
                 "CF": self.CFNumberLayout.line_edit.text(),
                 "birth": self.birthDateLayout.line_edit.text(),
-                "phone": self.phoneLayout.line_edit.text(),
+                "phone": utility.format_phone(self.phoneLayout.line_edit.text()),
                 "role": 'worker' if self.workerRadio.isChecked() else 'manager'
             }
-            self.controller.setWorkerData(data, newPassword, self.user_id)
+            self.controller.setUserData(data, newPassword, self.user_id)
             self.close()
         except Exception as e:
             print(e)

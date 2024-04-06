@@ -55,6 +55,11 @@ class ProfileStrings:
     DELETE_BUTTON = "Elimina profilo"
 
 
+# Worker
+class WorkerStrings:
+    ADD_WORKER = "Aggiungi operaio"
+
+
 # Utility
 class UtilityStrings:
     CHECK_INTERNET_CONNECTION = "Controllare la propria connessione a Internet"

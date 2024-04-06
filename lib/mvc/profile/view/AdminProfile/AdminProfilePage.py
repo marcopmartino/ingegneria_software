@@ -19,7 +19,7 @@ class ProfileWidget(QFrame):
         # appena aperta perché il garbage collector la eliminerebbe
         self.controller = ProfileController()
 
-        data = self.controller.getData(firebaseConfig.currentUser['localId'])
+        data = self.controller.getData()
 
         self.setObjectName("Profilo")
         self.setStyleSheet(Styles.PROFILE_PAGE)
@@ -83,11 +83,11 @@ class ProfileWidget(QFrame):
         self.birthDateLabel = QLabelLayout(FormStrings.BIRTH_DATE, data['birth_date'])
         self.CFNumberLayout = QLabelLayout(FormStrings.CF, data['CF'])
 
+        self.profileInfoTable.addLayout(self.CFNumberLayout)
         self.profileInfoTable.addLayout(self.emailLabel)
         self.profileInfoTable.addLayout(self.phoneLayout)
-        self.profileInfoTable.addLayout(self.CFNumberLayout)
+        self.profileInfoTable.addLayout(self.birthDateLabel)
 
-        self.profileInfoTable.setAlignment(self.nameLabel, Qt.AlignLeft)
         self.profileInfoTable.setAlignment(self.emailLabel, Qt.AlignLeft)
         self.profileInfoTable.setAlignment(self.phoneLayout, Qt.AlignLeft)
         self.profileInfoTable.setAlignment(self.birthDateLabel, Qt.AlignLeft)
@@ -118,7 +118,6 @@ class ProfileWidget(QFrame):
         self.setLayout(self.outerLayout)
 
     def update_data(self):
-        print(":)")
         pass
 
     def open_edit_window(self):

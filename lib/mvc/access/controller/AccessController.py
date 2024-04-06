@@ -1,6 +1,7 @@
 from lib.firebaseData import firebase
 from lib import firebaseData as firebaseConfig
 from lib.network.HTTPErrorHelper import HTTPErrorHelper
+import lib.UtilityFunction as utility
 
 
 class AccessController:
@@ -25,7 +26,8 @@ class AccessController:
             "company": form_data["nome azienda"],
             "IVA": form_data["partita iva"],
             "delivery": form_data["indirizzo di recapito"],
-            "phone": form_data["telefono"],
+            "phone": utility.format_phone(form_data["telefono"]),
             "role": "user"
         }
-        self.database.child('users').child(uid).set(data)
+        HTTPErrorHelper.handle_request(
+            lambda: self.database.child('users').child(uid).set(data))
