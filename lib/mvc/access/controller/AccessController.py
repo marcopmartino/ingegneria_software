@@ -29,5 +29,5 @@ class AccessController:
             "phone": utility.format_phone(form_data["telefono"]),
             "role": "user"
         }
-        HTTPErrorHelper.handle_request(
+        HTTPErrorHelper.differentiate(
             lambda: self.database.child('users').child(uid).set(data))

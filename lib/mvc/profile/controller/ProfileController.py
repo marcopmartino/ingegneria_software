@@ -13,8 +13,8 @@ class ProfileController:
     def __init__(self):
         super().__init__()
         self.customer_data = CustomerDataManager()
+        self.staff_data = StaffDataManager()
 
-        self.staff_data = Staff()
         self.auth = firebase.auth()
         self.database = firebase.database()
 

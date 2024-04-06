@@ -19,7 +19,7 @@ class EditAdminProfileWindow(QMainWindow):
 
         self.controller = ProfileController()
 
-        data = self.controller.getData(firebaseConfig.currentUser['localId'])
+        data = self.controller.getData()
 
         self.prevWindow = prevWindow
 
@@ -77,12 +77,12 @@ class EditAdminProfileWindow(QMainWindow):
         self.profileForm.setAlignment(self.phoneLayout, Qt.AlignCenter)
 
         # Campo input indirizzo
-        self.birthDateLayout = LineEditCompositeLayout(FormStrings.BIRTH_DATE, data['delivery'], self)
+        self.birthDateLayout = LineEditCompositeLayout(FormStrings.BIRTH_DATE, data['birth_date'], self)
         self.profileForm.addLayout(self.birthDateLayout)
         self.profileForm.setAlignment(self.birthDateLayout, Qt.AlignCenter)
 
         # Campo input partita IVA
-        self.CFNumberLayout = LineEditCompositeLayout(FormStrings.CF, data['IVA'], self)
+        self.CFNumberLayout = LineEditCompositeLayout(FormStrings.CF, data['CF'], self)
         self.profileForm.addLayout(self.CFNumberLayout)
         self.profileForm.setAlignment(self.CFNumberLayout, Qt.AlignCenter)
 
@@ -178,7 +178,7 @@ class EditAdminProfileWindow(QMainWindow):
                 "phone": utility.format_phone(self.phoneLayout.line_edit.text()),
                 "role": "manager"
             }
-            self.controller.setWorkerData(data, newPassword, self.user_id)
+            self.controller.setUserData(data, newPassword, self.user_id)
             self.close()
         except Exception as e:
             print(e)
