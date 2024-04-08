@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QInputDialog, QDialog, QL
 
 from lib.mvc.main.view.BaseWidget import BaseWidget
 from lib.mvc.pricecatalog.controller.PriceCatalogController import PriceListController
+from lib.mvc.pricecatalog.model.PriceCatalog import PriceCatalog
 from lib.widget.TableWidgets import PriceCatalogTable, PriceCatalogTableBuilder, TitleAndSubtitleSection, \
     SixColumnsHeaderSection, SixColumnsDataSection, HorizontalTreeSection
 from res import Styles
@@ -119,7 +120,7 @@ class PriceCatalogView(BaseWidget):
     def on_item_clicked(self, item: QTableWidgetItem):
         if type(item).__name__ == "NamedTableItem":
 
-            current_value = float(item.text().replace(",", "."))
+            current_value = PriceCatalog.unformat(item.text())
 
             # Imposto il Dialog
             dialog = QInputDialog(self)

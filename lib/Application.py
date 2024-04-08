@@ -12,8 +12,6 @@ class Application(QApplication):
     def __init__(self, argv: List[str]):
         super().__init__(argv)
 
-        #init()
-
         # Inizializzo lo stato
         self.state = "NOT_RUNNING"
 

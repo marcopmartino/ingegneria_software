@@ -1,27 +1,22 @@
-from typing import Callable
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QTableWidget,
-    QTableWidgetItem, QWidget, QHeaderView, QAbstractItemView, QStyledItemDelegate, QFrame, QStyle, QVBoxLayout, QLabel,
-    QSpacerItem, QSizePolicy
+    QWidget, QVBoxLayout, QLabel
 )
-from qfluentwidgets import SearchLineEdit, CheckBox, PushButton, SpinBox, ComboBox, PrimaryPushButton
+from qfluentwidgets import SearchLineEdit, CheckBox, PushButton, ComboBox, PrimaryPushButton
 
 from lib.mvc.main.view.BaseWidget import BaseWidget
 from lib.mvc.order.controller.OrderListController import OrderListController
 from lib.mvc.order.model.Order import Order
-from lib.mvc.order.model.OrderList import OrderList
 from lib.mvc.order.view.CreateOrderView import CreateOrderView
 from lib.mvc.order.view.OrderDetailsView import OrderDetailsView
 from lib.mvc.pricecatalog.model.PriceCatalog import PriceCatalog
+from lib.utility.TableAdapters import AdvancedTableAdapter
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
-from lib.widget.Separators import HorizontalLine, VerticalLine
-from lib.widget.TableWidgets import StandardTable, AdvancedTableAdapter
-from res import Styles
-from res.Dimensions import TableDimensions, ValidationDimensions, FontSize, SpacerDimensions
+from lib.widget.Separators import HorizontalLine
+from lib.widget.TableWidgets import StandardTable
+from res.Dimensions import ValidationDimensions, FontSize
 
 
 class OrderListView(BaseWidget):
@@ -153,6 +148,7 @@ class OrderListView(BaseWidget):
 
     # Aggiorna la lista degli ordini in base al filtri
     def refresh_order_list(self):
+        self.table.clearSelection()
         self.table_adapter.setData(self.controller.get_order_list())
 
     # Mostra la form per la creazione di ordini
@@ -174,7 +170,7 @@ class OrderListAdapter(AdvancedTableAdapter):
                 order.creation_date,
                 order.state,
                 str(order.quantity),
-                PriceCatalog.price_format(order.price)
+                PriceCatalog.format(order.price)
                 ]
 
     def filterData(self, order_list: list[Order], filters: dict[str, any]) -> list[Order]:

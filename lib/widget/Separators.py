@@ -32,7 +32,7 @@ class HorizontalSpacer(QSpacerItem):
         super().__init__(width, SpacerDimensions.DEFAULT_SECONDARY, size_policy, QSizePolicy.Minimum)
 
 
-# Spacer Verticale
+# Spacer verticale
 class VerticalSpacer(QSpacerItem):
     def __init__(self, heigth: int = SpacerDimensions.DEFAULT_PRIMARY,
                  size_policy: QSizePolicy = QSizePolicy.Preferred):

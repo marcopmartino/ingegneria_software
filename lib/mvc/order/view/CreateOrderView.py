@@ -359,7 +359,7 @@ class CreateOrderView(QDialog):
         clicked_button = message_box.question(
             self,
             'Conferma ordine',
-            f"Il prezzo dell'ordine è € {PriceCatalog.price_format(final_price)}.\n"
+            f"Il prezzo dell'ordine è € {PriceCatalog.format(final_price)}.\n"
             "Sei sicuro di voler creare e inviare l'ordine?",
             message_box.Yes | message_box.No
         )
@@ -372,7 +372,7 @@ class CreateOrderView(QDialog):
     # Aggiorna il prezzo indicato
     def refresh_price(self):
         new_price: float = self.controller.get_order_price(self.form_manager.data())
-        self.price_label.setText(f"Prezzo finale: € {PriceCatalog.price_format(new_price)}")
+        self.price_label.setText(f"Prezzo finale: € {PriceCatalog.format(new_price)}")
 
     # Aggiorna il ComboBox con le taglie in base al genere di forma selezionato
     def on_gender_selected(self):

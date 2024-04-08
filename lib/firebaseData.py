@@ -33,12 +33,9 @@ def currentUserId():
 # noinspection PyPep8Naming
 def getUserRole():
 
-    def no_authenticated_user_handler():
-        return "unauthenticated"
-
     return HTTPErrorHelper.handle(
         lambda: firebase.database().child('users').child(currentUserId()).get().val()['role'],
-        {TypeError: no_authenticated_user_handler},
+        {TypeError: lambda: "unauthenticated"},
         True
     )
 

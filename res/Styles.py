@@ -27,7 +27,7 @@ ACCESS_LINE_EDIT = """/* Set style for QLineEdit */\n
 
 ACCESS_MAIN_WINDOW = """/* Set style for MainWindow */\n
                 QMainWindow {\n
-                    border-image: url(""" + ResourceManager.image("access_background.jpg") + """);\n
+                    border-image: url(""" + ResourceManager.image_path("access_background.jpg") + """);\n
                 }\n
                 /* Set style for QWidget */\n
                 #main_widget {\n

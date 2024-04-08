@@ -3,6 +3,8 @@ from lib.mvc.order.model.Article import Article
 from lib.mvc.order.model.ArticleList import ArticleList
 from datetime import datetime
 
+from res.Strings import OrderStateStrings
+
 
 class Order:
 
@@ -21,7 +23,7 @@ class Order:
     # Crea un nuovo ordine
     @classmethod
     def new(cls, article_serial: str, quantity: int, price: float):
-        return cls('', article_serial, "Non iniziato", currentUserId(), quantity, price, -1,
+        return cls('', article_serial, OrderStateStrings.NOT_STARTED, currentUserId(), quantity, price, -1,
                    datetime.today().strftime('%d/%m/%Y'))
 
     def article(self) -> Article:

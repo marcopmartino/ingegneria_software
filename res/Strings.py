@@ -42,6 +42,17 @@ class FormStrings:
     DELETE_EDIT = "Annulla modifiche"
 
 
+# OrderState
+class OrderStateStrings:
+    SENT = "Inviato"
+    NOT_STARTED = "Non iniziato"
+    STARTED = "Iniziato"
+    PROCESSING = "In lavorazione"
+    COMPLETED = "Completato"
+    WAITING_COLLECTION = "Da ritirare"
+    DELIVERED = "Consegnato"
+
+
 # PriceCatalog
 class PriceCatalogStrings:
     FREE = "Gratuito"

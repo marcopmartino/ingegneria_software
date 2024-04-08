@@ -67,8 +67,7 @@ class RemovableNavigationWidget(NavigationTreeWidget):
         super().__init__(icon, text, True, parent_widget)
 
         # Carica l'icona per chiudere l'interfaccia corrispondente
-        self.close_icon = QImage(ResourceManager.icon("close_icon.png")).scaled(
-            24, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.close_icon = ResourceManager.icon("close_icon.png")
 
     # Personalizza la grafica
     def paintEvent(self, e):
