@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, Q
 
 import lib.UtilityFunction as utility
 import lib.firebaseData as firebaseConfig
-from lib.mvc.profile.controller.ProfileController import ProfileController
+from lib.mvc.profile.controller.StaffController import StaffController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
@@ -17,9 +17,9 @@ class EditAdminProfileWindow(QMainWindow):
     def __init__(self, prevWindow, parent=None):
         super().__init__(parent=parent)
 
-        self.controller = ProfileController()
+        self.controller = StaffController()
 
-        data = self.controller.getData()
+        data = self.controller.staff_data.get()
 
         self.prevWindow = prevWindow
 
@@ -170,7 +170,7 @@ class EditAdminProfileWindow(QMainWindow):
                 self.newPasswordLayout.error_label.setText(ValidationStrings.MIN_PASSWORD_ERROR)
 
         try:
-            self.controller.checkLogin(currentEmail, password)
+            self.controller.staff_data.checkLogin(currentEmail, password)
             data = {
                 "name": self.nameLayout.line_edit.text(),
                 "CF": self.CFNumberLayout.line_edit.text(),
@@ -178,7 +178,7 @@ class EditAdminProfileWindow(QMainWindow):
                 "phone": utility.format_phone(self.phoneLayout.line_edit.text()),
                 "role": "manager"
             }
-            self.controller.setUserData(data, newPassword, self.user_id)
+            self.controller.staff_data.setUserData(data, newPassword, self.user_id)
             self.close()
         except Exception as e:
             print(e)

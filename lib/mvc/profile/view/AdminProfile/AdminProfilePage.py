@@ -5,7 +5,7 @@ import lib.firebaseData as firebaseConfig
 
 from lib.layout.QLabelLayout import QLabelLayout
 from lib.mvc.main.view.BaseWidget import BaseWidget
-from lib.mvc.profile.controller.ProfileController import ProfileController
+from lib.mvc.profile.controller.StaffController import StaffController
 from lib.mvc.profile.view.AdminProfile.EditAdminProfileWindow import EditAdminProfileWindow
 from res import Styles
 from res.Strings import FormStrings, ProfileStrings
@@ -20,18 +20,16 @@ class ProfileWidget(BaseWidget):
         # appena aperta perché il garbage collector la eliminerebbe
         self.edit_window = None
 
-        self.controller = ProfileController()
-
-        temp_data = self.controller.getData()
+        self.controller = StaffController()
 
         self.setTitleText("Profilo")
 
-        self.profileInfo = QVBoxLayout(self.central_layout)
+        self.profileInfo = QVBoxLayout(self.central_frame)
         self.profileInfo.setContentsMargins(10, 10, 10, 10)
         self.profileInfo.setSpacing(15)
         self.profileInfo.setObjectName("ProfileInfo")
 
-        self.nameLabel = QLabel(temp_data['name'])
+        self.nameLabel = QLabel()
         self.nameLabel.adjustSize()
         self.nameLabel.setMinimumSize(450, 50)
         self.nameLabel.setStyleSheet(Styles.PROFILE_INFO_NAME)
@@ -45,10 +43,10 @@ class ProfileWidget(BaseWidget):
         self.profileInfoTable.setAlignment(Qt.AlignLeft)
         self.profileInfoTable.setObjectName("ProfileInfoTable")
 
-        self.emailLabel = QLabelLayout(FormStrings.EMAIL, firebaseConfig.currentUser['email'])
-        self.phoneLayout = QLabelLayout(FormStrings.PHONE, temp_data['phone'])
-        self.birthDateLabel = QLabelLayout(FormStrings.BIRTH_DATE, temp_data['birth_date'])
-        self.CFNumberLayout = QLabelLayout(FormStrings.CF, temp_data['CF'])
+        self.emailLabel = QLabelLayout(FormStrings.EMAIL)
+        self.phoneLayout = QLabelLayout(FormStrings.PHONE)
+        self.birthDateLabel = QLabelLayout(FormStrings.BIRTH_DATE)
+        self.CFNumberLayout = QLabelLayout(FormStrings.CF)
 
         self.profileInfoTable.addLayout(self.CFNumberLayout)
         self.profileInfoTable.addLayout(self.emailLabel)
@@ -65,7 +63,7 @@ class ProfileWidget(BaseWidget):
         self.separator = QFrame()
         self.separator.setFrameShape(QFrame.HLine)
         self.separator.setFrameShadow(QFrame.Raised)
-        self.separator.setMinimumSize(self.companyNameLabel.width(), 1)
+        self.separator.setMinimumSize(self.nameLabel.width(), 1)
 
         self.profileInfo.addWidget(self.separator)
         self.profileInfo.setAlignment(self.separator, Qt.AlignLeft)
@@ -85,13 +83,14 @@ class ProfileWidget(BaseWidget):
 
         self.profileInfo.setAlignment(self.buttonsBox, Qt.AlignCenter)
 
-        def update_data(message: dict[str, any]):
-            data = self.controller.staff_data.get()
+        def update_data(data):
             self.nameLabel.setText(data.name)
-            self.emailLayout.labelData.setText(data.email)
-            self.phoneLayout.labelData.setText(data.phone)
-            self.birthDateLabel.labelData.setText(data.birthDate)
-            self.IVANumberLayout.labelData.setText(data.CF)
+            self.emailLabel.edit_text(FormStrings.EMAIL, data.email)
+            self.phoneLayout.edit_text(FormStrings.PHONE, data.phone)
+            self.birthDateLabel.edit_text(FormStrings.BIRTH_DATE, data.birthDate)
+            self.CFNumberLayout.edit_text(FormStrings.CF, data.CF)
+
+        update_data(self.controller.staff_data.get())
 
         self.controller.staff_data.observe(update_data)
 

@@ -32,8 +32,9 @@ class QLabelLayout(QHBoxLayout):
         if data is not None:
             self.addWidget(self.labelData)  # Aggiunge la Label del dato
 
-    def add_text(self, field_name: str, data: Any):
+    def edit_text(self, field_name: str, data: Any):
         if self.labelData is not None:
             self.labelData.setText(data)
         else:
             self.labelData = CustomTableQLabel(f"{field_name}_data", str(data), position=Qt.AlignCenter)
+            self.addWidget(self.labelData)

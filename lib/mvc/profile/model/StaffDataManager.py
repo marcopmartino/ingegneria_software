@@ -1,3 +1,5 @@
+from pyrebase.pyrebase import Stream
+
 from lib.mvc.profile.model.Customer import Customer
 from lib.mvc.profile.model.Staff import Staff
 from lib.network.UserNetwork import UserNetwork
@@ -11,7 +13,13 @@ class StaffDataManager(Observable, metaclass=ObservableSingleton):
     def __init__(self):
         super().__init__()
         self.__staff_data = Staff()
-        UserNetwork.stream(self.__stream_handler)
+        self.stream: Stream | None = None
+
+    def open_stream(self):
+        self.stream = UserNetwork.stream_by_id(firebase.currentUserId(), self.__stream_handler)
+
+    def close_stream(self):
+        self.stream.close()
 
     # Usato per aggiungere i dati di un utente
     def __add_data(self, data: any):
@@ -62,19 +70,30 @@ class StaffDataManager(Observable, metaclass=ObservableSingleton):
 
         # Notifico gli osservatori cosi che possano aggiornarsi
         message['notifier'] = StaffDataManager
-        self.notify(message)
+        self.notify(self.__staff_data)
+
+    @staticmethod
+    def checkLogin(currentEmail, password):
+        UserNetwork.checkLogin(currentEmail, password)
+
+    # Modifica i dati degli utenti nel database
+    @staticmethod
+    def setUserData(form_data: dict[str, any], newPassword, uid):
+        UserNetwork.update(form_data, newPassword, uid)
 
     # Ritorna i dati dell'utente
     def get(self) -> Staff:
         return self.__staff_data
 
+    # Crea il profilo di un nuovo utente
+    @staticmethod
+    def add_profile(email: str, password: str):
+        UserNetwork.create_profile(email, password)
+
     # Salva un nuovo utente nel database
     @staticmethod
-    def add(staff: Staff) -> str:
-        # Converte l'utente in dizionario
-        staff_dict = vars(staff)
-        # Salva l'utente nel database e ne ritorna l'id
-        return UserNetwork.create(staff_dict)
+    def add_data(form_data: dict[str, any], user):
+        UserNetwork.create_data(form_data, user)
 
     # Elimina un utente dal database
     @staticmethod

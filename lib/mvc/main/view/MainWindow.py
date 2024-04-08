@@ -18,6 +18,9 @@ from lib.utility.ResourceManager import ResourceManager
 from lib.widget.Separators import HorizontalLine
 from res.CustomIcon import CustomIcon as CustomFIF
 
+from lib.mvc.profile.model.CustomerDataManager import CustomerDataManager
+from lib.mvc.profile.model.StaffDataManager import StaffDataManager
+
 from lib.mvc.main.view.BaseWidget import BaseWidget
 from lib.mvc.workerlist.view.WorkerListView import WorkerListView
 from lib.mvc.profile.view.CustomerProfile import CustomerProfilePage
@@ -169,12 +172,14 @@ class MainWindow(FramelessWindow):
 
         # Sezione Top
         match user_role:
-            case "user":
+            case "customer":
+                CustomerDataManager().open_stream()
                 self.insertSubInterface(2, CustomerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
 
             case "admin":
+                StaffDataManager().open_stream()
                 self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
@@ -183,6 +188,7 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(7, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
 
             case "worker":
+                StaffDataManager().open_stream()
                 self.insertSubInterface(2, WorkerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, BaseWidget('Magazzino', self), FIF.LIBRARY, 'Magazzino')
@@ -317,6 +323,10 @@ class MainWindow(FramelessWindow):
     # Mostra la schermata di accesso dopo aver effettuato il logout
     def show_access_window(self):
         self.logout.emit()
+        if getUserRole() == 'customer':
+            CustomerDataManager().close_stream()
+        else:
+            StaffDataManager().close_stream()
         print("Window changed")
 
     # Esegue il reset della navigazione

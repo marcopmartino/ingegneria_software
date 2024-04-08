@@ -1,3 +1,5 @@
+from pyrebase.pyrebase import Stream
+
 from lib.mvc.profile.model.Customer import Customer
 from lib.network.UserNetwork import UserNetwork
 from lib.utility.ObserverClasses import Observable
@@ -10,14 +12,20 @@ class CustomerDataManager(Observable, metaclass=ObservableSingleton):
     def __init__(self):
         super().__init__()
         self.__customer_data = Customer()
-        UserNetwork.stream(self.__stream_handler)
+        self.stream: Stream | None = None
+
+    def open_stream(self):
+        self.stream = UserNetwork.stream_by_id(firebase.currentUserId(), self.__stream_handler)
+
+    def close_stream(self):
+        self.stream.close()
 
     # Usato per aggiungere i dati di un utente
     def __add_data(self, data: any):
         print(f"{data}")
         if data is not None:
-            self.__customer_data = Customer(data['uid'], data['companyName'], data['mail'],
-                                            data['phone'], data['deliveryAddress'], data['IVA'])
+            self.__customer_data = Customer(data['company'], data['phone'], data['email'],
+                                            data['delivery'], data['IVA'], data['role'])
 
     # Usato per modificare i dati di un utente
     def __edit_data(self, key: str, data: any):
@@ -30,7 +38,7 @@ class CustomerDataManager(Observable, metaclass=ObservableSingleton):
                 self.__customer_data.phone = data
             case 'deliveryAddress':
                 self.__customer_data.deliveryAddress = data
-            case 'mail':
+            case 'IVA':
                 self.__customer_data.IVA = data
 
     # Usato per rimuovere i dati di un utente (in caso di eliminazione)
@@ -44,13 +52,13 @@ class CustomerDataManager(Observable, metaclass=ObservableSingleton):
             print(f"{key}: {message[key]}")
 
         data = message['data']
-        if data is not None and len(data) == 1:
+        if data is not None:
             match message['event']:
                 case "put":  # Funzione di aggiunta dati
+                    data['email'] = firebase.currentUser['email']
                     self.__add_data(data)
                 case "patch":  # Funzione di modifica dei dati
                     for key, value in data.items():
-                        print(key)
                         self.__edit_data(key, value)
                 case "cancel":
                     pass
@@ -61,11 +69,20 @@ class CustomerDataManager(Observable, metaclass=ObservableSingleton):
 
         # Notifico gli osservatori cosi che possano aggiornarsi
         message['notifier'] = CustomerDataManager
-        self.notify(message)
+        self.notify(self.__customer_data)
 
     # Ritorna i dati dell'utente
     def get(self) -> Customer:
         return self.__customer_data
+
+    @staticmethod
+    def checkLogin(currentEmail, password):
+        UserNetwork.checkLogin(currentEmail, password)
+
+    # Modifica i dati degli utenti nel database
+    @staticmethod
+    def setUserData(form_data: dict[str, any], newPassword, uid):
+        UserNetwork.update(form_data, newPassword, uid)
 
     # Salva un nuovo utente nel database
     @staticmethod

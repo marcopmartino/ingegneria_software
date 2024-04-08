@@ -6,7 +6,8 @@ import lib.firebaseData as firebaseConfig
 from lib.layout.QLabelLayout import QLabelLayout
 from lib.mvc.main.view.BaseWidget import BaseWidget
 from lib.mvc.profile.view.CustomerProfile.EditCustomerProfileWindow import EditProfileWindow
-from lib.mvc.profile.controller.ProfileController import ProfileController
+from lib.mvc.profile.controller.CustomerController import CustomerController
+
 from res import Styles
 from res.Strings import FormStrings, ProfileStrings
 
@@ -20,9 +21,7 @@ class ProfileWidget(BaseWidget):
         # appena aperta perché il garbage collector la eliminerebbe
         self.edit_window = None
 
-        self.controller = ProfileController()
-
-        temp_data = self.controller.getData()
+        self.controller = CustomerController()
 
         self.setTitleText("Profilo")
 
@@ -31,7 +30,7 @@ class ProfileWidget(BaseWidget):
         self.profileInfo.setSpacing(15)
         self.profileInfo.setObjectName("ProfileInfo")
 
-        self.companyNameLabel = QLabel(temp_data['company'])
+        self.companyNameLabel = QLabel()
         self.companyNameLabel.adjustSize()
         self.companyNameLabel.setMinimumSize(450, 50)
         self.companyNameLabel.setStyleSheet(Styles.PROFILE_INFO_NAME)
@@ -39,10 +38,10 @@ class ProfileWidget(BaseWidget):
         self.profileInfo.addWidget(self.companyNameLabel)
         self.profileInfo.setAlignment(self.companyNameLabel, Qt.AlignLeft)
 
-        self.emailLayout = QLabelLayout(FormStrings.EMAIL, firebaseConfig.currentUser['email'])
-        self.phoneLayout = QLabelLayout(FormStrings.PHONE, temp_data['phone'])
-        self.deliveryAddressLayout = QLabelLayout(FormStrings.DELIVERY_ADDRESS, temp_data['delivery'])
-        self.IVANumberLayout = QLabelLayout(FormStrings.IVA_NUMBER, temp_data['IVA'])
+        self.emailLayout = QLabelLayout(FormStrings.EMAIL)
+        self.phoneLayout = QLabelLayout(FormStrings.PHONE)
+        self.deliveryAddressLayout = QLabelLayout(FormStrings.DELIVERY_ADDRESS)
+        self.IVANumberLayout = QLabelLayout(FormStrings.IVA_NUMBER)
 
         self.profileInfoTable = QVBoxLayout()
         self.profileInfoTable.setContentsMargins(0, 0, 1, 1)
@@ -90,13 +89,14 @@ class ProfileWidget(BaseWidget):
 
         self.profileInfo.setAlignment(self.buttonsBox, Qt.AlignCenter)
 
-        def update_data(message: dict[str, any]):
-            data = self.controller.customer_data.get()
-            self.companyNameLabel.setText(data.companyName)
-            self.emailLayout.labelData.setText(data.email)
-            self.phoneLayout.labelData.setText(data.phone)
-            self.deliveryAddressLayout.labelData.setText(data.delivery)
-            self.IVANumberLayout.labelData.setText(data.IVA)
+        def update_data(data):
+            self.companyNameLabel.setText(data.company)
+            self.emailLayout.edit_text(FormStrings.EMAIL, data.email)
+            self.phoneLayout.edit_text(FormStrings.PHONE, data.phone)
+            self.deliveryAddressLayout.edit_text(FormStrings.DELIVERY_ADDRESS, data.delivery)
+            self.IVANumberLayout.edit_text(FormStrings.IVA_NUMBER, data.IVA)
+
+        update_data(self.controller.customer_data.get())
 
         self.controller.customer_data.observe(update_data)
 
