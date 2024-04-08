@@ -75,6 +75,15 @@ class CustomerDataManager(Observable, metaclass=ObservableSingleton):
     def get(self) -> Customer:
         return self.__customer_data
 
+    @staticmethod
+    def checkLogin(currentEmail, password):
+        UserNetwork.checkLogin(currentEmail, password)
+
+    # Modifica i dati degli utenti nel database
+    @staticmethod
+    def setUserData(form_data: dict[str, any], newPassword, uid):
+        UserNetwork.update(form_data, newPassword, uid)
+
     # Salva un nuovo utente nel database
     @staticmethod
     def add(customer: Customer) -> str:

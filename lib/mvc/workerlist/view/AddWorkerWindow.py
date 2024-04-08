@@ -205,7 +205,7 @@ class AddWorkerWindow(QMainWindow):
                 return
 
         try:
-            user = self.controller.registerWorker(form_data['email'], form_data['password'])
+            user = self.controller.staff_data.add_profile(form_data['email'], form_data['password'])
 
             data = {
                 "name": self.nameLayout.line_edit.text(),
@@ -215,7 +215,7 @@ class AddWorkerWindow(QMainWindow):
                 "mail": self.emailLayout.line_edit.text(),
                 "role": "worker" if self.workerRadio.isChecked() else 'manager'
             }
-            self.controller.createUserData(data, user)
+            self.controller.staff_data.add_data(data, user)
             self.close()
         except Exception as e:
             print(e)

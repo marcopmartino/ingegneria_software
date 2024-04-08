@@ -19,7 +19,7 @@ class EditAdminProfileWindow(QMainWindow):
 
         self.controller = StaffController()
 
-        data = self.controller.getData()
+        data = self.controller.staff_data.get()
 
         self.prevWindow = prevWindow
 
@@ -170,7 +170,7 @@ class EditAdminProfileWindow(QMainWindow):
                 self.newPasswordLayout.error_label.setText(ValidationStrings.MIN_PASSWORD_ERROR)
 
         try:
-            self.controller.checkLogin(currentEmail, password)
+            self.controller.staff_data.checkLogin(currentEmail, password)
             data = {
                 "name": self.nameLayout.line_edit.text(),
                 "CF": self.CFNumberLayout.line_edit.text(),
@@ -178,7 +178,7 @@ class EditAdminProfileWindow(QMainWindow):
                 "phone": utility.format_phone(self.phoneLayout.line_edit.text()),
                 "role": "manager"
             }
-            self.controller.setUserData(data, newPassword, self.user_id)
+            self.controller.staff_data.setUserData(data, newPassword, self.user_id)
             self.close()
         except Exception as e:
             print(e)

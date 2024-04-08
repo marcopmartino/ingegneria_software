@@ -19,7 +19,7 @@ class EditProfileWindow(QMainWindow):
 
         self.controller = CustomerController()
 
-        data = self.controller.getData()
+        data = self.controller.customer_data.get()
 
         self.prevWindow = prevWindow
 
@@ -169,7 +169,7 @@ class EditProfileWindow(QMainWindow):
                 self.newPasswordLayout.error_label.setText(ValidationStrings.MIN_PASSWORD_ERROR)
 
         try:
-            self.controller.checkLogin(currentEmail, password)
+            self.controller.customer_data.checkLogin(currentEmail, password)
             data = {
                 "company": self.companyNameLayout.line_edit.text(),
                 "IVA": self.IVANumberLayout.line_edit.text(),

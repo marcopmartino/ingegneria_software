@@ -72,17 +72,28 @@ class StaffDataManager(Observable, metaclass=ObservableSingleton):
         message['notifier'] = StaffDataManager
         self.notify(self.__staff_data)
 
+    @staticmethod
+    def checkLogin(currentEmail, password):
+        UserNetwork.checkLogin(currentEmail, password)
+
+    # Modifica i dati degli utenti nel database
+    @staticmethod
+    def setUserData(form_data: dict[str, any], newPassword, uid):
+        UserNetwork.update(form_data, newPassword, uid)
+
     # Ritorna i dati dell'utente
     def get(self) -> Staff:
         return self.__staff_data
 
+    # Crea il profilo di un nuovo utente
+    @staticmethod
+    def add_profile(email: str, password: str):
+        UserNetwork.create_profile(email, password)
+
     # Salva un nuovo utente nel database
     @staticmethod
-    def add(staff: Staff) -> str:
-        # Converte l'utente in dizionario
-        staff_dict = vars(staff)
-        # Salva l'utente nel database e ne ritorna l'id
-        return UserNetwork.create(staff_dict)
+    def add_data(form_data: dict[str, any], user):
+        UserNetwork.create_data(form_data, user)
 
     # Elimina un utente dal database
     @staticmethod
