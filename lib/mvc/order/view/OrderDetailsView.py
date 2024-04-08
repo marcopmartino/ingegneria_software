@@ -109,13 +109,13 @@ class OrderDetailsView(BaseWidget):
         state_labels_layout.addWidget(self.state_description_label)
 
         self.next_state_button = PrimaryPushButton()
-        self.next_state_button.clicked.connect(self.next_state)
+        self.next_state_button.clicked.connect(self.transition_to_next_state)
 
         self.modify_order_button = PrimaryPushButton(text="Modifica ordine")
-        #self.modify_order_button.clicked.connect()
+        # self.modify_order_button.clicked.connect()
 
         self.delete_order_button = PrimaryPushButton(text="Annulla ordine")
-        #self.delete_order_button.clicked.connect()
+        # self.delete_order_button.clicked.connect()
 
         self.order_completion_number_label = QLabel()
         font = QFont()
@@ -183,8 +183,8 @@ class OrderState(ABC):
         self._yellow_pause: callable = lambda: ResourceManager.icon_label("yellow_pause.png")
         self._black_three_dots: callable = lambda: ResourceManager.icon_label("black_three_dots.png")
         self._black_right_arrow: callable = lambda: ResourceManager.icon_label("black_right_arrow.png",
-                                                                               36, 24, Qt.IgnoreAspectRatio
-                                                                               )
+                                                                               36, 24,
+                                                                               Qt.IgnoreAspectRatio)
 
     def __new_state_label(self, text: str) -> QLabel:
         state_label = QLabel(text)

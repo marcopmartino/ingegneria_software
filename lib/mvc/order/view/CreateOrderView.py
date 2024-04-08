@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSpacerItem, QSizePolicy, QVBoxLayout, QLabel, QGridLayout, \
     QMessageBox, QDialog
@@ -8,12 +8,11 @@ from lib.layout.FrameLayouts import HFrameLayout, VFrameLayout
 from lib.mvc.order.controller.OrderListController import OrderListController
 from lib.mvc.pricecatalog.model.PriceCatalog import PriceCatalog
 from lib.validation.FormManager import FormManager
-from res import Styles
 from res.Dimensions import FontWeight, FontSize
 
 
 class CreateOrderView(QDialog):
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: QWidget):
         super().__init__(parent)
 
         # Finestra e widget

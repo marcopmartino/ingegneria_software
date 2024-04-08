@@ -8,8 +8,8 @@ from res.Strings import OrderStateStrings
 
 class Order:
 
-    def __init__(self, order_serial: str, article_serial: str, state: str, customer_id: str, quantity: int, price: float,
-                 first_product_serial: int, creation_date: str):
+    def __init__(self, order_serial: str, article_serial: str, state: str, customer_id: str, quantity: int,
+                 price: float, first_product_serial: int, creation_date: str):
         super(Order, self).__init__()
         self.order_serial = order_serial
         self.article_serial = article_serial
