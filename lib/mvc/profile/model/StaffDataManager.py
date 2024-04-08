@@ -1,6 +1,5 @@
 from pyrebase.pyrebase import Stream
 
-from lib.mvc.profile.model.Customer import Customer
 from lib.mvc.profile.model.Staff import Staff
 from lib.network.UserNetwork import UserNetwork
 from lib.utility.ObserverClasses import Observable
@@ -25,7 +24,7 @@ class StaffDataManager(Observable, metaclass=ObservableSingleton):
     def __add_data(self, data: any):
         print(f"{data}")
         if data is not None:
-            self.__staff_data = Staff(data['uid'], data['name'], data['mail'],
+            self.__staff_data = Staff(data['uid'], data['name'], data['email'],
                                       data['phone'], data['CF'], data['birth_date'], data['role'])
 
     # Usato per modificare i dati di un utente
@@ -53,9 +52,11 @@ class StaffDataManager(Observable, metaclass=ObservableSingleton):
             print(f"{key}: {message[key]}")
 
         data = message['data']
-        if data is not None and len(data) == 1:
+        if data is not None:
             match message['event']:
                 case "put":  # Funzione di aggiunta dati
+                    data['email'] = firebase.currentUser['email']
+                    data['uid'] = firebase.currentUserId()
                     self.__add_data(data)
                 case "patch":  # Funzione di modifica dei dati
                     for key, value in data.items():

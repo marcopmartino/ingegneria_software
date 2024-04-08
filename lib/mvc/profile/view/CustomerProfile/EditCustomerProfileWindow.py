@@ -62,7 +62,7 @@ class EditProfileWindow(QMainWindow):
         self.profileForm.setObjectName("ProfileForm")
 
         # Campo input nome azienda
-        self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, data.company, self)
+        self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, data['company'], self)
         self.profileForm.addLayout(self.companyNameLayout)
         self.profileForm.setAlignment(self.companyNameLayout, Qt.AlignCenter)
 
@@ -72,17 +72,17 @@ class EditProfileWindow(QMainWindow):
         self.profileForm.setAlignment(self.emailLayout, Qt.AlignCenter)
 
         # Campo input telefono
-        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, data.phone, self)
+        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, data['phone'], self)
         self.profileForm.addLayout(self.phoneLayout)
         self.profileForm.setAlignment(self.phoneLayout, Qt.AlignCenter)
 
         # Campo input indirizzo
-        self.deliveryAddressLayout = LineEditCompositeLayout(FormStrings.DELIVERY_ADDRESS, data.delivery, self)
+        self.deliveryAddressLayout = LineEditCompositeLayout(FormStrings.DELIVERY_ADDRESS, data['delivery'], self)
         self.profileForm.addLayout(self.deliveryAddressLayout)
         self.profileForm.setAlignment(self.deliveryAddressLayout, Qt.AlignCenter)
 
         # Campo input partita IVA
-        self.IVANumberLayout = LineEditCompositeLayout(FormStrings.IVA_NUMBER, data.IVA, self)
+        self.IVANumberLayout = LineEditCompositeLayout(FormStrings.IVA_NUMBER, data['IVA'], self)
         self.profileForm.addLayout(self.IVANumberLayout)
         self.profileForm.setAlignment(self.IVANumberLayout, Qt.AlignCenter)
 

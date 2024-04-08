@@ -84,6 +84,7 @@ class ProfileWidget(BaseWidget):
         self.profileInfo.setAlignment(self.buttonsBox, Qt.AlignCenter)
 
         def update_data(data):
+            print(data)
             self.nameLabel.setText(data.name)
             self.emailLabel.edit_text(FormStrings.EMAIL, data.email)
             self.phoneLayout.edit_text(FormStrings.PHONE, data.phone)
