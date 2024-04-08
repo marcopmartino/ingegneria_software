@@ -32,7 +32,6 @@ def currentUserId():
 # Ottiene il tipo di utente che sta effettuando l'accesso
 # noinspection PyPep8Naming
 def getUserRole():
-
     def no_authenticated_user_handler():
         return "unauthenticated"
 

@@ -24,12 +24,12 @@ class UserNetwork:
         return firebase.database().child("users").child(order_id).get().val()
 
     @staticmethod
-    def stream_by_id(order_id: int, stream_handler: callable):
-        return firebase.database().child("users").child(order_id).stream(stream_handler)
+    def stream_by_id(user_id: str, stream_handler: callable):
+        return firebase.database().child("users").child(user_id).stream(stream_handler)
 
     @staticmethod
-    def update_by_id(order_id: int, data: dict):
-        firebase.database().child("users").child(order_id).update(data)
+    def update_by_id(user_id: int, data: dict):
+        firebase.database().child("users").child(user_id).update(data)
 
     @staticmethod
     def delete_by_email(email: str):

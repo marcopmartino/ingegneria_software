@@ -6,13 +6,13 @@ from lib.firebaseData import firebase
 from lib import firebaseData as firebaseConfig
 from lib.mvc.profile.model.CustomerDataManager import CustomerDataManager
 from lib.mvc.profile.model.Staff import Staff
+from lib.mvc.profile.model.StaffDataManager import StaffDataManager
 from lib.network.HTTPErrorHelper import HTTPErrorHelper
 
 
-class ProfileController:
+class StaffController:
     def __init__(self):
         super().__init__()
-        self.customer_data = CustomerDataManager()
         self.staff_data = StaffDataManager()
 
         self.auth = firebase.auth()

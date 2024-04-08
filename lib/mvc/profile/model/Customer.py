@@ -1,12 +1,11 @@
 class Customer:
 
-    def __init__(self, uid: str = None, companyName: str = None, email: str = None, phone: str = None,
-                 delivery: str = None, IVA: str = None):
+    def __init__(self, company: str = None, phone: str = None, email: str = None,
+                 delivery: str = None, IVA: str = None, role: str = None):
         super(Customer, self).__init__()
-        self.uid = uid
-        self.companyName = companyName
-        self.email = email
+        self.company = company
         self.phone = phone
+        self.email = email
         self.delivery = delivery
         self.IVA = IVA
-
+        self.role = role

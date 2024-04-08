@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, Q
 
 import lib.UtilityFunction as utility
 import lib.firebaseData as firebaseConfig
-from lib.mvc.profile.controller.ProfileController import ProfileController
+from lib.mvc.profile.controller.CustomerController import CustomerController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
@@ -17,7 +17,7 @@ class EditProfileWindow(QMainWindow):
     def __init__(self, prevWindow, parent=None):
         super().__init__(parent=parent)
 
-        self.controller = ProfileController()
+        self.controller = CustomerController()
 
         data = self.controller.getData()
 

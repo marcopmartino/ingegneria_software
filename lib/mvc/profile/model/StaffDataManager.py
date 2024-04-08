@@ -1,3 +1,5 @@
+from pyrebase.pyrebase import Stream
+
 from lib.mvc.profile.model.Customer import Customer
 from lib.mvc.profile.model.Staff import Staff
 from lib.network.UserNetwork import UserNetwork
@@ -11,7 +13,13 @@ class StaffDataManager(Observable, metaclass=ObservableSingleton):
     def __init__(self):
         super().__init__()
         self.__staff_data = Staff()
-        UserNetwork.stream(self.__stream_handler)
+        self.stream: Stream | None = None
+
+    def open_stream(self):
+        self.stream = UserNetwork.stream_by_id(firebase.currentUserId(), self.__stream_handler)
+
+    def close_stream(self):
+        self.stream.close()
 
     # Usato per aggiungere i dati di un utente
     def __add_data(self, data: any):
@@ -62,7 +70,7 @@ class StaffDataManager(Observable, metaclass=ObservableSingleton):
 
         # Notifico gli osservatori cosi che possano aggiornarsi
         message['notifier'] = StaffDataManager
-        self.notify(message)
+        self.notify(self.__staff_data)
 
     # Ritorna i dati dell'utente
     def get(self) -> Staff:

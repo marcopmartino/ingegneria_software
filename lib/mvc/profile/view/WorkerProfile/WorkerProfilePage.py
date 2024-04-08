@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QHBoxLayout
 import lib.firebaseData as firebaseConfig
 
 from lib.layout.QLabelLayout import QLabelLayout
-from lib.mvc.profile.controller.ProfileController import ProfileController
+from lib.mvc.profile.controller.StaffController import StaffController
 from res import Styles
 from res.Strings import FormStrings, ProfileStrings
 
@@ -18,9 +18,7 @@ class ProfileWidget(QFrame):
         # appena aperta perché il garbage collector la eliminerebbe
         self.edit_window = None
 
-        self.controller = ProfileController()
-
-        temp_data = self.controller.getData()
+        self.controller = StaffController()
 
         self.setTitleText("Profilo")
 
@@ -29,7 +27,7 @@ class ProfileWidget(QFrame):
         self.profileInfo.setSpacing(15)
         self.profileInfo.setObjectName("ProfileInfo")
 
-        self.nameLabel = QLabel(temp_data['name'])
+        self.nameLabel = QLabel()
         self.nameLabel.adjustSize()
         self.nameLabel.setMinimumSize(450, 50)
         self.nameLabel.setStyleSheet(Styles.PROFILE_INFO_NAME)
@@ -43,10 +41,10 @@ class ProfileWidget(QFrame):
         self.profileInfoTable.setAlignment(Qt.AlignLeft)
         self.profileInfoTable.setObjectName("ProfileInfoTable")
 
-        self.emailLabel = QLabelLayout(FormStrings.EMAIL, firebaseConfig.currentUser['email'])
-        self.phoneLayout = QLabelLayout(FormStrings.PHONE, temp_data['phone'])
-        self.birthDateLabel = QLabelLayout(FormStrings.BIRTH_DATE, temp_data['birth_date'])
-        self.CFNumberLayout = QLabelLayout(FormStrings.CF, temp_data['CF'])
+        self.emailLabel = QLabelLayout(FormStrings.EMAIL)
+        self.phoneLayout = QLabelLayout(FormStrings.PHONE)
+        self.birthDateLabel = QLabelLayout(FormStrings.BIRTH_DATE)
+        self.CFNumberLayout = QLabelLayout(FormStrings.CF)
 
         self.profileInfoTable.addLayout(self.CFNumberLayout)
         self.profileInfoTable.addLayout(self.emailLabel)
@@ -68,13 +66,14 @@ class ProfileWidget(QFrame):
         self.profileInfo.addWidget(self.separator)
         self.profileInfo.setAlignment(self.separator, Qt.AlignLeft)
 
-        def update_data(message: dict[str, any]):
-            data = self.controller.staff_data.get()
+        def update_data(data):
             self.nameLabel.setText(data.name)
-            self.emailLayout.labelData.setText(data.email)
-            self.phoneLayout.labelData.setText(data.phone)
-            self.birthDateLabel.labelData.setText(data.birthDate)
-            self.IVANumberLayout.labelData.setText(data.CF)
+            self.emailLayout.edit_text(FormStrings.EMAIL, data.email)
+            self.phoneLayout.edit_text(FormStrings.PHONE, data.phone)
+            self.birthDateLabel.edit_text(FormStrings.BIRTH_DATE, data.birthDate)
+            self.CFNumberLayout.edit_text(FormStrings.CF, data.CF)
+
+        update_data(self.controller.staff_data.get())
 
         self.controller.staff_data.observe(update_data)
 
