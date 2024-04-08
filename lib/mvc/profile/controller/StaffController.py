@@ -8,8 +8,5 @@ class StaffController:
         super().__init__()
         self.staff_data = StaffDataManager()
 
-        self.auth = firebase.auth()
-        self.database = firebase.database()
-
 
 

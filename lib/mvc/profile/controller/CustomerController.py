@@ -7,6 +7,3 @@ class CustomerController:
     def __init__(self):
         super().__init__()
         self.customer_data = CustomerDataManager()
-
-        self.auth = firebase.auth()
-        self.database = firebase.database()
