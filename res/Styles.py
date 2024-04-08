@@ -187,6 +187,24 @@ EDIT_BUTTON = """/* Set style for QPushButton */\n
                     border: 2px solid #9AC3FE;\n
                 }\n"""
 
+EDIT_WORKER_BUTTON = """/* Set style for QPushButton */\n
+                        QPushButton {\n
+                            background-color: #0D6EFD;\n
+                            border: 2px solid #FFF;\n
+                            color: #FFF;\n
+                            border-radius: 5px;\n
+                            padding: 10px;\n
+                        }\n
+                        QPushButton:hover {\n
+                            background-color: #0B5ED7;\n
+                            border: 2px solid #9AC3FE;\n
+                        }\n
+                        QPushButton:pressed {\n
+                            background-color: #FFF;\n
+                            color: #0B5ED7;\n
+                            border: 2px solid #9AC3FE;\n
+                        }\n"""
+
 
 DELETE_BUTTON = """/* Set style for QPushButton */\n
                 QPushButton {\n

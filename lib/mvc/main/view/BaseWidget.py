@@ -1,6 +1,5 @@
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QWidget, QFrame, QVBoxLayout, QLabel, QSizePolicy, QHBoxLayout
-
 from res import Styles
 
 

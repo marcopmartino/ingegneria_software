@@ -1,6 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow
 
+import lib.UtilityFunction as utility
 import lib.firebaseData as firebaseConfig
 from lib.mvc.profile.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
@@ -13,13 +14,12 @@ from res.Strings import FormStrings, Config, ProfileStrings, ValidationStrings
 
 class EditAdminProfileWindow(QMainWindow):
 
-    def __init__(self, prevWindow, user_id: str, parent=None):
+    def __init__(self, prevWindow, parent=None):
         super().__init__(parent=parent)
 
         self.controller = ProfileController()
 
-        self.user_id = user_id
-        data = self.controller.getData(user_id)
+        data = self.controller.getData()
 
         self.prevWindow = prevWindow
 
@@ -77,12 +77,12 @@ class EditAdminProfileWindow(QMainWindow):
         self.profileForm.setAlignment(self.phoneLayout, Qt.AlignCenter)
 
         # Campo input indirizzo
-        self.birthDateLayout = LineEditCompositeLayout(FormStrings.BIRTH_DATE, data['delivery'], self)
+        self.birthDateLayout = LineEditCompositeLayout(FormStrings.BIRTH_DATE, data['birth_date'], self)
         self.profileForm.addLayout(self.birthDateLayout)
         self.profileForm.setAlignment(self.birthDateLayout, Qt.AlignCenter)
 
         # Campo input partita IVA
-        self.CFNumberLayout = LineEditCompositeLayout(FormStrings.CF, data['IVA'], self)
+        self.CFNumberLayout = LineEditCompositeLayout(FormStrings.CF, data['CF'], self)
         self.profileForm.addLayout(self.CFNumberLayout)
         self.profileForm.setAlignment(self.CFNumberLayout, Qt.AlignCenter)
 
@@ -175,10 +175,10 @@ class EditAdminProfileWindow(QMainWindow):
                 "name": self.nameLayout.line_edit.text(),
                 "CF": self.CFNumberLayout.line_edit.text(),
                 "birth": self.birthDateLayout.line_edit.text(),
-                "phone": self.phoneLayout.line_edit.text(),
+                "phone": utility.format_phone(self.phoneLayout.line_edit.text()),
                 "role": "manager"
             }
-            self.controller.setWorkerData(data, newPassword, self.user_id)
+            self.controller.setUserData(data, newPassword, self.user_id)
             self.close()
         except Exception as e:
             print(e)
