@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtCore import Qt, QLibraryInfo, QLocale, QTranslator
+from PyQt5.QtCore import Qt, QLibraryInfo, QTranslator
 from PyQt5.QtGui import QFont
 
 from lib.Application import Application

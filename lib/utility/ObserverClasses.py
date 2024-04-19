@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+from enum import Enum
 
 
 # Classe astratta Osservatore
@@ -21,14 +22,17 @@ class AnonymousObserver(Observer):
 
 
 # Classe astratta Osservabile
+# noinspection PyPep8Naming
 class Observable(ABC):
 
     def __init__(self):
         self.__observers: list[Observer] = []
 
     # Aggiunge un osservatore anonimo alla lista
-    def observe(self, callback: callable):
-        self.__observers.append(AnonymousObserver(callback))
+    def observe(self, callback: callable) -> Observer:
+        observer = AnonymousObserver(callback)
+        self.__observers.append(observer)
+        return observer
 
     # Se non già presente, aggiunge un osservatore alla lista
     def attach(self, observer: Observer):
@@ -40,7 +44,28 @@ class Observable(ABC):
         if observer in self.__observers:
             self.__observers.remove(observer)
 
+    # Svuota la lista degli osservatori
+    def detachAll(self):
+        self.__observers.clear()
+
     # Notifica gli osservatori dei cambiamenti
     def notify(self, message):
         for observer in self.__observers:
             observer.onNotificationReceived(message)
+
+
+# Classe di utilità rappresentante un messaggio che può essere inviato da un Observable come notifica
+# noinspection PyPep8Naming
+class Message:
+    def __init__(self, event: Enum, data: any = None):
+        self.__event: Enum = event
+        self.__data: any = data
+
+    def event(self) -> Enum:
+        return self.__event
+
+    def data(self) -> any:
+        return self.__data
+
+    def setData(self, data: any):
+        self.__data = data

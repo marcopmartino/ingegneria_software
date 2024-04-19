@@ -49,6 +49,11 @@ class SingleRowTableAdapter(ITableAdapter, ABC):
         for column in range(self.table.columnCount()):
             self.table.columnItem(column).setText(data[column])
 
+    def updateDataColumns(self, data: any, columns: list[int]):
+        data: list[str] = self.adaptData(data)
+        for column in columns:
+            self.table.columnItem(column).setText(data[column])
+
 
 # noinspection PyPep8Naming
 class TableAdapter(ITableAdapter, ABC):
@@ -56,7 +61,8 @@ class TableAdapter(ITableAdapter, ABC):
     def __init__(self, table: ExtendedTableWidget):
         super().__init__(table)
 
-        self.key_column: int = 0
+        self.__key_column: int = 0
+        self.__column_item_class_dict: dict[int, type(QTableWidgetItem)] = dict()
 
     @classmethod
     def autoSetup(cls, table_parent: QWidget = None):
@@ -66,17 +72,20 @@ class TableAdapter(ITableAdapter, ABC):
     def onSelection(self, callback: Callable[[str], any]):
         self.table.cellClicked.connect(lambda: callback(self.getSelectedItemKey()))
 
+    def onDoubleClick(self, callback: Callable[[str], any]):
+        self.table.cellDoubleClicked.connect(lambda: callback(self.getSelectedItemKey()))
+
     def setKeyColumn(self, column_index: int):
-        self.key_column = column_index
+        self.__key_column = column_index
 
     def hideKeyColumn(self):
-        self.table.hideColumn(self.key_column)
+        self.table.hideColumn(self.__key_column)
 
     def showKeyColumn(self):
-        self.table.showColumn(self.key_column)
+        self.table.showColumn(self.__key_column)
 
     def getItemKey(self, row: int) -> str:
-        return self.table.item(row, self.key_column).text()
+        return self.table.item(row, self.__key_column).text()
 
     def getItemKeys(self) -> list[str]:
         keys: list[str] = []
@@ -89,11 +98,22 @@ class TableAdapter(ITableAdapter, ABC):
     def getSelectedItemKey(self) -> str:
         return self.getItemKey(self.table.currentRow())
 
+    def getRowIndexByKey(self, key: str):
+        for row in range(self.table.rowCount()):
+            if self.table.item(row, self.__key_column).text() == key:
+                return row
+
     def removeRowByKey(self, key: str):
         for row in range(self.table.rowCount()):
-            if self.table.item(row, self.key_column).text() == key:
+            if self.table.item(row, self.__key_column).text() == key:
                 self.table.removeRow(row)
                 break
+
+    def getColumnItemClass(self, column: int) -> type(QTableWidgetItem):
+        return self.__column_item_class_dict.get(column, QTableWidgetItem)
+
+    def setColumnItemClass(self, column: int, item_type: type(QTableWidgetItem)):
+        self.__column_item_class_dict.update({column: item_type})
 
     def setData(self, data: list[any]):
         self.table.setRowCount(len(data))
@@ -102,67 +122,36 @@ class TableAdapter(ITableAdapter, ABC):
             element: list = self.adaptData(data[row])
 
             for column in range(0, self.table.columnCount()):
-                self.table.setItem(row, column, QTableWidgetItem(element[column]))
+                self.table.setItem(row, column, self.getColumnItemClass(column)(element[column]))
 
-    def addData(self, data: list[any]):
+    def addData(self, data: any):
+        data: list = self.adaptData(data)
         row_count: int = self.table.rowCount()
-        self.table.setRowCount(row_count + len(data))
+        self.table.setRowCount(row_count + 1)
 
-        index: int = 0
-        for row in range(row_count, self.table.rowCount()):
-            element: list = self.adaptData(data[index])
+        for column in range(0, self.table.columnCount()):
+            self.table.setItem(row_count, column, self.getColumnItemClass(column)(data[column]))
 
-            for column in range(0, self.table.columnCount()):
-                self.table.setItem(row, column, QTableWidgetItem(element[column]))
+    def updateData(self, data: any):
+        data: list = self.adaptData(data)
+        key_column: int = self.__key_column
+        data_key: str = data[key_column]
 
-            index += 1
+        for row in range(0, self.table.rowCount()):
+            if self.table.item(row, key_column).text() == data_key:
+                for column in range(0, self.table.columnCount()):
+                    self.table.item(row, column).setText(data[column])
 
-    def updateData(self, data: list[any]):
-        for element in data:
-            element: list = self.adaptData(element)
-            key_column: int = self.key_column
-            element_key: str = element[key_column]
+                break
 
-            for row in range(0, self.table.rowCount()):
-                if self.table.item(row, key_column).text() == element_key:
-                    for column in range(0, self.table.columnCount()):
-                        self.table.setItem(row, column, QTableWidgetItem(element[column]))
+    def updateDataColumns(self, data: list, columns: list[int]):
+        data: list = self.adaptData(data)
+        key_column: int = self.__key_column
+        data_key: str = data[key_column]
 
-                    break
+        for row in range(0, self.table.rowCount()):
+            if self.table.item(row, key_column).text() == data_key:
+                for column in columns:
+                    self.table.item(row, column).setText(data[column])
 
-    def updateDataColumns(self, data: list[any], columns: list[int]):
-        for element in data:
-            element: list = self.adaptData(element)
-            key_column: int = self.key_column
-            element_key: str = element[key_column]
-
-            for row in range(0, self.table.rowCount()):
-                if self.table.item(row, key_column).text() == element_key:
-                    for column in columns:
-                        self.table.setItem(row, column, QTableWidgetItem(element[column]))
-
-                    break
-
-
-# noinspection PyPep8Naming
-class AdvancedTableAdapter(TableAdapter, ABC):
-
-    def __init__(self, table: ExtendedTableWidget, form_manager: FormManager):
-        super().__init__(table)
-
-        self.form_manager: FormManager = form_manager
-
-    @classmethod
-    def autoSetupWithFormManager(cls, form_manager: FormManager, table_parent: QWidget = None):
-        instance = cls(StandardTable(table_parent), form_manager)
-        return instance, instance.table
-
-    @abstractmethod
-    def filterData(self, data: list[any], filters: dict[str, any]) -> list[any]:
-        pass
-
-    def setData(self, data: list[any]):
-        super().setData(self.filterData(data, self.form_manager.data()))
-
-    def addData(self, data: list[any]):
-        super().addData(self.filterData(data, self.form_manager.data()))
+                break

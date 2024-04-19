@@ -2,9 +2,8 @@ from typing import List
 
 from PyQt5.QtWidgets import QApplication
 
-from lib.firebaseData import init
-from lib.mvc.access.view.AccessWindow import AccessWindow
-from lib.mvc.main.view.MainWindow import MainWindow
+from lib.view.access.AccessWindow import AccessWindow
+from lib.view.main.MainWindow import MainWindow
 
 
 class Application(QApplication):

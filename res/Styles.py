@@ -75,14 +75,14 @@ DIALOG_PUSH_BUTTON = """/* Set style for QPushButton */\n
                     width: 80px;\n
                 }\n
                 QPushButton:hover {\n
-                    background-color: #0B5ED7;\n
-                    color: white;\n
-                    border: 2px solid #9AC3FE;\n
-                }\n
-                QPushButton:pressed {\n
                     background-color: #FFF;\n
                     color: white;\n
                     color: #0B5ED7;\n
+                    border: 2px solid #9AC3FE;\n
+                }\n
+                QPushButton:pressed {\n
+                    background-color: #0B5ED7;\n
+                    color: white;\n
                     border: 2px solid #9AC3FE;\n
                 }\n"""
 

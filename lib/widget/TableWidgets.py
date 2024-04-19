@@ -1,12 +1,14 @@
-from abc import abstractmethod, ABC
+from __future__ import annotations
 
+from abc import abstractmethod, ABC
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QColor, QFont
 from PyQt5.QtWidgets import QTableWidget, QWidget, QFrame, QAbstractItemView, QHeaderView, QStyledItemDelegate, \
     QTableWidgetItem
 
-from lib.mvc.pricecatalog.model.PriceCatalog import PriceCatalog
+from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.utility.Singleton import Singleton
+from lib.utility.UtilityClasses import PriceFormatter
 from res import Styles
 from res.Dimensions import TableDimensions, FontWeight, FontSize
 from res.Strings import PriceCatalogStrings
@@ -29,6 +31,22 @@ class NamedTableItem(QTableWidgetItem):
     # Imposta il nome dell'elemento
     def setItemName(self, name: str):
         self.itemName = name
+
+
+# Elemento della tabella rappresentante una data
+# noinspection PyPep8Naming
+class DateTableItem(QTableWidgetItem):
+    def __init__(self, text: str = ''):
+        super().__init__(text)
+
+    # Ritorna la data nel formato "YYYYMMDD"
+    def getYearMonthDayString(self) -> str:
+        date_parts: list = self.text().split('/')
+        return date_parts[2] + date_parts[1] + date_parts[0]
+
+    # Stabilisce se una data è più recente di un altra
+    def __lt__(self, other: DateTableItem):
+        return self.getYearMonthDayString() < other.getYearMonthDayString()
 
 
 # Widget tabella esteso con una lista di NamedTableItem e nuovi metodi
@@ -186,13 +204,13 @@ class PriceCatalogTable(ExtendedTableWidget):
     # Aggiorna tutti i NamedTableItem in base alla corrispondenza tra i nomi degli item e le chiavi di un dict
     def updateAllNamedItems(self, data: dict):
         for item in self.namedItems:
-            item.setText(PriceCatalog.format(data[item.itemName]))
+            item.setText(PriceFormatter.format(data[item.itemName]))
 
     # Aggiorna un NamedTableItem cercandolo in base al nome
     def updateNamedItem(self, name, value):
         for item in self.namedItems:
             if item.itemName == name:
-                item.setText(PriceCatalog.format(value))
+                item.setText(PriceFormatter.format(value))
                 break
 
 
