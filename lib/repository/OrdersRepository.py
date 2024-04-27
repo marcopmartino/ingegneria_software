@@ -81,8 +81,8 @@ class OrdersRepository(Observable, metaclass=ObservableSingleton):
                                 message.setData(order_serial)
                                 break
 
-                # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                self.notify(message)
+                    # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                    self.notify(message)
 
             # Aggiornamento di un ordine
             case "patch":
@@ -136,7 +136,7 @@ class OrdersRepository(Observable, metaclass=ObservableSingleton):
             case "cancel":
                 pass
 
-    # Ritorna una copia della lista degli ordini
+    # Ritorna la lista degli ordini
     def get_order_list(self) -> list[Order]:
         return self.__order_list
 

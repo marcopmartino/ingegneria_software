@@ -52,7 +52,7 @@ class OrderListController(OrderFormController):
         append_state_if_allowed("completed", "Completato")
         append_state_if_allowed("delivered", "Consegnato")
 
-        # Numero di campi ammesssi
+        # Numero di stati ammessi
         allowed_states_count: int = len(allowed_states)
 
         # Inizializzo la lista degli elementi da ritornare

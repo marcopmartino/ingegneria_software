@@ -1,12 +1,14 @@
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QWidget, QFrame, QVBoxLayout, QLabel, QSizePolicy, QHBoxLayout
+from qfluentwidgets import SingleDirectionScrollArea
+
 from res import Styles
 
 
 # Widget ereditato da tutte le sotto-interfacce della MainWindow
 # noinspection PyPep8Naming
 class BaseWidget(QWidget):
-    def __init__(self, name: str, parent_widget: QWidget):
+    def __init__(self, name: str, parent_widget: QWidget, scrollable: bool = False, scrollable_sidebar: bool = False):
         super().__init__(parent_widget)
 
         # Base Widget - il widget Base include il frame Header e il widget Body
@@ -82,8 +84,30 @@ class BaseWidget(QWidget):
         self.sidebar_layout.setContentsMargins(16, 12, 16, 12)
 
         # Aggiungo i frame centrale e laterale al layout del Body
-        self.body_layout.addWidget(self.central_frame)
-        self.body_layout.addWidget(self.sidebar_frame)
+        if scrollable:
+            central_scroll_area = SingleDirectionScrollArea(self.body_widget, Qt.Vertical)
+            central_scroll_area.setWidget(self.central_frame)
+            central_scroll_area.setSizePolicy(self.central_frame.sizePolicy())
+            central_scroll_area.setFrameShape(QFrame.NoFrame)
+            central_scroll_area.setWidgetResizable(True)
+            central_scroll_area.setObjectName("central_scroll_area")
+            self.body_layout.addWidget(central_scroll_area)
+
+        else:
+            self.body_layout.addWidget(self.central_frame)
+
+        if scrollable_sidebar:
+            sidebar_scroll_area = SingleDirectionScrollArea(self.body_widget, Qt.Vertical)
+            sidebar_scroll_area.setWidget(self.sidebar_frame)
+            sidebar_scroll_area.setSizePolicy(self.sidebar_frame.sizePolicy())
+            sidebar_scroll_area.setFixedWidth(self.sidebar_frame.width())
+            sidebar_scroll_area.setFrameShape(QFrame.NoFrame)
+            sidebar_scroll_area.setWidgetResizable(True)
+            sidebar_scroll_area.setObjectName("sidebar_scroll_area")
+            self.body_layout.addWidget(sidebar_scroll_area)
+
+        else:
+            self.body_layout.addWidget(self.sidebar_frame)
 
         # Aggiungo il frame header e il Body al layout di base
         self.base_layout.addWidget(self.header_frame)

@@ -9,6 +9,7 @@ from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, TitleBar
 
 from lib.firebaseData import currentUserId, getUserRole
+from lib.view.machine.MachineListView import MachineListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.utility.ResourceManager import ResourceManager
 from res.CustomIcon import CustomIcon as CustomFIF
@@ -149,7 +150,7 @@ class MainWindow(FramelessWindow):
 
     # Funzione per inizializzare la finestra (dimensione, titolo, logo e stile[dark/light])
     def initWindow(self):
-        self.resize(1008, 600)
+        self.resize(1280, 720)
         self.setWindowIcon(QIcon('resource/logo.png'))
         self.setWindowTitle('Shoe LastFactory Manager')
         self.titleBar.setAttribute(Qt.WA_StyledBackground)
@@ -172,6 +173,7 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(2, CustomerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
+                self.insertSubInterface(5, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
 
             case "admin":
                 StaffDataManager().open_stream()
@@ -179,7 +181,7 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
                 self.insertSubInterface(5, BaseWidget('Magazzino', self), FIF.LIBRARY, 'Magazzino')
-                self.insertSubInterface(6, BaseWidget('Macchinari', self), CustomFIF.MACHINERY, 'Macchinari')
+                self.insertSubInterface(6, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
                 self.insertSubInterface(7, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
 
             case "worker":
@@ -187,7 +189,7 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(2, WorkerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, BaseWidget('Magazzino', self), FIF.LIBRARY, 'Magazzino')
-                self.insertSubInterface(5, BaseWidget('Macchinari', self), CustomFIF.MACHINERY, 'Macchinari')
+                self.insertSubInterface(5, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
 
             case "unauthenticated":
                 return

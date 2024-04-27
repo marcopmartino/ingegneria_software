@@ -12,12 +12,15 @@ class LineEditDimensions:
 # FontSize - pt (1 px = 0,75 pt; 1 pt = 1,333 px)
 class FontSize:
     DEFAULT = 12
-    SMALL = 10
+    SMALL = 11
+    VERY_SMALL = 10
     SUBTITLE = 14
     TITLE = 18
+
     TABLE_HEADER = 11
+
     SUB_INTERFACE_TITLE = 20
-    SUB_INTERFACE_SUBTITLE = 10
+    SUB_INTERFACE_SUBTITLE = 11
 
     FLUENT_DEFAULT = 11
     FLUENT_WIDGET_DEFAULT = 10

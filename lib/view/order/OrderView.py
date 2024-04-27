@@ -202,7 +202,7 @@ class OrderView(BaseWidget):
 
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
-        # (per esempio, l'apertura e la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
+        # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
         self.messageReceived.connect(update_order_view_callback)
         self.observer: Observer = self.controller.observe_order(self.messageReceived.emit)
 
@@ -265,7 +265,7 @@ class OrderView(BaseWidget):
 # Implementazione dello State pattern
 # Classe astratta OrderState
 class OrderState(ABC):
-    STATE_NAME: str = 'Sconosciuto'
+    STATE_NAME: str
 
     def __init__(self, view: OrderView):
         self._view: OrderView = view

@@ -46,8 +46,8 @@ class OrderListView(BaseWidget):
         # ComboBox
         self.search_combo_box = ComboBox(self.sidebar_frame)
         self.search_combo_box.setObjectName("searchcombobox_line_edit")
-        self.search_combo_box.insertItem(0, "Cerca su base ordine", userData="ordine")
-        self.search_combo_box.insertItem(1, "Cerca su base articolo", userData="articolo")
+        self.search_combo_box.insertItem(0, "Cerca in base all'ordine", userData="ordine")
+        self.search_combo_box.insertItem(1, "Cerca in base all'articolo", userData="articolo")
         self.search_combo_box.setCurrentIndex(0)
 
         # Layout di ricerca con SearchBox e ComboBox
@@ -116,8 +116,13 @@ class OrderListView(BaseWidget):
         self.sidebar_layout.addLayout(self.search_box_layout)
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
-        self.sidebar_layout.addWidget(self.sidebar_spacer)
-        self.sidebar_layout.addWidget(self.create_button)
+
+        if getUserRole() == "customer":
+            self.sidebar_layout.addWidget(self.sidebar_spacer)
+            self.sidebar_layout.addWidget(self.create_button)
+        else:
+            self.sidebar_spacer.hide()
+            self.create_button.hide()
 
         # Form Manager
         self.form_manager = FormManager()

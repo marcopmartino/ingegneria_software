@@ -51,7 +51,7 @@ class ArticlesRepository(Observable, metaclass=ObservableSingleton):
         # Notifico gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
         self.notify(message)
 
-    # Ritorna la lista di ordini
+    # Ritorna la lista degli articoli
     def get_article_list(self) -> list[Article]:
         return self.__article_list.copy()
 

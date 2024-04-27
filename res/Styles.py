@@ -290,3 +290,13 @@ PRICE_CATALOG_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
                     background-color: #72aa53;\n
                 }\n"""
 
+PROGRESS_BAR = """/* Set style for QProgressBar */
+                QProgressBar {
+                    border: 1px solid black;
+                    background-color: white;
+                }
+
+                QProgressBar::chunk {
+                    background-color: """ + Colors.LIGHT_GREEN + """;
+                }"""
+

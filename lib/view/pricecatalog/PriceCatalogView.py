@@ -5,7 +5,6 @@ from lib.firebaseData import getUserRole
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.BaseWidget import BaseWidget
 from lib.controller.PriceCatalogController import PriceCatalogController
-from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.widget.TableWidgets import PriceCatalogTable, PriceCatalogTableBuilder, TitleAndSubtitleSection, \
     SixColumnsHeaderSection, SixColumnsDataSection, HorizontalTreeSection, NamedTableItem
 from res import Styles
@@ -22,7 +21,7 @@ class PriceCatalogView(BaseWidget):
         self.setTitleText("Listino prezzi formificio")
         self.setSubtitleText("Gli importi sono espressi in euro e si riferiscono al paio di forme")
 
-        self.sidebar_label = QLabel("Clicca su un importo per modificarlo")
+        self.sidebar_label = QLabel()
         self.sidebar_label.setWordWrap(True)
         self.sidebar_label.setAlignment(Qt.AlignCenter)
         self.sidebar_layout.addWidget(self.sidebar_label)
@@ -112,9 +111,16 @@ class PriceCatalogView(BaseWidget):
         # Aggiorna l'intero listino
         self.table.updateAllNamedItems(self.controller.get_price_catalog())
 
-        # Connetto il segnale "itemClicked" allo slot "on_item_clicked"
         if getUserRole() != "customer":
+            # Connette il segnale "itemClicked" allo slot "on_item_clicked"
             self.table.itemClicked.connect(self.on_item_clicked)
+
+            # Imposta il testo mostrato nella sidebar
+            self.sidebar_label.setText("Clicca su un importo per modificarlo")
+
+        else:
+            # Imposta il testo mostrato nella sidebar
+            self.sidebar_label.setText("Gli importi sono aggiornati in tempo reale")
 
         # Imposta la tabella nel layout centrale
         self.central_layout.addWidget(self.table)

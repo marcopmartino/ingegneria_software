@@ -7,10 +7,10 @@ from res.Dimensions import SpacerDimensions
 # Separatore costituito da una linea orizzontale
 class HorizontalLine(QFrame):
 
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: QWidget = None, color: Colors = Colors.GREY):
         super().__init__(parent)
 
-        self.setStyleSheet("color: " + Colors.GREY)
+        self.setStyleSheet("color: " + color)
         self.setFrameShape(QFrame.HLine)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -18,10 +18,10 @@ class HorizontalLine(QFrame):
 # Separatore costituito da una linea verticale
 class VerticalLine(QFrame):
 
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: QWidget = None, color: Colors = Colors.GREY):
         super().__init__(parent)
 
-        self.setStyleSheet("color: " + Colors.GREY)
+        self.setStyleSheet("color: " + color)
         self.setFrameShape(QFrame.VLine)
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
 

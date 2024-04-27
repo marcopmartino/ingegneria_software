@@ -39,7 +39,7 @@ class DateTableItem(QTableWidgetItem):
     def __init__(self, text: str = ''):
         super().__init__(text)
 
-    # Ritorna la data nel formato "YYYYMMDD"
+    # Ritorna la data nel formato "YYYYMMDD" (dal formato "DD/MM/YYYY")
     def getYearMonthDayString(self) -> str:
         date_parts: list = self.text().split('/')
         return date_parts[2] + date_parts[1] + date_parts[0]
@@ -146,6 +146,7 @@ class StandardTable(ExtendedTableWidget):
         self.setHorizontalHeaders(headers)
 
 
+# Tabella standard usata nell'applicazione, con una sola riga
 # noinspection PyPep8Naming
 class SingleRowStandardTable(ExtendedTableWidget):
 
@@ -214,7 +215,7 @@ class PriceCatalogTable(ExtendedTableWidget):
                 break
 
 
-# Singleton con i font e i brush usati nelle PriceListTableSection
+# Singleton con i font e i brush usati nelle PriceCatalogTableSection
 class PriceCatalogTableStyle(metaclass=Singleton):
 
     def __init__(self):
@@ -234,14 +235,15 @@ class PriceCatalogTableStyle(metaclass=Singleton):
         self.red_brush = QBrush(QColor(207, 0, 0))
         self.green_brush = QBrush(QColor(70, 142, 35))
         self.brown_brush = QBrush(QColor(92, 64, 51))
+        self.grey_brush = QBrush(QColor(210, 210, 210))
 
 
-# Classe che rappresenta una sezione di una PriceListTable
+# Classe che rappresenta una sezione di una PriceCatalogTable
 class PriceCatalogTableSection(ABC):
     def __init__(self, rows):
         self.rows: int = rows  # Numero di righe occupate dalla sezione
 
-    # Metodo che traccia la sezione su una PriceListTable "table" a partire dalla riga "start_row"
+    # Metodo che traccia la sezione su una PriceCatalogTable "table" a partire dalla riga "start_row"
     @abstractmethod
     def draw(self, table: PriceCatalogTable, start_row: int = 0):
         pass
@@ -379,12 +381,14 @@ class SixColumnsDataSection(PriceCatalogTableSection):
 # Sezione con Header verticale (laterali sinistro) a due livelli, e una colonna di dati. Ogni HorizontalTreeSection
 # rappresenta un solo elemento di primo livello con le sue foglie. Non ha header orizzontale (superiore).
 class HorizontalTreeSection(PriceCatalogTableSection):
-    def __init__(self, root_text: str, leaves_text: list[str], data_names: list[str], first_free: bool = False):
+    def __init__(self, root_text: str, leaves_text: list[str], data_names: list[str], first_free: bool = False,
+                 grey_rows: set[int] = None):
         super().__init__(len(leaves_text))
         self.root_text: str = root_text  # Testo dell'header di primo livello (radice)
         self.leaves_text: list[str] = leaves_text  # Testo degli header di secondo livello (foglie)
         self.data_names: list[str] = data_names  # Nomi dei NamedTableItem (uno per ogni header di secondo livello)
         self.first_free: bool = first_free  # Indica se il primo item è gratuito (senza prezzo)
+        self.grey_rows: set[int] = grey_rows if grey_rows else set()  # Righe a cui applicare uno sfondo grigio
 
     def draw(self, table: PriceCatalogTable, start_row: int = 0):
 
@@ -397,6 +401,7 @@ class HorizontalTreeSection(PriceCatalogTableSection):
 
         # Brush
         brown_brush = PriceCatalogTableStyle().brown_brush
+        grey_brush = PriceCatalogTableStyle().green_brush
 
         # Header di primo livello
         table.setSpan(first_data_row, 0, 4, 2)
@@ -422,10 +427,15 @@ class HorizontalTreeSection(PriceCatalogTableSection):
                 table.setNamedItem(row, 5, NamedTableItem(self.data_names[iteration]))
             table.item(row, 5).setForeground(brown_brush)
 
+            # Imposta uno sfondo grigio
+            if row - first_data_row in self.grey_rows:
+                table.item(row, 2).setBackground(grey_brush)
+                table.item(row, 5).setBackground(grey_brush)
+
             iteration += 1
 
 
-# Classe per la costruzione di PriceListTable tramite PriceListTableSection
+# Classe per la costruzione di PriceListTable tramite PriceCatalogTableSection
 class PriceCatalogTableBuilder:
     def __init__(self, table_parent: QWidget = None):
         self.__table_parent: QWidget = table_parent  # QWidget genitore della tabella
