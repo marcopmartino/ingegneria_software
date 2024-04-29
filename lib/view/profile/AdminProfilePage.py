@@ -1,10 +1,13 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QWidget
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QWidget
+
+import lib.firebaseData as firebaseConfig
 
 from lib.layout.QLabelLayout import QLabelLayout
-from lib.view.main.BaseWidget import BaseWidget
-from lib.controller.StaffController import StaffController
-from lib.view.profile.EditAdminProfileWindow import EditAdminProfileWindow
+from lib.mvc.main.view.BaseWidget import BaseWidget
+from lib.mvc.profile.controller.ProfileController import ProfileController
+from lib.mvc.profile.model.Staff import Staff
+from lib.mvc.profile.view.AdminProfile.EditAdminProfileWindow import EditAdminProfileWindow
 from res import Styles
 from res.Strings import FormStrings, ProfileStrings
 
@@ -18,7 +21,8 @@ class ProfileWidget(BaseWidget):
         # appena aperta perché il garbage collector la eliminerebbe
         self.edit_window = None
 
-        self.controller = StaffController()
+        self.controller = ProfileController()
+        self.controller.open_staff_stream()
 
         self.setTitleText("Profilo")
 
@@ -82,23 +86,26 @@ class ProfileWidget(BaseWidget):
         self.profileInfo.setAlignment(self.buttonsBox, Qt.AlignCenter)
 
         def update_data(data):
-            print(data)
-            self.nameLabel.setText(data.name)
-            self.emailLabel.edit_text(FormStrings.EMAIL, data.email)
-            self.phoneLayout.edit_text(FormStrings.PHONE, data.phone)
-            self.birthDateLabel.edit_text(FormStrings.BIRTH_DATE, data.birthDate)
-            self.CFNumberLayout.edit_text(FormStrings.CF, data.CF)
+            for key, value in data.items():
+                match key:
+                    case 'name':
+                        self.nameLabel.setText(value)
+                    case 'email':
+                        self.emailLayout.edit_text(value)
+                    case 'phone':
+                        self.phoneLayout.edit_text(value)
+                    case 'birthDate':
+                        self.birthDateLabel.edit_text(value)
+                    case 'CF':
+                        self.CFNumberLayout.edit_text(value)
 
-        update_data(self.controller.staff_data.get_price_catalog())
-
-        self.controller.staff_data.observe(update_data)
+        self.controller.set_staff_observer(update_data)
 
         self.central_layout.addLayout(self.profileInfo)
 
     def open_edit_window(self):
-        self.edit_window = EditAdminProfileWindow(prevWindow=self)
-        self.setEnabled(False)
-        self.edit_window.show()
+        self.edit_window = EditAdminProfileWindow(self)
+        self.edit_window.exec()
 
     def activateWindow(self):
         print(":)")

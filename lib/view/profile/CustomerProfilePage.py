@@ -1,10 +1,12 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QWidget
 
+
 from lib.layout.QLabelLayout import QLabelLayout
-from lib.view.main.BaseWidget import BaseWidget
-from lib.view.profile.EditCustomerProfileWindow import EditProfileWindow
-from lib.controller.CustomerController import CustomerController
+from lib.mvc.main.view.BaseWidget import BaseWidget
+from lib.mvc.profile.model.Customer import Customer
+from lib.mvc.profile.view.CustomerProfile.EditCustomerProfileWindow import EditCustomerProfileWindow
+from lib.mvc.profile.controller.ProfileController import ProfileController
 
 from res import Styles
 from res.Strings import FormStrings, ProfileStrings
@@ -17,9 +19,8 @@ class ProfileWidget(BaseWidget):
 
         # Inizializzo una reference da una eventuale pagina di modifica, senza fare questo la pagina si chiuderebbe
         # appena aperta perché il garbage collector la eliminerebbe
-        self.edit_window = None
-
-        self.controller = CustomerController()
+        self.controller = ProfileController()
+        self.controller.open_customer_stream()
 
         self.setTitleText("Profilo")
 
@@ -88,22 +89,26 @@ class ProfileWidget(BaseWidget):
         self.profileInfo.setAlignment(self.buttonsBox, Qt.AlignCenter)
 
         def update_data(data):
-            self.companyNameLabel.setText(data.company)
-            self.emailLayout.edit_text(FormStrings.EMAIL, data.email)
-            self.phoneLayout.edit_text(FormStrings.PHONE, data.phone)
-            self.deliveryAddressLayout.edit_text(FormStrings.DELIVERY_ADDRESS, data.delivery)
-            self.IVANumberLayout.edit_text(FormStrings.IVA_NUMBER, data.IVA)
+            for key, value in data.items():
+                match key:
+                    case 'company':
+                        self.companyNameLabel.setText(value)
+                    case 'mail':
+                        self.emailLayout.edit_text(value)
+                    case 'phone':
+                        self.phoneLayout.edit_text(value)
+                    case 'delivery':
+                        self.deliveryAddressLayout.edit_text(value)
+                    case 'IVA':
+                        self.IVANumberLayout.edit_text(value)
 
-        update_data(self.controller.customer_data.get())
-
-        self.controller.customer_data.observe(update_data)
+        self.controller.set_customer_observer(update_data)
 
         self.central_layout.addLayout(self.profileInfo)
 
     def open_edit_window(self):
-        self.edit_window = EditProfileWindow(prevWindow=self)
-        self.setEnabled(False)
-        self.edit_window.show()
+        edit_form = EditCustomerProfileWindow(self)
+        edit_form.exec()
 
     def open_delete_window(self):
         pass

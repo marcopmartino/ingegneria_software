@@ -143,7 +143,7 @@ EDIT_PROFILE_LINE_EDIT = """/* Set style for QLineEdit */\n
                                 height: 30px;\n
                             }\n
                             QLineEdit:focus {\n
-                                border-bottom: 2px solid #28A2A2;\n
+                                border-bottom: 2px solid #28A2A2\n
                             }\n"""
 
 EDIT_PROFILE_PAGE = EDIT_PROFILE_PAGE + EDIT_PROFILE_LINE_EDIT + EDIT_PROFILE_LABEL

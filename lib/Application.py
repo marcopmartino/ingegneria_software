@@ -59,3 +59,4 @@ class Application(QApplication):
         self.access_window.reset()
         self.main_window.setup()
         self.main_window.show()
+

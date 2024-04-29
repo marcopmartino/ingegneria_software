@@ -1,9 +1,9 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog
+from PyQt5.uic.properties import QtCore
 
-import lib.utility.UtilityClasses as utility
+import lib.UtilityFunction as utility
 import lib.firebaseData as firebaseConfig
-from lib.controller.CustomerController import CustomerController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
@@ -12,16 +12,16 @@ from res import Styles, Dimensions
 from res.Strings import FormStrings, Config, ProfileStrings, ValidationStrings
 
 
-class EditProfileWindow(QMainWindow):
+class EditCustomerProfileWindow(QDialog):
 
-    def __init__(self, prevWindow, parent=None):
-        super().__init__(parent=parent)
+    def __init__(self, parent=QWidget):
+        super().__init__(parent)
 
-        self.controller = CustomerController()
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
-        data = self.controller.customer_data.get_price_catalog()
+        self.controller = self.parent().controller
 
-        self.prevWindow = prevWindow
+        data = self.controller.get_customer_model()
 
         # Finestra
         self.setWindowTitle(Config.APPLICATION_NAME)
@@ -30,6 +30,7 @@ class EditProfileWindow(QMainWindow):
         self.setStyleSheet(Styles.EDIT_PROFILE_PAGE)
 
         self.outerWidget = QWidget(self)
+        self.outerWidget.setMaximumHeight(200)
         self.outerWidget.setObjectName("outer_widget")
 
         self.outerLayout = QHBoxLayout(self.outerWidget)
@@ -39,7 +40,7 @@ class EditProfileWindow(QMainWindow):
         self.innerLayout.setSpacing(0)
 
         self.titleFrame = QFrame()
-        self.titleFrame.setStyleSheet(Styles.PAGE_TITLE_FRAME)
+        # self.titleFrame.setStyleSheet(Styles.PAGE_TITLE_FRAME)
 
         self.title = QVBoxLayout(self.titleFrame)
         self.title.setContentsMargins(10, 10, 0, 10)
@@ -62,27 +63,28 @@ class EditProfileWindow(QMainWindow):
         self.profileForm.setObjectName("ProfileForm")
 
         # Campo input nome azienda
-        self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, data['company'], self)
+        self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, data.company, self)
         self.profileForm.addLayout(self.companyNameLayout)
         self.profileForm.setAlignment(self.companyNameLayout, Qt.AlignCenter)
 
         # Campo input email
-        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, firebaseConfig.currentUser['email'], self)
+        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, data.email, self)
+        self.emailLayout.line_edit.setEnabled(False)
         self.profileForm.addLayout(self.emailLayout)
         self.profileForm.setAlignment(self.emailLayout, Qt.AlignCenter)
 
         # Campo input telefono
-        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, data['phone'], self)
+        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, data.phone, self)
         self.profileForm.addLayout(self.phoneLayout)
         self.profileForm.setAlignment(self.phoneLayout, Qt.AlignCenter)
 
         # Campo input indirizzo
-        self.deliveryAddressLayout = LineEditCompositeLayout(FormStrings.DELIVERY_ADDRESS, data['delivery'], self)
+        self.deliveryAddressLayout = LineEditCompositeLayout(FormStrings.DELIVERY_ADDRESS, data.delivery, self)
         self.profileForm.addLayout(self.deliveryAddressLayout)
         self.profileForm.setAlignment(self.deliveryAddressLayout, Qt.AlignCenter)
 
         # Campo input partita IVA
-        self.IVANumberLayout = LineEditCompositeLayout(FormStrings.IVA_NUMBER, data['IVA'], self)
+        self.IVANumberLayout = LineEditCompositeLayout(FormStrings.IVA_NUMBER, data.IVA, self)
         self.profileForm.addLayout(self.IVANumberLayout)
         self.profileForm.setAlignment(self.IVANumberLayout, Qt.AlignCenter)
 
@@ -129,8 +131,6 @@ class EditProfileWindow(QMainWindow):
         self.outerLayout.addLayout(self.innerLayout)
         self.outerLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.setCentralWidget(self.outerWidget)
-
         company_field = LineEditCompositeFormField.LayoutAndRule(self.companyNameLayout, ValidationRule.Required())
         iva_field = LineEditCompositeFormField.LayoutAndRule(self.IVANumberLayout, ValidationRule.IVANumber())
         address_field = LineEditCompositeFormField.LayoutAndRule(self.deliveryAddressLayout, ValidationRule.Address())
@@ -169,21 +169,17 @@ class EditProfileWindow(QMainWindow):
                 self.newPasswordLayout.error_label.setText(ValidationStrings.MIN_PASSWORD_ERROR)
 
         try:
-            self.controller.customer_data.checkLogin(currentEmail, password)
+            self.controller.customer_checkLogin(currentEmail, password)
             data = {
                 "company": self.companyNameLayout.line_edit.text(),
                 "IVA": self.IVANumberLayout.line_edit.text(),
                 "delivery": self.deliveryAddressLayout.line_edit.text(),
                 "phone": utility.format_phone(self.phoneLayout.line_edit.text())
             }
-            self.controller.customer_data.setUserData(data, newPassword, firebaseConfig.currentUser['localId'])
+            self.controller.customer_setUserData(data, newPassword, firebaseConfig.currentUser['localId'])
             self.close()
         except Exception as e:
             print(e)
-
-    # Intercetta l'evento di chiusura della finestra e abilita la finestra precedente
-    def closeEvent(self, event):
-        self.prevWindow.setEnabled(True)
 
     # Chiude la finestra alla pressione di un bottone
     def delete_edit(self):

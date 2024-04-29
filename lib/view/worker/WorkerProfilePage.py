@@ -1,10 +1,13 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QHBoxLayout
+
+import lib.firebaseData as firebaseConfig
 
 from lib.layout.QLabelLayout import QLabelLayout
-from lib.controller.StaffController import StaffController
+from lib.mvc.profile.controller.ProfileController import ProfileController
+from lib.mvc.profile.model.Staff import Staff
 from res import Styles
-from res.Strings import FormStrings
+from res.Strings import FormStrings, ProfileStrings
 
 
 class ProfileWidget(QFrame):
@@ -16,7 +19,8 @@ class ProfileWidget(QFrame):
         # appena aperta perché il garbage collector la eliminerebbe
         self.edit_window = None
 
-        self.controller = StaffController()
+        self.controller = ProfileController()
+        self.controller.open_staff_stream()
 
         self.setTitleText("Profilo")
 
@@ -65,14 +69,19 @@ class ProfileWidget(QFrame):
         self.profileInfo.setAlignment(self.separator, Qt.AlignLeft)
 
         def update_data(data):
-            self.nameLabel.setText(data.name)
-            self.emailLayout.edit_text(FormStrings.EMAIL, data.email)
-            self.phoneLayout.edit_text(FormStrings.PHONE, data.phone)
-            self.birthDateLabel.edit_text(FormStrings.BIRTH_DATE, data.birthDate)
-            self.CFNumberLayout.edit_text(FormStrings.CF, data.CF)
+            for key, value in data.items():
+                match key:
+                    case 'name':
+                        self.nameLabel.setText(value)
+                    case 'mail':
+                        self.emailLayout.edit_text(value)
+                    case 'phone':
+                        self.phoneLayout.edit_text(value)
+                    case 'birthDate':
+                        self.birthDateLabel.edit_text(value)
+                    case 'CF':
+                        self.CFNumberLayout.edit_text(value)
 
-        update_data(self.controller.staff_data.get_price_catalog())
-
-        self.controller.staff_data.observe(update_data)
+        self.controller.set_staff_observer(update_data)
 
         self.central_layout.addLayout(self.profileInfo)

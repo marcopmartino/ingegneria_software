@@ -25,12 +25,12 @@ class UserNetwork:
     @staticmethod
     def create_profile(email, password):
         HTTPErrorHelper.differentiate(
-            lambda: firebase.auth.create_user_with_email_and_password(email, password))
+            lambda: firebase.auth().create_user_with_email_and_password(email, password))
 
     @staticmethod
     def create_data(form_data, user):
         HTTPErrorHelper.differentiate(
-            lambda: firebase.database.child('users').child(user['localId']).set(form_data))
+            lambda: firebase.database().child('users').child(user['localId']).set(form_data))
 
     @staticmethod
     def get_by_id(order_id: int):
@@ -51,4 +51,4 @@ class UserNetwork:
     @staticmethod
     def checkLogin(currentEmail: str, password: str):
         HTTPErrorHelper.differentiate(
-            lambda: firebase.auth.sign_in_with_email_and_password(currentEmail, password))
+            lambda: firebase.auth().sign_in_with_email_and_password(currentEmail, password))

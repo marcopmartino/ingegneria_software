@@ -1,7 +1,9 @@
+from collections import OrderedDict
+
 from firebase_admin import auth
 
 from lib.firebaseData import firebase
-from lib.model.WorkerList import WorkerList
+from lib.mvc.workerlist.model.WorkerList import WorkerList
 from lib.network.HTTPErrorHelper import HTTPErrorHelper
 
 
@@ -22,19 +24,19 @@ class WorkerListController:
     def getWorkerList(self):
         print("Inizio ottenimento dati")
         return HTTPErrorHelper.differentiate(
-            lambda: self.database.child('users').get_price_catalog().val())
+            lambda: self.database.child('users').get().val())
 
     # Prende i dati relativi a un singolo operaio
     def getWorkerData(self, uid: str):
         print("Inizio ottenimento dati")
         return HTTPErrorHelper.differentiate(
-            lambda: self.database.child('users').child(uid).get_price_catalog().val())
+            lambda: self.database.child('users').child(uid).get().val())
 
     # Salva i dati degli operai/manager nel database
     def setWorkerData(self, form_data: dict[str, any], newPassword, uid):
         print("Inizio invio dati")
         HTTPErrorHelper.differentiate(
-            lambda: self.database.child('users').child(uid).update_price_catalog(form_data))
+            lambda: self.database.child('users').child(uid).update(form_data))
 
         if newPassword != "":
             HTTPErrorHelper.differentiate(

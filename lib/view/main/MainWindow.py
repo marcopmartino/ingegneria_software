@@ -1,5 +1,4 @@
 # coding:utf-8
-
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont, QBrush, QPainter
 from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, QWidget
@@ -14,8 +13,8 @@ from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.utility.ResourceManager import ResourceManager
 from res.CustomIcon import CustomIcon as CustomFIF
 
-from lib.model.CustomerDataManager import CustomerDataManager
-from lib.model.StaffDataManager import StaffDataManager
+from lib.model.Customer import Customer
+from lib.model.Staff import Staff
 
 from lib.view.main.BaseWidget import BaseWidget
 from lib.view.worker.WorkerListView import WorkerListView
@@ -169,14 +168,12 @@ class MainWindow(FramelessWindow):
         # Sezione Top
         match user_role:
             case "customer":
-                CustomerDataManager().open_stream()
                 self.insertSubInterface(2, CustomerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
                 self.insertSubInterface(5, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
 
             case "admin":
-                StaffDataManager().open_stream()
                 self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
@@ -185,7 +182,6 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(7, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
 
             case "worker":
-                StaffDataManager().open_stream()
                 self.insertSubInterface(2, WorkerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, BaseWidget('Magazzino', self), FIF.LIBRARY, 'Magazzino')
@@ -322,9 +318,9 @@ class MainWindow(FramelessWindow):
     def show_access_window(self):
         self.logout.emit()
         if getUserRole() == 'customer':
-            CustomerDataManager().close_stream()
+            Customer().close_stream()
         else:
-            StaffDataManager().close_stream()
+            Staff().close_stream()
         print("Window changed")
 
     # Esegue il reset della navigazione

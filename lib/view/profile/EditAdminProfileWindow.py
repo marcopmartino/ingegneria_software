@@ -1,9 +1,10 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow, \
+    QDialog
 
-import lib.utility.UtilityClasses as utility
+import lib.UtilityFunction as utility
 import lib.firebaseData as firebaseConfig
-from lib.controller.StaffController import StaffController
+from lib.mvc.profile.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
@@ -12,16 +13,16 @@ from res import Styles, Dimensions
 from res.Strings import FormStrings, Config, ProfileStrings, ValidationStrings
 
 
-class EditAdminProfileWindow(QMainWindow):
+class EditAdminProfileWindow(QDialog):
 
-    def __init__(self, prevWindow, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        self.controller = StaffController()
+        self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
-        data = self.controller.staff_data.get_price_catalog()
+        self.controller = self.parent().controller
 
-        self.prevWindow = prevWindow
+        data = self.controller.get_staff_model()
 
         # Finestra
         self.setWindowTitle(Config.APPLICATION_NAME)
@@ -30,6 +31,7 @@ class EditAdminProfileWindow(QMainWindow):
         self.setStyleSheet(Styles.EDIT_PROFILE_PAGE)
 
         self.outerWidget = QWidget(self)
+        self.outerWidget.setMaximumHeight(200)
         self.outerWidget.setObjectName("outer_widget")
 
         self.outerLayout = QHBoxLayout(self.outerWidget)
@@ -68,6 +70,7 @@ class EditAdminProfileWindow(QMainWindow):
 
         # Campo input email
         self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, firebaseConfig.currentUser['email'], self)
+        self.emailLayout.line_edit.setEnabled(False)
         self.profileForm.addLayout(self.emailLayout)
         self.profileForm.setAlignment(self.emailLayout, Qt.AlignCenter)
 
@@ -129,8 +132,6 @@ class EditAdminProfileWindow(QMainWindow):
         self.outerLayout.addLayout(self.innerLayout)
         self.outerLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.setCentralWidget(self.outerWidget)
-
         name_field = LineEditCompositeFormField.LayoutAndRule(self.nameLayout, ValidationRule.Required())
         fiscal_code = LineEditCompositeFormField.LayoutAndRule(self.CFNumberLayout, ValidationRule.FiscalCode())
         birth_date = LineEditCompositeFormField.LayoutAndRule(self.birthDateLayout, ValidationRule.Address())
@@ -170,7 +171,7 @@ class EditAdminProfileWindow(QMainWindow):
                 self.newPasswordLayout.error_label.setText(ValidationStrings.MIN_PASSWORD_ERROR)
 
         try:
-            self.controller.staff_data.checkLogin(currentEmail, password)
+            self.controller.staff_checkLogin(currentEmail, password)
             data = {
                 "name": self.nameLayout.line_edit.text(),
                 "CF": self.CFNumberLayout.line_edit.text(),
@@ -178,14 +179,10 @@ class EditAdminProfileWindow(QMainWindow):
                 "phone": utility.format_phone(self.phoneLayout.line_edit.text()),
                 "role": "manager"
             }
-            self.controller.staff_data.setUserData(data, newPassword, self.user_id)
+            self.controller.staff_setUserData(data, newPassword, firebaseConfig.currentUser['localId'])
             self.close()
         except Exception as e:
             print(e)
-
-    # Intercetta l'evento di chiusura della finestra e abilita la finestra precedente
-    def closeEvent(self, event):
-        self.prevWindow.setEnabled(True)
 
     # Chiude la finestra alla pressione di un bottone
     def delete_edit(self):
