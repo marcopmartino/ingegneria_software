@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, Q
 
 import lib.utility.UtilityClasses as utility
 from lib.layout.CustomDatePicker import CustomDatePicker
-from lib.controller.StaffController import StaffController
+from lib.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
@@ -20,7 +20,7 @@ class AddWorkerWindow(QMainWindow):
     def __init__(self, prevWindow, parent=None):
         super().__init__(parent=parent)
 
-        self.controller = StaffController()
+        self.controller = ProfileController()
 
         self.prevWindow = prevWindow
 

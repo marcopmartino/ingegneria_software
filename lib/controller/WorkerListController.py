@@ -3,7 +3,7 @@ from collections import OrderedDict
 from firebase_admin import auth
 
 from lib.firebaseData import firebase
-from lib.mvc.workerlist.model.WorkerList import WorkerList
+from lib.model.WorkerList import WorkerList
 from lib.network.HTTPErrorHelper import HTTPErrorHelper
 
 

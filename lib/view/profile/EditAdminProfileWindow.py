@@ -2,9 +2,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow, \
     QDialog
 
-import lib.UtilityFunction as utility
+import lib.utility.UtilityClasses as utility
 import lib.firebaseData as firebaseConfig
-from lib.mvc.profile.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager

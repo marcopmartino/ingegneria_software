@@ -3,10 +3,10 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QWidget
 
 
 from lib.layout.QLabelLayout import QLabelLayout
-from lib.mvc.main.view.BaseWidget import BaseWidget
-from lib.mvc.profile.model.Customer import Customer
-from lib.mvc.profile.view.CustomerProfile.EditCustomerProfileWindow import EditCustomerProfileWindow
-from lib.mvc.profile.controller.ProfileController import ProfileController
+from lib.view.main.BaseWidget import BaseWidget
+from lib.model.Customer import Customer
+from lib.view.profile.EditCustomerProfileWindow import EditCustomerProfileWindow
+from lib.controller.ProfileController import ProfileController
 
 from res import Styles
 from res.Strings import FormStrings, ProfileStrings

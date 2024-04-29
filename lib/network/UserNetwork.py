@@ -6,7 +6,7 @@ class UserNetwork:
 
     @staticmethod
     def get():
-        return firebase.database().child("users").get_price_catalog().val()
+        return firebase.database().child("users").get().val()
 
     @staticmethod
     def stream(stream_handler: callable):
@@ -16,7 +16,7 @@ class UserNetwork:
     def update(form_data: dict[str, any], newPassword, uid):
         print("Inizio invio dati")
         HTTPErrorHelper.differentiate(
-            lambda: firebase.database.child('users').child(uid).update_price_catalog(form_data))
+            lambda: firebase.database().child('users').child(uid).update(form_data))
 
         if newPassword is not None:
             HTTPErrorHelper.differentiate(
@@ -34,7 +34,7 @@ class UserNetwork:
 
     @staticmethod
     def get_by_id(order_id: int):
-        return firebase.database().child("users").child(order_id).get_price_catalog().val()
+        return firebase.database().child("users").child(order_id).get().val()
 
     @staticmethod
     def stream_by_id(user_id: str, stream_handler: callable):
@@ -42,7 +42,7 @@ class UserNetwork:
 
     @staticmethod
     def update_by_id(user_id: int, data: dict):
-        firebase.database().child("users").child(user_id).update_price_catalog(data)
+        firebase.database().child("users").child(user_id).update(data)
 
     @staticmethod
     def delete_by_email(email: str):

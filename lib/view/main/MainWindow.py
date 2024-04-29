@@ -11,6 +11,7 @@ from lib.firebaseData import currentUserId, getUserRole
 from lib.view.machine.MachineListView import MachineListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.utility.ResourceManager import ResourceManager
+from lib.view.storage.StoragePage import StoragePage
 from res.CustomIcon import CustomIcon as CustomFIF
 
 from lib.model.Customer import Customer
@@ -177,7 +178,7 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
-                self.insertSubInterface(5, BaseWidget('Magazzino', self), FIF.LIBRARY, 'Magazzino')
+                self.insertSubInterface(5, StoragePage(self), FIF.LIBRARY, 'Magazzino')
                 self.insertSubInterface(6, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
                 self.insertSubInterface(7, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
 

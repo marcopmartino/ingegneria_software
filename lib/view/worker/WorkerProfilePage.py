@@ -4,8 +4,8 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QHBoxLayout
 import lib.firebaseData as firebaseConfig
 
 from lib.layout.QLabelLayout import QLabelLayout
-from lib.mvc.profile.controller.ProfileController import ProfileController
-from lib.mvc.profile.model.Staff import Staff
+from lib.controller.ProfileController import ProfileController
+from lib.model.Staff import Staff
 from res import Styles
 from res.Strings import FormStrings, ProfileStrings
 

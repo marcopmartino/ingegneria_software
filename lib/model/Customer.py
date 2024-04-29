@@ -2,13 +2,12 @@ import firebase_admin.auth
 from pyrebase.pyrebase import Stream
 
 from lib import firebaseData as firebase
-from lib.mvc.profile.model.User import User
+from lib.model.User import User
 from lib.network.UserNetwork import UserNetwork
 from lib.utility.ObserverClasses import Observable
-from lib.utility.Singleton import ObservableSingleton
 
 
-class Customer(User, Observable, metaclass=ObservableSingleton):
+class Customer(User, Observable):
 
     def __init__(self, company: str = None, phone: str = None, mail: str = None,
                  delivery: str = None, IVA: str = None, role: str = None):

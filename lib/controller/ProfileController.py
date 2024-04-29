@@ -1,5 +1,5 @@
-from lib.mvc.profile.model.Customer import Customer
-from lib.mvc.profile.model.Staff import Staff
+from lib.model.Customer import Customer
+from lib.model.Staff import Staff
 
 
 class ProfileController:

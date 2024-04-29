@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog
 from PyQt5.uic.properties import QtCore
 
-import lib.UtilityFunction as utility
+import lib.utility.UtilityClasses as utility
 import lib.firebaseData as firebaseConfig
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField

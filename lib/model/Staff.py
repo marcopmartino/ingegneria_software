@@ -1,7 +1,7 @@
 from pyrebase.pyrebase import Stream
 
-from lib.firebaseData import firebase
-from lib.mvc.profile.model.User import User
+from lib import firebaseData as firebase
+from lib.model.User import User
 from lib.network.UserNetwork import UserNetwork
 from lib.utility.ObserverClasses import Observable
 from lib.utility.Singleton import ObservableSingleton
@@ -51,7 +51,7 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
 
     # Usato per rimuovere i dati di un utente (in caso di eliminazione)
     def __remove_data(self):
-        self.delete(self, self.email)
+        self.delete(self, self.mail)
         self.name = None
         self.phone = None
         self.uid = None
@@ -69,7 +69,7 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
         if data is not None:
             match message['event']:
                 case "put":  # Funzione di aggiunta dati
-                    data['mail'] = firebase.currentUser['mail']
+                    data['mail'] = firebase.currentUser['email']
                     self.__add_data(data)
                 case "patch":  # Funzione di modifica dei dati
                     for key, value in data.items():

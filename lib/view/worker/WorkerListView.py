@@ -51,7 +51,7 @@ class WorkerListView(BaseWidget):
 
         # Inserisce i dati in tabella e la aggiunge al central_layout
         def update_table(message: dict[str, any]):
-            worker_list = self.controller.worker_list.get_price_catalog()
+            worker_list = self.controller.worker_list.get()
             print("Tabella")
 
             self.table.setRowCount(len(worker_list))
