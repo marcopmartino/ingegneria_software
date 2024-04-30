@@ -4,61 +4,62 @@ from lib import firebaseData as firebase
 from lib.model.User import User
 from lib.network.UserNetwork import UserNetwork
 from lib.utility.ObserverClasses import Observable
-from lib.utility.Singleton import ObservableSingleton
 
 
-class Staff(User, Observable, metaclass=ObservableSingleton):
+class Staff(User, Observable):
 
-    def __init__(self, name: str = None, mail: str = None,
+    def __init__(self, uid: str = None, name: str = None, mail: str = None,
                  phone: str = None, CF: str = None, birth_date: str = None, role: str = None):
-        super().__init__(phone, mail, role)
-        self.name = name
-        self.CF = CF
-        self.birth_date = birth_date
-        self.stream: Stream | None = None
+        super().__init__(uid, phone, mail, role)
+        self.__name = name
+        self.__CF = CF
+        self.__birth_date = birth_date
+        self.__stream: Stream | None = None
 
     def open_stream(self):
-        self.uid = firebase.currentUserId()
-        self.stream = UserNetwork.stream_by_id(self.uid, self.__stream_handler)
+        self._uid = firebase.currentUserId()
+        self.__stream = UserNetwork.stream_by_id(self._uid, self.__stream_handler)
 
     def close_stream(self):
-        self.stream.close()
+        self.__stream.close()
 
     # Usato per aggiungere i dati di un utente
     def __add_data(self, data: any):
         print(f"{data}")
         if data is not None:
-            self.name = data['name']
-            self.mail = data['mail']
-            self.phone = data['phone']
-            self.CF = data['CF']
-            self.birth_date = data['birth_date']
-            self.role = data['role']
+            self._uid = data['uid']
+            self.__name = data['name']
+            self._mail = data['mail']
+            self._phone = data['phone']
+            self.__CF = data['CF']
+            self.__birth_date = data['birth_date']
+            self._role = data['role']
 
     # Usato per modificare i dati di un utente
     def __edit_data(self, key: str, data: any):
         match key:
+            case 'uid':
+                self._uid = data
             case 'name':
-                self.name = data
+                self.__name = data
             case 'mail':
-                self.mail = data
+                self._mail = data
             case 'phone':
-                self.phone = data
+                self._phone = data
             case 'birth_date':
-                self.birthDate = data
+                self.__birth_date = data
             case 'CF':
-                self.CF = data
+                self.__CF = data
 
     # Usato per rimuovere i dati di un utente (in caso di eliminazione)
     def __remove_data(self):
-        self.delete(self, self.mail)
-        self.name = None
-        self.phone = None
-        self.uid = None
-        self.phone = None
-        self.email = None
-        self.birth_date = None
-        self.CF = None
+        self.delete(self, self._mail)
+        self.__name = None
+        self._phone = None
+        self._email = None
+        self.__birth_date = None
+        self.__CF = None
+        self._role = None
 
     # Stream handler che aggiorna automaticamente i dati dell'utente
     def __stream_handler(self, message):
@@ -69,7 +70,7 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
         if data is not None:
             match message['event']:
                 case "put":  # Funzione di aggiunta dati
-                    data['mail'] = firebase.currentUser['email']
+                    data['uid'] = firebase.currentUserId()
                     self.__add_data(data)
                 case "patch":  # Funzione di modifica dei dati
                     for key, value in data.items():
@@ -81,7 +82,7 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
             self.__remove_data()
 
         # Notifico gli osservatori cosi che possano aggiornarsi
-        self.notify(self.to_dict())
+        self.notify(message["data"])
 
     @staticmethod
     def checkLogin(currentEmail, password):
@@ -106,8 +107,16 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
     def add_data(form_data: dict[str, any], user):
         UserNetwork.create_data(form_data, user)
 
-    def to_dict(self):
-        return vars(self)
+    def get_dict(self):
+        return dict(
+            uid=self._uid,
+            name=self.__name,
+            mail=self._mail,
+            CF=self.__CF,
+            birth_date=self.__birth_date,
+            role=self._role,
+            phone=self._phone
+        )
 
     # Elimina un utente dal database
     @staticmethod
@@ -117,5 +126,3 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
             self.__remove_data()
         except Exception as e:
             print(e)
-
-

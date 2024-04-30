@@ -1,4 +1,3 @@
-import firebase_admin.auth
 from pyrebase.pyrebase import Stream
 
 from lib import firebaseData as firebase
@@ -9,58 +8,58 @@ from lib.utility.ObserverClasses import Observable
 
 class Customer(User, Observable):
 
-    def __init__(self, company: str = None, phone: str = None, mail: str = None,
+    def __init__(self, uid: str = None, company: str = None, phone: str = None, mail: str = None,
                  delivery: str = None, IVA: str = None, role: str = None):
-        super().__init__(phone, mail, role)
-        self.company = company
-        self.delivery = delivery
-        self.IVA = IVA
-        self.stream: Stream | None = None
+        super().__init__(uid, phone, mail, role)
+        self.__company = company
+        self.__delivery = delivery
+        self.__IVA = IVA
+        self.__stream: Stream | None = None
 
     def open_stream(self):
-        self.uid = firebase.currentUserId()
-        self.stream = UserNetwork.stream_by_id(self.uid, self.__stream_handler)
+        self._uid = firebase.currentUserId()
+        self.__stream = UserNetwork.stream_by_id(self._uid, self.__stream_handler)
 
     def close_stream(self):
-        self.stream.close()
+        self.__stream.close()
 
     # Usato per aggiungere i dati di un utente
     def __add_data(self, data: any):
-        print(f"{data}")
         if data is not None:
-            self.company = data['company']
-            self.phone = data['phone']
-            self.email = data['mail']
-            self.delivery = data['delivery']
-            self.IVA = data['IVA']
-            self.role = data['role']
+            self._uid = data['uid']
+            self.__company = data['company']
+            self._phone = data['phone']
+            self._email = data['email']
+            self.__delivery = data['delivery']
+            self.__IVA = data['IVA']
+            self._role = data['role']
 
     # Usato per modificare i dati di un utente
     def __edit_data(self, key: str, data: any):
         match key:
+            case 'uid':
+                self._uid = data
             case 'company':
-                self.companyName = data
+                self.__companyName = data
             case 'mail':
-                self.mail = data
+                self._mail = data
             case 'phone':
-                self.phone = data
+                self._phone = data
             case 'deliveryAddress':
-                self.deliveryAddress = data
+                self.__delivery = data
             case 'IVA':
-                self.IVA = data
+                self.__IVA = data
 
         # Usato per rimuovere i dati di un utente (in caso di eliminazione)
 
     # Usato eliminare il profilo dell'utente
     def __remove_data(self):
-        self.delete(self, self.mail)
-        self.companyName = None
-        self.phone = None
-        self.uid = None
-        self.phone = None
-        self.mail = None
-        self.delivery = None
-        self.IVA = None
+        self.delete(self, self._mail)
+        self.__companyName = None
+        self._phone = None
+        self._mail = None
+        self.__delivery = None
+        self.__IVA = None
 
     # Stream handler che aggiorna automaticamente i dati dell'utente
     def __stream_handler(self, message):
@@ -71,7 +70,7 @@ class Customer(User, Observable):
         if data is not None:
             match message['event']:
                 case "put":  # Funzione di aggiunta dati
-                    data['mail'] = firebase.currentUser['email']
+                    data['uid'] = firebase.currentUserId()
                     self.__add_data(data)
                 case "patch":  # Funzione di modifica dei dati
                     for key, value in data.items():

@@ -90,11 +90,11 @@ class ProfileWidget(BaseWidget):
                 match key:
                     case 'name':
                         self.nameLabel.setText(value)
-                    case 'email':
-                        self.emailLayout.edit_text(value)
+                    case 'mail':
+                        self.emailLabel.edit_text(value)
                     case 'phone':
                         self.phoneLayout.edit_text(value)
-                    case 'birthDate':
+                    case 'birth_date':
                         self.birthDateLabel.edit_text(value)
                     case 'CF':
                         self.CFNumberLayout.edit_text(value)

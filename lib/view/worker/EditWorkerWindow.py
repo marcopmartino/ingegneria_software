@@ -1,11 +1,6 @@
 from PyQt5.QtCore import Qt, QDate
-
-from lib.controller.WorkerListController import WorkerListController
-
-QDate
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow, \
-    QRadioButton
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog
 
 import lib.utility.UtilityClasses as utility
 from lib.layout.CustomDatePicker import CustomDatePicker
@@ -18,17 +13,15 @@ from res.Dimensions import LineEditDimensions, FontWeight
 from res.Strings import FormStrings, Config, ValidationStrings, WorkerStrings
 
 
-class EditWorkerWindow(QMainWindow):
+class EditWorkerWindow(QDialog):
 
-    def __init__(self, prevWindow, uid, parent=None):
+    def __init__(self, controller, uid, parent=None):
         super().__init__(parent=parent)
 
         self.uid = uid
-        self.controller = WorkerListController()
+        self.controller = controller
 
-        data = self.controller.getWorkerData(self.uid)
-
-        self.prevWindow = prevWindow
+        data = self.controller.get_worker_by_id(self.uid)
 
         # Finestra
         self.setWindowTitle(Config.APPLICATION_NAME)
@@ -123,22 +116,6 @@ class EditWorkerWindow(QMainWindow):
         self.profileForm.addLayout(self.confirmPasswordLayout)
         self.profileForm.setAlignment(self.confirmPasswordLayout, Qt.AlignCenter)
 
-        self.radioBox = QHBoxLayout()
-        self.radioBox.setSpacing(13)
-        self.radioBox.setObjectName("ButtonsBox")
-
-        self.workerRadio = QRadioButton(FormStrings.WORKER_TEXT, self)
-        self.workerRadio.toggled.connect(lambda: self.btnState(self.workerRadio))
-        self.adminRadio = QRadioButton(FormStrings.ADMIN_TEXT, self)
-        self.adminRadio.toggled.connect(lambda: self.btnState(self.adminRadio))
-
-        self.workerRadio.setChecked(True)
-
-        self.radioBox.addWidget(self.workerRadio)
-        self.radioBox.addWidget(self.adminRadio)
-
-        self.profileForm.addLayout(self.radioBox)
-
         self.buttonsBox = QHBoxLayout()
         self.buttonsBox.setSpacing(13)
         self.buttonsBox.setObjectName("ButtonsBox")
@@ -164,8 +141,6 @@ class EditWorkerWindow(QMainWindow):
         self.outerLayout.addLayout(self.innerLayout)
         self.outerLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.setCentralWidget(self.outerWidget)
-
         name_field = LineEditCompositeFormField.LayoutAndRule(self.nameLayout, ValidationRule.Required())
         cf_field = LineEditCompositeFormField.LayoutAndRule(self.fiscalCodeLayout, ValidationRule.FiscalCode())
         email_field = LineEditCompositeFormField.LayoutAndRule(self.emailLayout, ValidationRule.Email())
@@ -177,17 +152,6 @@ class EditWorkerWindow(QMainWindow):
         self.form_manager.add_fields(name_field, cf_field,
                                      email_field, phone_field, password_field, confirm_password_field)
         self.form_manager.add_submit_button(self.editButton, self.on_submit)
-
-    # Funzione che gestisce l'interazione con i radio button
-    def btnState(self, button):
-        if button.text() == "Operario":
-            if not button.isChecked():
-                self.adminRadio.setChecked(False)
-                self.workerRadio.setChecked(True)
-        elif button.text() == "Manager":
-            if not button.isChecked():
-                self.workerRadio.setChecked(True)
-                self.adminRadio.setChecked(False)
 
     # Esegue i controlli sulla password e crea un nuovo operaio
     def on_submit(self, form_data: dict[str, any]):
@@ -224,18 +188,14 @@ class EditWorkerWindow(QMainWindow):
                 "name": self.nameLayout.line_edit.text(),
                 "birth_date": self.birthDatePicker.date.toString('dd/MM/yyyy'),
                 "CF": self.fiscalCodeLayout.line_edit.text(),
-                "phone": utility.format_phone(self.phoneLayout.line_edit.text()),
+                "phone": utility.PhoneFormatter().format(self.phoneLayout.line_edit.text()),
                 "mail": self.emailLayout.line_edit.text(),
-                "role": "worker" if self.workerRadio.isChecked() else 'manager'
+                "role": "worker"
             }
             self.controller.setWorkerData(data, newPassword, uid=self.uid)
             self.close()
         except Exception as e:
             print(e)
-
-    # Intercetta l'evento di chiusura della finestra e abilita la finestra precedente
-    def closeEvent(self, event):
-        self.prevWindow.setEnabled(True)
 
     # Chiude la finestra alla pressione di un bottone
     def delete_add(self):

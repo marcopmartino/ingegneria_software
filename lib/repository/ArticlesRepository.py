@@ -80,7 +80,6 @@ class ArticlesRepository(Observable, metaclass=ObservableSingleton):
                     and article.get_numbering_heel() == new_article_data.get("heel")
                     and article.get_iron_tip() == new_article_data.get("shoetip")
                     and article.get_pivot_under_heel() == new_article_data.get("pivot")):
-
                 # Se l'articolo esiste, ne viene ritornato il seriale
                 print("Trovato")
                 return article.get_article_serial()

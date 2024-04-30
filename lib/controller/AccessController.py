@@ -25,6 +25,7 @@ class AccessController:
         data = {
             "company": form_data["nome azienda"],
             "IVA": form_data["partita iva"],
+            'mail': form_data["email"],
             "delivery": form_data["indirizzo di recapito"],
             "phone": PhoneFormatter.format(form_data["telefono"]),
             "role": "user"

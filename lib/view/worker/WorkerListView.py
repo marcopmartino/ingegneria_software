@@ -51,34 +51,33 @@ class WorkerListView(BaseWidget):
 
         # Inserisce i dati in tabella e la aggiunge al central_layout
         def update_table(message: dict[str, any]):
-            worker_list = self.controller.worker_list.get()
+            worker_list = self.controller.get_worker_list()
             print("Tabella")
 
             self.table.setRowCount(len(worker_list))
             row = 0
             for worker in worker_list:
-                self.table.setItem(row, 0, QTableWidgetItem(worker.name))
-                self.table.setItem(row, 1, QTableWidgetItem(worker.mail))
-                self.table.setItem(row, 2, QTableWidgetItem(str(worker.phone)))
-                self.table.setItem(row, 3, QTableWidgetItem(str(worker.CF)))
-                self.workerUid[row] = worker.uid
+                data = worker.get_dict()
+                self.table.setItem(row, 0, QTableWidgetItem(data["name"]))
+                self.table.setItem(row, 1, QTableWidgetItem(data["mail"]))
+                self.table.setItem(row, 2, QTableWidgetItem(str(data["phone"])))
+                self.table.setItem(row, 3, QTableWidgetItem(str(data["CF"])))
+                self.workerUid[row] = data['uid']
                 row += 1
             if self.isNotConnected:
                 self.table.cellDoubleClicked.connect(self.open_edit_worker)
                 self.isNotConnected = False
 
         update_table({})
-        self.controller.worker_list.observe(update_table)
+        self.controller.observe_worker_list(update_table)
 
         self.central_layout.addWidget(self.table)
 
     # Apre la finestra per aggiungere un operaio
     def open_add_worker(self):
-        add_window = AddWorkerWindow(prevWindow=self)
-        self.setEnabled(False)
-        add_window.show()
+        add_window = AddWorkerWindow(self.controller)
+        add_window.exec()
 
     def open_edit_worker(self, selected):
-        edit_window = EditWorkerWindow(prevWindow=self, uid=self.workerUid[selected])
-        self.setEnabled(False)
-        edit_window.show()
+        edit_window = EditWorkerWindow(controller=self.controller, uid=self.workerUid[selected])
+        edit_window.exec()
