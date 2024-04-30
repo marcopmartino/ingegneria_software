@@ -1,15 +1,20 @@
-from lib.utility.ObserverClasses import Observable
-from lib.utility.Singleton import ObservableSingleton
+from pyrebase.pyrebase import Stream
+
 from lib.network.PriceCatalogNetwork import PriceCatalogNetwork
+from lib.repository.Repository import Repository
+from lib.utility.Singleton import RepositoryMeta
 
 
-class PriceCatalogRepository(Observable, metaclass=ObservableSingleton):
+class PriceCatalogRepository(Repository, metaclass=RepositoryMeta):
 
     def __init__(self):
         super().__init__()
         self.__price_catalog: dict[str, float] = {}  # Inizializzo
         self.__price_catalog_network: PriceCatalogNetwork = PriceCatalogNetwork()
-        self.__price_catalog_network.stream(self.__stream_handler)
+
+    # Apre uno stream di dati
+    def open_stream(self):
+        self._stream = self.__price_catalog_network.stream(self.__stream_handler)
 
     # Stream handler che aggiorna automaticamente il listino
     def __stream_handler(self, message):

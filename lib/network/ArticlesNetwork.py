@@ -1,11 +1,13 @@
+from pyrebase.pyrebase import Stream
+
 from lib.firebaseData import firebase
 
 
-class ArticleNetwork:
+class ArticlesNetwork:
 
     @staticmethod
-    def stream(stream_handler: callable):
-        firebase.database().child("articles").stream(stream_handler)
+    def stream(stream_handler: callable) -> Stream:
+        return firebase.database().child("articles").stream(stream_handler)
 
     @staticmethod
     def get_next_id():
@@ -14,7 +16,7 @@ class ArticleNetwork:
     @staticmethod
     def insert(data: dict) -> str:
         db = firebase.database()
-        article_id: int = ArticleNetwork.get_next_id()
+        article_id: int = ArticlesNetwork.get_next_id()
         serial_number: str = f"{article_id:04d}"
         db.child("articles").child(serial_number).set(data)
         db.child("next_ids").update({"article": article_id + 1})

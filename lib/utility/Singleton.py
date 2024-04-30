@@ -1,5 +1,6 @@
 from functools import wraps
 
+from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Observable
 
 
@@ -33,6 +34,15 @@ class ObservableSingleton(type(Observable)):
     def __init__(self, name, bases, mmbs):
         super(ObservableSingleton, self).__init__(name, bases, mmbs)
         self._instance = super(ObservableSingleton, self).__call__()
+
+    def __call__(self, *args, **kw):
+        return self._instance
+
+
+class RepositoryMeta(type(Repository)):
+    def __init__(self, name, bases, mmbs):
+        super(RepositoryMeta, self).__init__(name, bases, mmbs)
+        self._instance = super(RepositoryMeta, self).__call__()
 
     def __call__(self, *args, **kw):
         return self._instance

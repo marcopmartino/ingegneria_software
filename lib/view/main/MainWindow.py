@@ -8,10 +8,11 @@ from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, TitleBar
 
 from lib.firebaseData import currentUserId, getUserRole
+from lib.view.cashregister.CashRegisterView import CashRegisterView
 from lib.view.machine.MachineListView import MachineListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.utility.ResourceManager import ResourceManager
-from lib.view.storage.StoragePage import StoragePage
+#from lib.view.storage.StoragePage import StoragePage
 from res.CustomIcon import CustomIcon as CustomFIF
 
 from lib.model.Customer import Customer
@@ -170,17 +171,17 @@ class MainWindow(FramelessWindow):
         match user_role:
             case "customer":
                 self.insertSubInterface(2, CustomerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
+                self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'I tuoi ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
-                self.insertSubInterface(5, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
 
             case "admin":
                 self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
-                self.insertSubInterface(5, StoragePage(self), FIF.LIBRARY, 'Magazzino')
+                #self.insertSubInterface(5, StoragePage(self), FIF.LIBRARY, 'Magazzino')
                 self.insertSubInterface(6, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
-                self.insertSubInterface(7, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
+                self.insertSubInterface(7, CashRegisterView(self), FIF.SHOPPING_CART, 'Registro di cassa')
+                self.insertSubInterface(8, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
 
             case "worker":
                 self.insertSubInterface(2, WorkerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')

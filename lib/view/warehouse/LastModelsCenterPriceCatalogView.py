@@ -9,7 +9,7 @@ from lib.widget.TableWidgets import PriceCatalogTableBuilder, SixColumnsHeaderSe
 from res import Styles
 
 
-class BlockCenterPriceCatalogView(BaseWidget):
+class LastModelsCenterPriceCatalogView(BaseWidget):
     def __init__(self, parent_widget: QWidget = None):
         super().__init__("price_list_view", parent_widget)
 

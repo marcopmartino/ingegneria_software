@@ -1,11 +1,13 @@
+from pyrebase.pyrebase import Stream
+
 from lib.firebaseData import firebase
 
 
-class MachineNetwork:
+class MachinesNetwork:
 
     @staticmethod
-    def stream(stream_handler: callable):
-        firebase.database().child("machines").stream(stream_handler)
+    def stream(stream_handler: callable) -> Stream:
+        return firebase.database().child("machines").stream(stream_handler)
 
     @staticmethod
     def update(machine_id: str, data: dict):

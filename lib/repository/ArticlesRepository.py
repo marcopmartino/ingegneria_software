@@ -1,17 +1,21 @@
 from lib.model.Article import Article
-from lib.network.ArticleNetwork import ArticleNetwork
+from lib.network.ArticlesNetwork import ArticlesNetwork
+from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Observable
-from lib.utility.Singleton import ObservableSingleton
+from lib.utility.Singleton import ObservableSingleton, RepositoryMeta
 from lib.utility.UtilityClasses import DatetimeUtils
 
 
-class ArticlesRepository(Observable, metaclass=ObservableSingleton):
+class ArticlesRepository(Repository, metaclass=RepositoryMeta):
 
     def __init__(self):
         super().__init__()
         self.__article_list: list[Article] = []
-        self.__article_newtork: ArticleNetwork = ArticleNetwork()
-        self.__article_newtork.stream(self.__stream_handler)
+        self.__article_network: ArticlesNetwork = ArticlesNetwork()
+
+    # Apre uno stream di dati
+    def open_stream(self):
+        self._stream = self.__article_network.stream(self.__stream_handler)
 
     # Usato internamente per istanziare e aggiungere un articolo alla lista
     def __instantiate_and_append_article(self, serial: str, data: any):
@@ -105,4 +109,4 @@ class ArticlesRepository(Observable, metaclass=ObservableSingleton):
         )
 
         # Salva l'articolo nel database e ritorna il nuovo seriale
-        return self.__article_newtork.insert(article_data)
+        return self.__article_network.insert(article_data)

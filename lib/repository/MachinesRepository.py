@@ -1,12 +1,13 @@
 from enum import Enum
 
 from lib.model.Machine import Machine
-from lib.network.MachineNetwork import MachineNetwork
-from lib.utility.ObserverClasses import Observable, Message
-from lib.utility.Singleton import ObservableSingleton
+from lib.network.MachinesNetwork import MachinesNetwork
+from lib.repository.Repository import Repository
+from lib.utility.ObserverClasses import Message
+from lib.utility.Singleton import RepositoryMeta
 
 
-class MachinesRepository(Observable, metaclass=ObservableSingleton):
+class MachinesRepository(Repository, metaclass=RepositoryMeta):
     class Event(Enum):
         MACHINE_STOPPED = 0
         MACHINE_STARTED = 1
@@ -14,8 +15,11 @@ class MachinesRepository(Observable, metaclass=ObservableSingleton):
     def __init__(self):
         super().__init__()
         self.__machine_list: list[Machine] = []  # Inizializza la lista dei macchinari
-        self.__machine_network = MachineNetwork()
-        self.__machine_network.stream(self.__stream_handler)
+        self.__machine_network = MachinesNetwork()
+
+    # Apre uno stream di dati
+    def open_stream(self):
+        self._stream = self.__machine_network.stream(self.__stream_handler)
 
     # Usato internamente per istanziare e aggiungere un nuovo macchinario alla lista
     def __instantiate_and_append_machine(self, serial: str, data: any) -> Machine:

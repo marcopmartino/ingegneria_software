@@ -2,16 +2,19 @@ from __future__ import annotations
 
 from enum import Enum
 
+from pyrebase.pyrebase import Stream
+
 from lib.firebaseData import currentUserId
 from lib.model.Order import Order
-from lib.network.OrderNetwork import OrderNetwork
-from lib.utility.ObserverClasses import Observable, Message
-from lib.utility.Singleton import ObservableSingleton
+from lib.network.OrdersNetwork import OrdersNetwork
+from lib.repository.Repository import Repository
+from lib.utility.ObserverClasses import Message
+from lib.utility.Singleton import RepositoryMeta
 from lib.utility.UtilityClasses import DatetimeUtils
 from res.Strings import OrderStateStrings
 
 
-class OrdersRepository(Observable, metaclass=ObservableSingleton):
+class OrdersRepository(Repository, metaclass=RepositoryMeta):
     class Event(Enum):
         ORDER_CREATED = 0
         ORDER_DELETED = 1
@@ -21,8 +24,11 @@ class OrdersRepository(Observable, metaclass=ObservableSingleton):
     def __init__(self):
         super().__init__()
         self.__order_list: list[Order] = []  # Inizializza la lista degli ordini
-        self.__order_network = OrderNetwork()
-        self.__order_network.stream(self.__stream_handler)
+        self.__order_network = OrdersNetwork()
+
+    def open_stream(self):
+        self._stream = self.__order_network.stream(self.__stream_handler)
+
 
     # Usato internamente per istanziare e aggiungere un nuovo ordine alla lista
     def __instantiate_and_append_order(self, serial: str, data: any) -> Order:
@@ -38,7 +44,7 @@ class OrdersRepository(Observable, metaclass=ObservableSingleton):
         for key in message.keys():
             print(f"{key}: {message[key]}")
 
-        # Aggiorna la lista degli ordini così che client diversi possano accedere alla stessa versione aggiornata dei
+        # Aggiorna la lista degli ordini così che utenti diversi possano accedere alla stessa versione aggiornata dei
         # dati (grazie al pattern Singleton)
         data = message["data"]
         path = message["path"]
@@ -146,7 +152,7 @@ class OrdersRepository(Observable, metaclass=ObservableSingleton):
             if order.get_order_serial() == order_serial:
                 return order
 
-    # Salva il nuovo ordine nel database. Il seriale è rimosso perché viene assegnato automaticamente.
+    # Salva il nuovo ordine nel database
     def create_order(self, article_serial: str, quantity: int, price: float) -> str:
         # Crea un dizionario con i dati del nuovo ordine
         order_data = dict(

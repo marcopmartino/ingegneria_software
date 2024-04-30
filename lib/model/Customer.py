@@ -3,7 +3,7 @@ from pyrebase.pyrebase import Stream
 
 from lib import firebaseData as firebase
 from lib.model.User import User
-from lib.network.UserNetwork import UserNetwork
+from lib.network.UsersNetwork import UsersNetwork
 from lib.utility.ObserverClasses import Observable
 
 
@@ -19,7 +19,7 @@ class Customer(User, Observable):
 
     def open_stream(self):
         self.uid = firebase.currentUserId()
-        self.stream = UserNetwork.stream_by_id(self.uid, self.__stream_handler)
+        self.stream = UsersNetwork.stream_by_id(self.uid, self.__stream_handler)
 
     def close_stream(self):
         self.stream.close()
@@ -90,7 +90,7 @@ class Customer(User, Observable):
 
     @staticmethod
     def checkLogin(currentEmail, password):
-        UserNetwork.checkLogin(currentEmail, password)
+        UsersNetwork.checkLogin(currentEmail, password)
 
     # Modifica i dati degli utenti nel database
     @staticmethod

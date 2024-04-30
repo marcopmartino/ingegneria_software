@@ -1,12 +1,14 @@
+from pyrebase.pyrebase import Stream
+
 from lib.firebaseData import firebase
 from lib.model.Order import Order
 
 
-class OrderNetwork:
+class OrdersNetwork:
 
     @staticmethod
-    def stream(stream_handler: callable):
-        firebase.database().child("orders").stream(stream_handler)
+    def stream(stream_handler: callable) -> Stream:
+        return firebase.database().child("orders").stream(stream_handler)
 
     @staticmethod
     def get_next_id():
@@ -15,7 +17,7 @@ class OrderNetwork:
     @staticmethod
     def insert(data: dict) -> str:
         db = firebase.database()
-        order_id: int = OrderNetwork.get_next_id()
+        order_id: int = OrdersNetwork.get_next_id()
         serial_number: str = f"{order_id:04d}"
         db.child("orders").child(serial_number).set(data)
         db.child("next_ids").update({"order": order_id + 1})

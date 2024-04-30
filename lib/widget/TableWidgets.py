@@ -116,6 +116,11 @@ class ExtendedTableWidget(QTableWidget):
     def addNamedItem(self, item: NamedTableItem):
         self.namedItems.append(item)
 
+    # Colora una riga della tabella
+    def setRowColor(self, row: int, color: QColor):
+        for column in range(self.columnCount()):
+            self.item(row, column).setBackground(QBrush(color))
+
 
 # Tabella standard usata nell'applicazione
 # noinspection PyPep8Naming

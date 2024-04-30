@@ -25,6 +25,8 @@ from res.Dimensions import FontSize
 class OrderListView(BaseWidget):
     def __init__(self, parent_widget: QWidget):
         super().__init__("order_list_view", parent_widget)
+
+        # Controller
         self.controller = OrderListController()
 
         # Titolo e sottotitolo

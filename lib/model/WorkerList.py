@@ -1,5 +1,5 @@
 from lib.model.Worker import Worker
-from lib.network.UserNetwork import UserNetwork
+from lib.network.UsersNetwork import UsersNetwork
 from lib.utility.ObserverClasses import Observable
 from lib.utility.Singleton import ObservableSingleton
 
@@ -9,7 +9,7 @@ class WorkerList(Observable, metaclass=ObservableSingleton):
     def __init__(self):
         super().__init__()
         self.__worker_list: list[Worker] = []
-        UserNetwork.stream(self.__stream_handler)
+        UsersNetwork.stream(self.__stream_handler)
 
     # Usato internamente per aggiungere un ordine alla lista
     def __append_worker(self, uid: str, data: any):
@@ -90,8 +90,8 @@ class WorkerList(Observable, metaclass=ObservableSingleton):
         # Converte l'operaio in dizionario
         worker_dict = vars(worker)
         # Salva l'operaio nel database e ne ritorna l'id
-        return UserNetwork.create(worker_dict)
+        return UsersNetwork.create(worker_dict)
 
     @staticmethod
     def delete(email: str):
-        UserNetwork.delete_by_email(email)
+        UsersNetwork.delete_by_email(email)

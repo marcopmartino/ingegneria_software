@@ -2,7 +2,7 @@ from pyrebase.pyrebase import Stream
 
 from lib import firebaseData as firebase
 from lib.model.User import User
-from lib.network.UserNetwork import UserNetwork
+from lib.network.UsersNetwork import UsersNetwork
 from lib.utility.ObserverClasses import Observable
 from lib.utility.Singleton import ObservableSingleton
 
@@ -19,7 +19,7 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
 
     def open_stream(self):
         self.uid = firebase.currentUserId()
-        self.stream = UserNetwork.stream_by_id(self.uid, self.__stream_handler)
+        self.stream = UsersNetwork.stream_by_id(self.uid, self.__stream_handler)
 
     def close_stream(self):
         self.stream.close()
@@ -85,12 +85,12 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
 
     @staticmethod
     def checkLogin(currentEmail, password):
-        UserNetwork.checkLogin(currentEmail, password)
+        UsersNetwork.checkLogin(currentEmail, password)
 
     # Modifica i dati degli utenti nel database
     @staticmethod
     def setUserData(form_data: dict[str, any], newPassword, uid):
-        UserNetwork.update(form_data, newPassword, uid)
+        UsersNetwork.update(form_data, newPassword, uid)
 
     # Ritorna i dati dell'utente
     def get(self):
@@ -99,12 +99,12 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
     # Crea il profilo di un nuovo utente
     @staticmethod
     def add_profile(email: str, password: str):
-        UserNetwork.create_profile(email, password)
+        UsersNetwork.create_profile(email, password)
 
     # Salva un nuovo utente nel database
     @staticmethod
     def add_data(form_data: dict[str, any], user):
-        UserNetwork.create_data(form_data, user)
+        UsersNetwork.create_data(form_data, user)
 
     def to_dict(self):
         return vars(self)
@@ -113,7 +113,7 @@ class Staff(User, Observable, metaclass=ObservableSingleton):
     @staticmethod
     def delete(self, email: str):
         try:
-            UserNetwork.delete_by_email(email)
+            UsersNetwork.delete_by_email(email)
             self.__remove_data()
         except Exception as e:
             print(e)
