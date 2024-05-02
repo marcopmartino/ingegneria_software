@@ -206,7 +206,7 @@ class MachineView(BaseWidget):
         self.sidebar_layout.addWidget(self.emergency_stop_label)
 
         # Callback per l'observer
-        def update_machine_view_callback(message: Message):
+        def update_machine_view(message: Message):
             match message.event():
                 case MachinesRepository.Event.MACHINE_STOPPED:
                     pass
@@ -216,7 +216,7 @@ class MachineView(BaseWidget):
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
         # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
-        self.messageReceived.connect(update_machine_view_callback)
+        self.messageReceived.connect(update_machine_view)
         self.observer: Observer = self.controller.observe_machine(self.messageReceived.emit)
 
 

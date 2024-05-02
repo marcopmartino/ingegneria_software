@@ -118,20 +118,25 @@ class CashRegisterView(BaseWidget):
         # Table Adapter
         self.table_adapter = TransactionListAdapter(self.table)
         self.table_adapter.setColumnItemClass(2, DateTableItem)  # Per un corretto ordinamento delle date
-        self.table_adapter.setData(self.get_filtered_transaction_list())
         '''self.table_adapter.onDoubleClick(self.show_order_details)'''
 
-        def update_table(message: Message):
+        def update_cash_register_view(message: Message):
+            data = message.data()
             match message.event():
+                case CashRegisterRepository.Event.CASH_REGISTER_INITIALIZED:
+                    self.table_adapter.setData(self.controller.filter_transactions(data))
+
                 case CashRegisterRepository.Event.TRANSACTION_CREATED:
                     if len(self.controller.filter_transactions(self.form_manager.data(), message.data())) != 0:
                         self.table_adapter.addData(message.data())
+
                 case CashRegisterRepository.Event.TRANSACTION_DELETED:
                     self.table_adapter.removeRowByKey(message.data())
+
                 case CashRegisterRepository.Event.TRANSACTION_UPDATED:
                     self.table_adapter.updateDataColumns(message.data(), [1, 2, 3])
 
-        self.controller.observe_transaction_list(update_table)
+        self.controller.observe_transaction_list(update_cash_register_view)
 
         self.central_layout.addWidget(self.table)
 

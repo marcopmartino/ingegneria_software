@@ -1,36 +1,48 @@
+from enum import Enum
+
 from pyrebase.pyrebase import Stream
 
 from lib.network.PriceCatalogNetwork import PriceCatalogNetwork
 from lib.repository.Repository import Repository
+from lib.utility.ObserverClasses import Message
 from lib.utility.Singleton import RepositoryMeta
 
 
 class PriceCatalogRepository(Repository, metaclass=RepositoryMeta):
 
+    class Event(Enum):
+        PRICE_CATALOG_INITIALIZED = 0
+        PRICE_UPDATED = 1
+
     def __init__(self):
-        super().__init__()
         self.__price_catalog: dict[str, float] = {}  # Inizializzo
         self.__price_catalog_network: PriceCatalogNetwork = PriceCatalogNetwork()
-
-    # Apre uno stream di dati
-    def open_stream(self):
-        self._stream = self.__price_catalog_network.stream(self.__stream_handler)
+        super().__init__(self.__price_catalog_network.stream)
 
     # Stream handler che aggiorna automaticamente il listino
-    def __stream_handler(self, message):
+    def _stream_handler(self, message):
 
         # Aggiorna i prezzi del listino così che client diversi possano accedere alla stessa versione aggiornata dei
         # dati (grazie al pattern Singleton)
         event: str = message["event"]
         data: dict = message["data"]
         match event:
-            # Durante l'inizializzazione (put) e ad ogni modifica di un importo del listino (patch)
-            case "put" | "patch":
+            # All'apertura dello Stream, quando viene caricato l'intero listino
+            case "put":
                 # Aggiorna il listino prezzi
                 self.__price_catalog.update(data)
 
                 # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                self.notify(message)
+                self.notify(Message(PriceCatalogRepository.Event.PRICE_CATALOG_INITIALIZED, self.__price_catalog))
+
+            # Modifica di un importo del listino
+            case "patch":
+                # Aggiorna il listino prezzi
+                self.__price_catalog.update(data)
+
+                # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                self.notify(Message(PriceCatalogRepository.Event.PRICE_UPDATED, data))
+
             # Se per qualche motivo il collegamento fallisce
             case "cancel":
                 pass

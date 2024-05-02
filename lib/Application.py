@@ -2,6 +2,7 @@ from typing import List
 
 from PyQt5.QtWidgets import QApplication
 
+from lib.firebaseData import Firebase
 from lib.view.access.AccessWindow import AccessWindow
 from lib.view.main.MainWindow import MainWindow
 
@@ -11,10 +12,10 @@ class Application(QApplication):
     def __init__(self, argv: List[str]):
         super().__init__(argv)
 
-        # Inizializzo lo stato
-        self.state = "NOT_RUNNING"
+        # Inizializzo Firebase
+        Firebase.initialize_app()
 
-        # Inizializza a None le due finestre
+        # Inizializza le due finestre
         self.main_window: MainWindow = MainWindow()
         self.access_window: AccessWindow = AccessWindow()
 
@@ -26,9 +27,6 @@ class Application(QApplication):
     def run(self):
         self.access_window.show()
 
-        # Aggiorno lo stato
-        self.state = "RUNNING"
-
     # Chiude eventuali finestre aperte
     def stop(self):
         if self.main_window:
@@ -38,9 +36,6 @@ class Application(QApplication):
         if self.access_window:
             self.access_window.hide()
             self.access_window.reset()
-
-        # Aggiorno lo stato
-        self.state = "STOPPED"
 
     # Chiude eventuali finestre aperte e poi avvia l'applicazione
     def rerun(self):

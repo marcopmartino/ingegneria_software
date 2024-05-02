@@ -1,9 +1,7 @@
 import json
-import sys
 import traceback
 
 from requests import HTTPError, RequestException
-from requests import ConnectionError
 
 
 class HTTPErrorHelper(object):
@@ -31,10 +29,10 @@ class HTTPErrorHelper(object):
                 traceback.print_exc()
 
     @staticmethod
-    def handle(request: callable, handlers: dict[type(Exception), callable], debug: bool = False):
+    def handle(request: callable, handlers: dict[type(RequestException), callable], debug: bool = False):
         try:
             return HTTPErrorHelper.differentiate(request, debug)
-        except Exception as e:
+        except RequestException as e:
             for exception, handler in handlers.items():
                 if isinstance(e, exception):
                     return handler()

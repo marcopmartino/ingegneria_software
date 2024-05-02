@@ -9,17 +9,14 @@ from lib.utility.Singleton import RepositoryMeta
 
 class MachinesRepository(Repository, metaclass=RepositoryMeta):
     class Event(Enum):
-        MACHINE_STOPPED = 0
-        MACHINE_STARTED = 1
+        MACHINES_INITIALIZED = 0
+        MACHINE_STOPPED = 1
+        MACHINE_STARTED = 2
 
     def __init__(self):
-        super().__init__()
         self.__machine_list: list[Machine] = []  # Inizializza la lista dei macchinari
         self.__machine_network = MachinesNetwork()
-
-    # Apre uno stream di dati
-    def open_stream(self):
-        self._stream = self.__machine_network.stream(self.__stream_handler)
+        super().__init__(self.__machine_network.stream)
 
     # Usato internamente per istanziare e aggiungere un nuovo macchinario alla lista
     def __instantiate_and_append_machine(self, serial: str, data: any) -> Machine:
@@ -30,7 +27,7 @@ class MachinesRepository(Repository, metaclass=RepositoryMeta):
         return order
 
     # Stream handler che aggiorna automaticamente la lista dei macchinari
-    def __stream_handler(self, message):
+    def _stream_handler(self, message):
         for key in message.keys():
             print(f"{key}: {message[key]}")
 
@@ -43,7 +40,7 @@ class MachinesRepository(Repository, metaclass=RepositoryMeta):
             # Ottenimento\inserimento\eliminazione di macchinari
             case "put":
 
-                # All'avvio del programma, quando viene caricata l'intera lista dei macchinari
+                # # All'apertura dello Stream, quando viene caricata l'intera lista dei macchinari
                 if path == "/":
                     # Se c'è almeno un ordine nella lista
                     if data:
@@ -52,7 +49,7 @@ class MachinesRepository(Repository, metaclass=RepositoryMeta):
                             self.__instantiate_and_append_machine(key, value)
 
                         # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                        self.notify(message)
+                        self.notify(Message(MachinesRepository.Event.MACHINES_INITIALIZED, self.__machine_list))
 
             # Aggiornamento di un macchinario
             case "patch":

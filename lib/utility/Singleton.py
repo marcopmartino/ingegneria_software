@@ -4,7 +4,7 @@ from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Observable
 
 
-# Implementazione del design pattern Singleton tramite Decorator (__init__ viene eseguito ogni volta)
+# Implementazione del design pattern Singleton tramite Decorator (__init__ viene eseguito a ogni chiamata della classe)
 def singleton(orig_cls):
     orig_new = orig_cls.__new__
     instance = None
@@ -30,19 +30,17 @@ class Singleton(type):
         return cls._instance
 
 
-class ObservableSingleton(type(Observable)):
-    def __init__(self, name, bases, mmbs):
-        super(ObservableSingleton, self).__init__(name, bases, mmbs)
-        self._instance = super(ObservableSingleton, self).__call__()
+class ObservableSingleton(Singleton, type(Observable)):
+    def __init__(cls, name, bases, mmbs):
+        super(ObservableSingleton, cls).__init__(name, bases, mmbs)
 
-    def __call__(self, *args, **kw):
-        return self._instance
+    def __call__(cls, *args, **kw):
+        return super(ObservableSingleton, cls).__call__()
 
 
-class RepositoryMeta(type(Repository)):
-    def __init__(self, name, bases, mmbs):
-        super(RepositoryMeta, self).__init__(name, bases, mmbs)
-        self._instance = super(RepositoryMeta, self).__call__()
+class RepositoryMeta(ObservableSingleton, type(Repository)):
+    def __init__(cls, name, bases, mmbs):
+        super(RepositoryMeta, cls).__init__(name, bases, mmbs)
 
-    def __call__(self, *args, **kw):
-        return self._instance
+    def __call__(cls, *args, **kw):
+        return super(RepositoryMeta, cls).__call__()

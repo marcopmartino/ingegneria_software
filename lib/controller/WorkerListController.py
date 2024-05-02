@@ -1,4 +1,4 @@
-from lib.firebaseData import firebase
+from lib.firebaseData import Firebase
 from lib.model import Staff
 from lib.repository.UsersRepository import UsersRepository
 
@@ -7,8 +7,6 @@ class WorkerListController:
     def __init__(self):
         super().__init__()
         self.__workers_repository = UsersRepository()
-        self.__auth = firebase.auth()
-        self.__database = firebase.database()
 
     def observe_worker_list(self, callback: callable):
         self.__workers_repository.observe(callback)

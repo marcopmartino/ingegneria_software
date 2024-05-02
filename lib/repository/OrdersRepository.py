@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from pyrebase.pyrebase import Stream
-
-from lib.firebaseData import currentUserId
+from lib.firebaseData import Firebase
 from lib.model.Order import Order
 from lib.network.OrdersNetwork import OrdersNetwork
 from lib.repository.Repository import Repository
@@ -16,19 +14,16 @@ from res.Strings import OrderStateStrings
 
 class OrdersRepository(Repository, metaclass=RepositoryMeta):
     class Event(Enum):
-        ORDER_CREATED = 0
-        ORDER_DELETED = 1
-        ORDER_UPDATED = 2
-        ORDER_STATE_UPDATED = 3
+        ORDERS_INITIALIZED = 0
+        ORDER_CREATED = 1
+        ORDER_DELETED = 2
+        ORDER_UPDATED = 3
+        ORDER_STATE_UPDATED = 4
 
     def __init__(self):
-        super().__init__()
         self.__order_list: list[Order] = []  # Inizializza la lista degli ordini
         self.__order_network = OrdersNetwork()
-
-    def open_stream(self):
-        self._stream = self.__order_network.stream(self.__stream_handler)
-
+        super().__init__(self.__order_network.stream)
 
     # Usato internamente per istanziare e aggiungere un nuovo ordine alla lista
     def __instantiate_and_append_order(self, serial: str, data: any) -> Order:
@@ -40,7 +35,7 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
         return order
 
     # Stream handler che aggiorna automaticamente la lista degli ordini
-    def __stream_handler(self, message):
+    def _stream_handler(self, message):
         for key in message.keys():
             print(f"{key}: {message[key]}")
 
@@ -53,13 +48,16 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
             # Ottenimento\inserimento\eliminazione di ordini
             case "put":
 
-                # All'avvio del programma, quando viene caricata l'intera lista di ordini
+                # # All'apertura dello Stream, quando viene caricata l'intera lista di ordini
                 if path == "/":
                     # Se c'è almeno un ordine nella lista
                     if data:
                         for key, value in data.items():
                             # Crea e aggiunge un ordine alla lista di ordini della repository
                             self.__instantiate_and_append_order(key, value)
+
+                        # Notifico gli osservatori che la repository ha concluso l'inizializzazione
+                        self.notify(Message(OrdersRepository.Event.ORDERS_INITIALIZED, self.__order_list))
 
                 # Se il path è diverso allora siamo nell'ambito di un singolo ordine della lista
                 else:
@@ -160,7 +158,7 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
             quantity=quantity,
             price=price,
             creation_date=DatetimeUtils.current_date(),
-            customer_id=currentUserId(),
+            customer_id=Firebase.auth.currentUserId(),
             state=OrderStateStrings.NOT_STARTED
         )
         # Salva l'ordine nel database e ne ritorna l'id

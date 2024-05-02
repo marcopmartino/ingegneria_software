@@ -1,6 +1,7 @@
 from pyrebase.pyrebase import Stream
 
 from lib import firebaseData as firebase
+from lib.firebaseData import Firebase
 from lib.model.User import User
 from lib.network.UsersNetwork import UsersNetwork
 from lib.utility.ObserverClasses import Observable
@@ -17,7 +18,7 @@ class Staff(User, Observable):
         self.__stream: Stream | None = None
 
     def open_stream(self):
-        self._uid = firebase.currentUserId()
+        self._uid = Firebase.auth.currentUserId()
         self.__stream = UsersNetwork.stream_by_id(self._uid, self.__stream_handler)
 
     def close_stream(self):
@@ -70,7 +71,7 @@ class Staff(User, Observable):
         if data is not None:
             match message['event']:
                 case "put":  # Funzione di aggiunta dati
-                    data['uid'] = firebase.currentUserId()
+                    data['uid'] = Firebase.auth.currentUserId()
                     self.__add_data(data)
                 case "patch":  # Funzione di modifica dei dati
                     for key, value in data.items():

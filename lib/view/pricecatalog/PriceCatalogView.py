@@ -1,7 +1,9 @@
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QInputDialog, QDialog, QLabel
 
-from lib.firebaseData import getUserRole
+from lib.firebaseData import Firebase
+from lib.repository.PriceCatalogRepository import PriceCatalogRepository
+from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.BaseWidget import BaseWidget
 from lib.controller.PriceCatalogController import PriceCatalogController
@@ -101,17 +103,21 @@ class PriceCatalogView(BaseWidget):
         self.table: PriceCatalogTable = table_builder.build()
 
         # Metodo per aggiornare il listino prezzi ogni volta che ci sono cambiamenti al model
-        def update_prices_callback(message):
-            data: dict = message["data"]
-            self.table.updateNamedItem(next(iter(data.keys())), next(iter(data.values())))
+        def update_price_catalog_view(message: Message):
+            data = message.data()
+            match message.event():
+                case PriceCatalogRepository.Event.PRICE_CATALOG_INITIALIZED:
+                    # Aggiorna l'intero listino
+                    self.table.updateAllNamedItems(data)
+
+                case PriceCatalogRepository.Event.PRICE_UPDATED:
+                    # Aggiorna un solo importo
+                    self.table.updateNamedItem(next(iter(data.keys())), next(iter(data.values())))
 
         # Aggiorno i dati della tabella ogni volta che cambiano
-        self.controller.observe_price_catalog(update_prices_callback)
+        self.controller.observe_price_catalog(update_price_catalog_view)
 
-        # Aggiorna l'intero listino
-        self.table.updateAllNamedItems(self.controller.get_price_catalog())
-
-        if getUserRole() != "customer":
+        if Firebase.auth.currentUserRole() == "admin":
             # Connette il segnale "itemClicked" allo slot "on_item_clicked"
             self.table.itemClicked.connect(self.on_item_clicked)
 

@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
 )
 from qfluentwidgets import SearchLineEdit, CheckBox, PushButton, ComboBox, PrimaryPushButton
 
-from lib.firebaseData import getUserRole
+from lib.firebaseData import Firebase
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
@@ -30,7 +30,7 @@ class OrderListView(BaseWidget):
         self.controller = OrderListController()
 
         # Titolo e sottotitolo
-        self.setTitleText("I tuoi ordini" if getUserRole() == "customer" else "Lista degli ordini")
+        self.setTitleText("I tuoi ordini" if Firebase.auth.currentUserRole() == "customer" else "Lista degli ordini")
         self.setSubtitleText("Clicca due volte su un ordine per visualizzare maggiori dettagli")
 
         # Sidebar
@@ -119,7 +119,7 @@ class OrderListView(BaseWidget):
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
 
-        if getUserRole() == "customer":
+        if Firebase.auth.currentUserRole() == "customer":
             self.sidebar_layout.addWidget(self.sidebar_spacer)
             self.sidebar_layout.addWidget(self.create_button)
         else:
@@ -138,22 +138,28 @@ class OrderListView(BaseWidget):
         # Table Adapter
         self.table_adapter = OrderListAdapter(self.table)
         self.table_adapter.setColumnItemClass(2, DateTableItem)  # Per un corretto ordinamento delle date
-        self.table_adapter.setData(self.get_filtered_order_list())
         self.table_adapter.onDoubleClick(self.show_order_details)
 
-        def update_table(message: Message):
+        def update_order_list_view(message: Message):
+            data = message.data()
             match message.event():
-                case OrdersRepository.Event.ORDER_CREATED:
-                    if len(self.controller.filter_orders(self.form_manager.data(), message.data())) != 0:
-                        self.table_adapter.addData(message.data())
-                case OrdersRepository.Event.ORDER_DELETED:
-                    self.table_adapter.removeRowByKey(message.data())
-                case OrdersRepository.Event.ORDER_UPDATED:
-                    self.table_adapter.updateDataColumns(message.data(), [1, 4, 5])
-                case OrdersRepository.Event.ORDER_STATE_UPDATED:
-                    self.table_adapter.updateDataColumns(message.data(), [3])
+                case OrdersRepository.Event.ORDERS_INITIALIZED:
+                    self.table_adapter.setData(self.controller.filter_orders(data))
 
-        self.controller.observe_order_list(update_table)
+                case OrdersRepository.Event.ORDER_CREATED:
+                    if len(self.controller.filter_orders(self.form_manager.data(), data)) != 0:
+                        self.table_adapter.addData(data)
+
+                case OrdersRepository.Event.ORDER_DELETED:
+                    self.table_adapter.removeRowByKey(data)
+
+                case OrdersRepository.Event.ORDER_UPDATED:
+                    self.table_adapter.updateDataColumns(data, [1, 4, 5])
+
+                case OrdersRepository.Event.ORDER_STATE_UPDATED:
+                    self.table_adapter.updateDataColumns(data, [3])
+
+        self.controller.observe_order_list(update_order_list_view)
 
         self.central_layout.addWidget(self.table)
 

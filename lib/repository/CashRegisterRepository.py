@@ -12,18 +12,15 @@ from lib.utility.UtilityClasses import DatetimeUtils
 
 class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
     class Event(Enum):
-        TRANSACTION_CREATED = 0
-        TRANSACTION_DELETED = 1
-        TRANSACTION_UPDATED = 2
+        CASH_REGISTER_INITIALIZED = 0
+        TRANSACTION_CREATED = 1
+        TRANSACTION_DELETED = 2
+        TRANSACTION_UPDATED = 3
 
     def __init__(self):
-        super().__init__()
         self.__transaction_list: list[CashRegisterTransaction] = []  # Inizializza il registro di cassa
         self.__cash_register_network = CashRegisterNetwork()
-
-    # Apre uno stream di dati
-    def open_stream(self):
-        self._stream = self.__cash_register_network.stream(self.__stream_handler)
+        super().__init__(self.__cash_register_network.stream)
 
     # Usato internamente per istanziare e aggiungere una nuova transazione al registro
     def __instantiate_and_append_transaction(self, serial: str, data: any) -> CashRegisterTransaction:
@@ -34,7 +31,7 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
         return order
 
     # Stream handler che aggiorna automaticamente il registro di cassa
-    def __stream_handler(self, message):
+    def _stream_handler(self, message):
         for key in message.keys():
             print(f"{key}: {message[key]}")
 
@@ -47,13 +44,19 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
             # Ottenimento\inserimento\eliminazione di transazioni
             case "put":
 
-                # All'avvio del programma, quando viene caricato l'intero registro di cassa
+                # All'apertura dello Stream, quando viene caricato l'intero registro di cassa
                 if path == "/":
                     # Se c'è almeno una transazione nella lista
                     if data:
                         for key, value in data.items():
                             # Crea e aggiunge una transazione al registro di cassa della repository
                             self.__instantiate_and_append_transaction(key, value)
+
+                        # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                        self.notify(Message(
+                            CashRegisterRepository.Event.CASH_REGISTER_INITIALIZED,
+                            self.__transaction_list
+                        ))
 
                 # Se il path è diverso allora siamo nell'ambito di una singola transazione
                 else:

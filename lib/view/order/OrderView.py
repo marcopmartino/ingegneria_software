@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QSizePolicy, QVBoxLayout, QHeaderVi
 from qfluentwidgets import PrimaryPushButton, StrongBodyLabel, BodyLabel
 
 from lib.controller.OrderController import OrderController
-from lib.firebaseData import getUserRole, currentUserId
+from lib.firebaseData import Firebase
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Observer, Message
 from lib.utility.UtilityClasses import PriceFormatter
@@ -65,13 +65,13 @@ class OrderView(BaseWidget):
         # Dettagli articolo
         article = self.controller.get_order_article()
 
-        # Prima tabella
+        # Prima tabella articolo
         self.article_table_adapter_main, self.article_table_main = ArticleMainDetailsAdapter.autoSetup(self)
         headers = ["Genere", "Taglia", "Tipo di forma", "Tipo di plastica", "Lavorazione", "Ferratura"]
         self.article_table_main.setHeaders(headers)
         self.article_table_adapter_main.setData(article)
 
-        # Seconda tabella
+        # Seconda tabella articolo
         self.article_table_adapter_accessories, self.article_table_accessories = ArticleAccessoriesAdapter.autoSetup(
             self)
         headers = ["Bussola", "Seconda bussola", "Altri accessori"]
@@ -179,7 +179,7 @@ class OrderView(BaseWidget):
         self.setup_sidebar()
 
         # Callback per l'observer
-        def update_order_view_callback(message: Message):
+        def update_order_view(message: Message):
             match message.event():
                 case OrdersRepository.Event.ORDER_UPDATED:
                     # Aggiorno la tabella dell'ordine
@@ -196,14 +196,14 @@ class OrderView(BaseWidget):
                     self.on_transition_to_next_state()
 
                 case OrdersRepository.Event.ORDER_DELETED:
-                    if order.get_customer_id() != currentUserId():
+                    if order.get_customer_id() != Firebase.auth.currentUserId():
                         # Informo che il cliente ha eliminato l'ordine
                         self.show_deletion_info_dialog()
 
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
         # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
-        self.messageReceived.connect(update_order_view_callback)
+        self.messageReceived.connect(update_order_view)
         self.observer: Observer = self.controller.observe_order(self.messageReceived.emit)
 
     # Mostra un Dialog di conferma dell'eliminazione dell'ordine

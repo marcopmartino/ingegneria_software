@@ -7,12 +7,14 @@ from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter
 from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, TitleBar
 
-from lib.firebaseData import currentUserId, getUserRole
+from lib.controller.MainController import MainController
+from lib.firebaseData import Firebase
+from lib.repository.OrdersRepository import OrdersRepository
 from lib.view.cashregister.CashRegisterView import CashRegisterView
 from lib.view.machine.MachineListView import MachineListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.utility.ResourceManager import ResourceManager
-#from lib.view.storage.StoragePage import StoragePage
+# from lib.view.storage.StoragePage import StoragePage
 from res.CustomIcon import CustomIcon as CustomFIF
 
 from lib.model.Customer import Customer
@@ -90,6 +92,11 @@ class MainWindow(FramelessWindow):
 
     def __init__(self):
         super().__init__()
+
+        # Controller
+        self.controller = MainController()
+
+        # Imposta la TitleBar
         self.setTitleBar(CustomTitleBar(self))
 
         # Layout orizzontale che contiene il menù (NavigationInterface) e la lista dei Widget associati (QStackedWidget)
@@ -164,7 +171,7 @@ class MainWindow(FramelessWindow):
     def setupNavigation(self):
 
         # Tipo di account
-        user_role: str = getUserRole()
+        user_role: str = Firebase.auth.currentUserRole()
         print("Tipo account: " + str(user_role))
 
         # Sezione Top
@@ -178,7 +185,7 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
                 self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
-                #self.insertSubInterface(5, StoragePage(self), FIF.LIBRARY, 'Magazzino')
+                # self.insertSubInterface(5, StoragePage(self), FIF.LIBRARY, 'Magazzino')
                 self.insertSubInterface(6, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
                 self.insertSubInterface(7, CashRegisterView(self), FIF.SHOPPING_CART, 'Registro di cassa')
                 self.insertSubInterface(8, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
@@ -200,7 +207,7 @@ class MainWindow(FramelessWindow):
             routeKey="user_info",
             icon=FIF.INFO,
             selectable=False,
-            text=f"Autenticato come\n{currentUserId()}",
+            text=f"Autenticato come\n{Firebase.auth.currentUserId()}",
             position=NavigationItemPosition.BOTTOM
         )
 
@@ -319,14 +326,13 @@ class MainWindow(FramelessWindow):
     # Mostra la schermata di accesso dopo aver effettuato il logout
     def show_access_window(self):
         self.logout.emit()
-        if getUserRole() == 'customer':
-            Customer().close_stream()
-        else:
-            Staff().close_stream()
         print("Window changed")
 
     # Esegue il reset della navigazione
     def reset(self):
+        # Chiude gli stream di dati
+        self.controller.close_streams()
+
         # Rimuove ed elimina i widget dello StackedWidget e le corrispondenti voci del menù
         for index in reversed(range(self.stackedWidget.count())):
             print("Rimuovo widget " + str(index))
@@ -340,3 +346,6 @@ class MainWindow(FramelessWindow):
     def setup(self):
         # Imposta nuove interfacce di navigazione
         self.setupNavigation()
+
+        # Apre gli stream di dati
+        self.controller.open_streams()

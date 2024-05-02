@@ -9,13 +9,9 @@ from lib.utility.UtilityClasses import DatetimeUtils
 class ArticlesRepository(Repository, metaclass=RepositoryMeta):
 
     def __init__(self):
-        super().__init__()
         self.__article_list: list[Article] = []
         self.__article_network: ArticlesNetwork = ArticlesNetwork()
-
-    # Apre uno stream di dati
-    def open_stream(self):
-        self._stream = self.__article_network.stream(self.__stream_handler)
+        super().__init__(self.__article_network.stream)
 
     # Usato internamente per istanziare e aggiungere un articolo alla lista
     def __instantiate_and_append_article(self, serial: str, data: any):
@@ -27,7 +23,7 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
         ))
 
     # Stream handler che aggiorna automaticamente la lista degli articoli
-    def __stream_handler(self, message):
+    def _stream_handler(self, message):
         for key in message.keys():
             print(f"{key}: {message[key]}")
 

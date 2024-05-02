@@ -134,22 +134,23 @@ class MachineListView(BaseWidget):
 
         # Table Adapter
         self.table_adapter = MachineListAdapter(self.table)
-        self.table_adapter.setData(self.get_filtered_machine_list())
         self.table_adapter.onDoubleClick(self.show_machine_details)
 
-        def update_table(message: Message):
+        def update_machine_table(message: Message):
+            data = message.data()
             match message.event():
-                case MachinesRepository.Event.ORDER_CREATED:
-                    if len(self.controller.filter_machines(self.form_manager.data(), message.data())) != 0:
-                        self.table_adapter.addData(message.data())
-                case MachinesRepository.Event.ORDER_DELETED:
-                    self.table_adapter.removeRowByKey(message.data())
-                case MachinesRepository.Event.ORDER_UPDATED:
-                    self.table_adapter.updateDataColumns(message.data(), [1, 4, 5])
-                case MachinesRepository.Event.ORDER_STATE_UPDATED:
-                    self.table_adapter.updateDataColumns(message.data(), [3])
+                case MachinesRepository.Event.MACHINES_INITIALIZED:
+                    self.table_adapter.setData(self.controller.filter_machines(data))
 
-        self.controller.observe_machine_list(update_table)
+                case MachinesRepository.Event.MACHINE_STARTED:
+                    pass
+                    #self.table_adapter.updateDataColumns(message.data(), [1, 4, 5])
+
+                case MachinesRepository.Event.MACHINE_STOPPED:
+                    pass
+                    #self.table_adapter.updateDataColumns(message.data(), [3])
+
+        self.controller.observe_machine_list(update_machine_table)
 
         self.central_layout.addWidget(self.table)
 

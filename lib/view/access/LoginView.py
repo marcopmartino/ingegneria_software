@@ -3,7 +3,7 @@ from requests import HTTPError
 from requests import ConnectionError
 
 from lib.layout.LineEditLayouts import LineEditLayout
-from lib.network.HTTPErrorHelper import InvalidEmailException, MissingPasswordException, \
+from lib.utility.HTTPErrorHelper import InvalidEmailException, MissingPasswordException, \
     InvalidLoginCredentialsException
 from lib.validation.FormField import LineEditValidatableFormField
 from lib.validation.ValidationRule import ValidationRule

@@ -1,14 +1,14 @@
 from pyrebase.pyrebase import Stream
 
-from lib.firebaseData import firebase
+from lib.firebaseData import Firebase
 
 
 class PriceCatalogNetwork:
 
     @staticmethod
     def stream(stream_handler: callable) -> Stream:
-        return firebase.database().child("shoe_last_factory_price_list").stream(stream_handler)
+        return Firebase.database.child("shoe_last_factory_price_list").stream(stream_handler)
 
     @staticmethod
     def update(data: dict):
-        firebase.database().child("shoe_last_factory_price_list").update(data)
+        Firebase.database.child("shoe_last_factory_price_list").update(data)

@@ -1,18 +1,17 @@
 from lib.model import User
 from lib.model.Customer import Customer
 from lib.model.Staff import Staff
-from lib.network.UserNetwork import UserNetwork
-from lib.utility.ObserverClasses import Observable
-from lib.utility.Singleton import ObservableSingleton
+from lib.network.UsersNetwork import UsersNetwork
+from lib.repository.Repository import Repository
+from lib.utility.Singleton import RepositoryMeta
 
 
-class UsersRepository(Observable, metaclass=ObservableSingleton):
+class UsersRepository(Repository, metaclass=RepositoryMeta):
 
     def __init__(self):
-        super().__init__()
         self.__users_list: list[User] = []
-        self.__user_network: UserNetwork = UserNetwork()
-        self.__user_network.stream(self.__stream_handler)
+        self.__user_network: UsersNetwork = UsersNetwork()
+        super().__init__(self.__user_network.stream)
 
     # Usato internamente per istanziare e aggiungere un utente alla lista
     def __instantiate_and_append_customer(self, uid: str, data: any):
@@ -27,7 +26,7 @@ class UsersRepository(Observable, metaclass=ObservableSingleton):
             data["birth_date"], data["role"]))
 
     # Stream handler che aggiorna automaticamente la lista degli utenti
-    def __stream_handler(self, message):
+    def _stream_handler(self, message):
         for key in message.keys():
             print(f"{key}: {message[key]}")
 
@@ -102,3 +101,6 @@ class UsersRepository(Observable, metaclass=ObservableSingleton):
         self.__user_network.create_data(user_data, user)
 
         return user.get_uid()
+
+    def authenticate_user(self, email: str, password: str):
+        self.__user_network.authenticate_user(email, password)

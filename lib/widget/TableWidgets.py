@@ -210,7 +210,7 @@ class PriceCatalogTable(ExtendedTableWidget):
     # Aggiorna tutti i NamedTableItem in base alla corrispondenza tra i nomi degli item e le chiavi di un dict
     def updateAllNamedItems(self, data: dict):
         for item in self.namedItems:
-            item.setText(PriceFormatter.format(data[item.itemName]))
+            item.setText(PriceFormatter.format(data.get(item.itemName)))
 
     # Aggiorna un NamedTableItem cercandolo in base al nome
     def updateNamedItem(self, name, value):

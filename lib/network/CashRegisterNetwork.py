@@ -1,21 +1,21 @@
 from pyrebase.pyrebase import Stream
 
-from lib.firebaseData import firebase
+from lib.firebaseData import Firebase
 
 
 class CashRegisterNetwork:
 
     @staticmethod
     def stream(stream_handler: callable) -> Stream:
-        return firebase.database().child("transactions").stream(stream_handler)
+        return Firebase.database.child("transactions").stream(stream_handler)
 
     @staticmethod
     def get_next_id():
-        return firebase.database().child("next_ids").get().val()["transaction"]
+        return Firebase.database.child("next_ids").get().val()["transaction"]
 
     @staticmethod
     def insert(data: dict) -> str:
-        db = firebase.database()
+        db = Firebase.database
         transaction_id: int = CashRegisterNetwork.get_next_id()
         serial_number: str = f"{transaction_id:04d}"
         db.child("transactions").child(serial_number).set(data)
@@ -24,8 +24,8 @@ class CashRegisterNetwork:
 
     @staticmethod
     def update(order_id: str, data: dict):
-        firebase.database().child("transactions").child(order_id).update(data)
+        Firebase.database.child("transactions").child(order_id).update(data)
 
     @staticmethod
     def delete(order_id: str):
-        firebase.database().child("transactions").child(order_id).remove()
+        Firebase.database.child("transactions").child(order_id).remove()

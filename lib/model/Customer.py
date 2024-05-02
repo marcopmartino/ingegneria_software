@@ -1,6 +1,7 @@
 from pyrebase.pyrebase import Stream
 
 from lib import firebaseData as firebase
+from lib.firebaseData import Firebase
 from lib.model.User import User
 from lib.network.UsersNetwork import UsersNetwork
 from lib.utility.ObserverClasses import Observable
@@ -70,7 +71,7 @@ class Customer(User, Observable):
         if data is not None:
             match message['event']:
                 case "put":  # Funzione di aggiunta dati
-                    data['uid'] = firebase.currentUserId()
+                    data['uid'] = Firebase.auth.currentUserId()
                     self.__add_data(data)
                 case "patch":  # Funzione di modifica dei dati
                     for key, value in data.items():
@@ -94,7 +95,7 @@ class Customer(User, Observable):
     # Modifica i dati degli utenti nel database
     @staticmethod
     def setUserData(form_data: dict[str, any], newPassword, uid):
-        UserNetwork.update(form_data, newPassword, uid)
+        UsersNetwork.update(form_data, newPassword, uid)
 
     # Salva un nuovo utente nel database
     # @staticmethod
@@ -111,6 +112,6 @@ class Customer(User, Observable):
     @staticmethod
     def delete(self, email: str):
         try:
-            UserNetwork.delete_by_email(email)
+            UsersNetwork.delete_by_email(email)
         except Exception as e:
             print(e)
