@@ -28,6 +28,11 @@ class UsersNetwork:
             lambda: firebase.auth.create_user_with_email_and_password(email, password))
 
     @staticmethod
+    def create_worker_profile(email, password):
+        return HTTPErrorHelper.differentiate(
+            lambda: firebase.auth().create_user_with_email_and_password(email, password))
+
+    @staticmethod
     def create_data(form_data, user):
         HTTPErrorHelper.differentiate(
             lambda: firebase.database.child('users').child(user['localId']).set(form_data))

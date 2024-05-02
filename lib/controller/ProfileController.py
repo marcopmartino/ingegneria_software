@@ -32,7 +32,7 @@ class ProfileController:
 
     # Restituisce il model di un membro dello staff
     def get_staff_model(self):
-        return self.__staff_model.get()
+        return self.__staff_model.get_dict()
 
     # Controlla che le credenziali inserite in fase di modifica dei dati siano corrette per un cliente
     def customer_checkLogin(self, currentEmail, password):
