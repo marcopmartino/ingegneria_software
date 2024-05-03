@@ -49,6 +49,39 @@ class DateTableItem(QTableWidgetItem):
         return self.getYearMonthDayString() < other.getYearMonthDayString()
 
 
+# Elemento della tabella rappresentante un numero intero
+# noinspection PyPep8Naming
+class IntegerTableItem(QTableWidgetItem):
+    def __init__(self, text: str = ''):
+        super().__init__(text)
+
+    # Stabilisce se un intero è più piccolo di un altro
+    def __lt__(self, other: IntegerTableItem):
+        return int(self.text()) < int(other.text())
+
+
+# Elemento della tabella rappresentante un numero in floating point
+# noinspection PyPep8Naming
+class FloatTableItem(QTableWidgetItem):
+    def __init__(self, text: str = ''):
+        super().__init__(text)
+
+    # Stabilisce se un numero è più piccolo di un altro
+    def __lt__(self, other: FloatTableItem):
+        return float(self.text()) < float(other.text())
+
+
+# Elemento della tabella rappresentante un prezzo
+# noinspection PyPep8Naming
+class PriceTableItem(QTableWidgetItem):
+    def __init__(self, text: str = ''):
+        super().__init__(text)
+
+    # Stabilisce se un numero è più piccolo di un altro
+    def __lt__(self, other: NumberTableItem):
+        return PriceFormatter.unformat(self.text()) < PriceFormatter.unformat(other.text())
+
+
 # Widget tabella esteso con una lista di NamedTableItem e nuovi metodi
 # noinspection PyPep8Naming
 class ExtendedTableWidget(QTableWidget):

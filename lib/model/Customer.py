@@ -18,7 +18,7 @@ class Customer(User, Observable):
         self.__stream: Stream | None = None
 
     def open_stream(self):
-        self._uid = firebase.currentUserId()
+        self._uid = Firebase.auth.currentUserId()
         self.__stream = UsersNetwork.stream_by_id(self._uid, self.__stream_handler)
 
     def close_stream(self):

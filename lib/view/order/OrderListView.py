@@ -18,7 +18,7 @@ from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from lib.widget.Separators import HorizontalLine
-from lib.widget.TableWidgets import StandardTable, DateTableItem
+from lib.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
 from res.Dimensions import FontSize
 
 
@@ -137,7 +137,11 @@ class OrderListView(BaseWidget):
 
         # Table Adapter
         self.table_adapter = OrderListAdapter(self.table)
+        self.table_adapter.setColumnItemClass(0, IntegerTableItem)  # Per un corretto ordinamento degli ordini
+        self.table_adapter.setColumnItemClass(1, IntegerTableItem)  # Per un corretto ordinamento degli articoli
         self.table_adapter.setColumnItemClass(2, DateTableItem)  # Per un corretto ordinamento delle date
+        self.table_adapter.setColumnItemClass(4, IntegerTableItem)  # Per un corretto ordinamento delle quantità
+        self.table_adapter.setColumnItemClass(5, PriceTableItem)  # Per un corretto ordinamento dei prezzi
         self.table_adapter.onDoubleClick(self.show_order_details)
 
         def update_order_list_view(message: Message):

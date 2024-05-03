@@ -12,7 +12,7 @@ from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.main.BaseWidget import BaseWidget
 from lib.widget.Separators import HorizontalLine
-from lib.widget.TableWidgets import StandardTable, DateTableItem
+from lib.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
 from res.Dimensions import FontSize
 
 
@@ -118,7 +118,9 @@ class CashRegisterView(BaseWidget):
 
         # Table Adapter
         self.table_adapter = TransactionListAdapter(self.table)
+        self.table_adapter.setColumnItemClass(0, IntegerTableItem)  # Per un corretto ordinamento delle date
         self.table_adapter.setColumnItemClass(2, DateTableItem)  # Per un corretto ordinamento delle date
+        self.table_adapter.setColumnItemClass(3, PriceTableItem)  # Per un corretto ordinamento delle date
         '''self.table_adapter.onDoubleClick(self.show_order_details)'''
 
         def update_cash_register_view(message: Message):

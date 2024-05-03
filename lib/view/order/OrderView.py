@@ -369,7 +369,7 @@ class OrderStateCreated(OrderState):
         # Imposto la descrizione dello stato
         self._view.state_description_label.setText("In attesa che la lavorazione abbia inizio")
 
-        match getUserRole():
+        match Firebase.auth.currentUserRole():
             case "customer":
                 # Aggiunge i pulsanti di modifica e annullamento dell'ordine al layout
                 self._view.sidebar_layout.addWidget(self._view.modify_order_button)
@@ -380,7 +380,7 @@ class OrderStateCreated(OrderState):
                 self._view.order_changes_info_label.setText(
                     "Sarà possibile modificare o annullare l'ordine solo finché la lavorazione non avrà inizio."
                 )
-            case "manager" | "admin":
+            case "admin":
                 # Aggiunge il pulsante per mettere l'ordine in lavorazione
                 self._view.sidebar_layout.addWidget(self._view.state_transition_button)
                 self._view.state_transition_button.setText("Metti in lavorazione")
@@ -414,7 +414,7 @@ class OrderStateProcessing(OrderState):
         # Imposta la descrizione dello stato
         self._view.state_description_label.setText("In attesa che l'ordine sia completato")
 
-        match getUserRole():
+        match Firebase.auth.currentUserRole():
             case "customer":
                 # Aggiunge i pulsanti (disabilitati) di modifica e annullamento dell'ordine al layout
                 self._view.sidebar_layout.addWidget(self._view.modify_order_button)
@@ -430,7 +430,7 @@ class OrderStateProcessing(OrderState):
             case "worker":
                 # Aggiunge le Label con le informazioni sul completamento dell'ordne
                 self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
-            case "manager" | "admin":
+            case "admin":
                 # Aggiunge le Label con le informazioni sul completamento dell'ordne
                 self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
 
@@ -446,7 +446,7 @@ class OrderStateProcessing(OrderState):
         # Aggiorna la descrizione dello stato
         self._view.state_description_label.setText("In attesa che l'ordine sia completato")
 
-        match getUserRole():
+        match Firebase.auth.currentUserRole():
             case "customer":
                 # Disabilita i pulsanti di modifica e di eliminazione dell'ordine
                 self._view.modify_order_button.setEnabled(False)
@@ -459,7 +459,7 @@ class OrderStateProcessing(OrderState):
             case "worker":
                 # Aggiunge le Label con le informazioni sul completamento dell'ordne
                 self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
-            case "manager" | "admin":
+            case "admin":
                 # Aggiunge le Label con le informazioni sul completamento dell'ordne
                 self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
 
@@ -491,7 +491,7 @@ class OrderStateCompleted(OrderState):
         # Imposta la descrizione dello stato
         self._view.state_description_label.setText("L'ordine è pronto per essere ritirato")
 
-        match getUserRole():
+        match Firebase.auth.currentUserRole():
             case "manager" | "admin":
                 # Aggiunge le Label con le informazioni sul completamento dell'ordne
                 self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
@@ -508,7 +508,7 @@ class OrderStateCompleted(OrderState):
         # Aggiorna la descrizione dello stato
         self._view.state_description_label.setText("L'ordine è pronto per essere ritirato")
 
-        match getUserRole():
+        match Firebase.auth.currentUserRole():
             case "customer":
                 # Nasconde i pulsanti di modifica e di eliminazione dell'ordine
                 self._view.modify_order_button.setHidden(True)
@@ -553,8 +553,8 @@ class OrderStateDelivered(OrderState):
         # Aggiorna la descrizione dello stato
         self._view.state_description_label.setText("L'ordine è stato consegnato")
 
-        match getUserRole():
-            case "manager" | "admin":
+        match Firebase.auth.currentUserRole():
+            case "admin":
                 self._view.state_transition_button.setHidden(True)
 
     def transition_to_next_state(self):
