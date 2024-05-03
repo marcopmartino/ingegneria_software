@@ -8,7 +8,7 @@ class OrdersNetwork:
 
     @staticmethod
     def stream(stream_handler: callable) -> Stream:
-        return Firebase.database.child("orders").stream(stream_handler, token=Firebase.auth.currentUserToken())
+        return Firebase.database.child("orders").stream(stream_handler)
 
     @staticmethod
     def get_next_id():

@@ -140,7 +140,8 @@ class MachineListView(BaseWidget):
             data = message.data()
             match message.event():
                 case MachinesRepository.Event.MACHINES_INITIALIZED:
-                    self.table_adapter.setData(self.controller.filter_machines(data))
+                    self.table_adapter.setData(self.controller.filter_machines(
+                        self.form_manager.data(), *data))
 
                 case MachinesRepository.Event.MACHINE_STARTED:
                     pass

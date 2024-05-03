@@ -144,7 +144,7 @@ class OrderListView(BaseWidget):
             data = message.data()
             match message.event():
                 case OrdersRepository.Event.ORDERS_INITIALIZED:
-                    self.table_adapter.setData(self.controller.filter_orders(data))
+                    self.table_adapter.setData(self.controller.filter_orders(self.form_manager.data(), *data))
 
                 case OrdersRepository.Event.ORDER_CREATED:
                     if len(self.controller.filter_orders(self.form_manager.data(), data)) != 0:

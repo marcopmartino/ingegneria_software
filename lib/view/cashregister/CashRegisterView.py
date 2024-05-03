@@ -42,8 +42,8 @@ class CashRegisterView(BaseWidget):
         # ComboBox
         self.search_combo_box = ComboBox(self.sidebar_frame)
         self.search_combo_box.setObjectName("searchcombobox_line_edit")
-        self.search_combo_box.insertItem(0, "Cerca in base all'ordine", userData="ordine")
-        self.search_combo_box.insertItem(1, "Cerca in base all'articolo", userData="articolo")
+        self.search_combo_box.insertItem(0, "Cerca in base all'id", userData="id")
+        self.search_combo_box.insertItem(1, "Cerca in base alla descrizione", userData="descrizione")
         self.search_combo_box.setCurrentIndex(0)
 
         # Layout di ricerca con SearchBox e ComboBox
@@ -110,6 +110,7 @@ class CashRegisterView(BaseWidget):
         self.table = StandardTable(self.central_frame)
         headers = ["Id", "Descrizione", "Data pagamento", "Importo"]
         self.table.setHeaders(headers)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.table.setColumnWidth(0, 100)
         self.table.setColumnWidth(2, 150)
         self.table.setColumnWidth(3, 150)
@@ -124,7 +125,8 @@ class CashRegisterView(BaseWidget):
             data = message.data()
             match message.event():
                 case CashRegisterRepository.Event.CASH_REGISTER_INITIALIZED:
-                    self.table_adapter.setData(self.controller.filter_transactions(data))
+                    self.table_adapter.setData(self.controller.filter_transactions(
+                        self.form_manager.data(), *data))
 
                 case CashRegisterRepository.Event.TRANSACTION_CREATED:
                     if len(self.controller.filter_transactions(self.form_manager.data(), message.data())) != 0:

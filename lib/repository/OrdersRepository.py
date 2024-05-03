@@ -52,9 +52,19 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
                 if path == "/":
                     # Se c'è almeno un ordine nella lista
                     if data:
-                        for key, value in data.items():
-                            # Crea e aggiunge un ordine alla lista di ordini della repository
-                            self.__instantiate_and_append_order(key, value)
+
+                        # Se l'utente è un cliente, aggiunge alla repository solo i suoi ordini
+                        if Firebase.auth.currentUserRole() == "customer":
+                            for key, value in data.items():
+                                if Firebase.auth.currentUserId() == value["customer_id"]:
+                                    # Crea e aggiunge un ordine alla lista di ordini della repository
+                                    self.__instantiate_and_append_order(key, value)
+
+                        # Altrimenti, aggiunge tutti gli ordini
+                        else:
+                            for key, value in data.items():
+                                # Crea e aggiunge un ordine alla lista di ordini della repository
+                                self.__instantiate_and_append_order(key, value)
 
                         # Notifico gli osservatori che la repository ha concluso l'inizializzazione
                         self.notify(Message(OrdersRepository.Event.ORDERS_INITIALIZED, self.__order_list))
@@ -66,11 +76,19 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
 
                     # Quando viene creato un nuovo ordine, data non è None
                     if data:
-                        # Crea e aggiunge un ordine alla lista di ordini della repository
-                        order = self.__instantiate_and_append_order(order_serial, data)
 
-                        # Prepara il messaggio per notificare gli osservatori della lista degli ordini
-                        message = Message(OrdersRepository.Event.ORDER_CREATED, order)
+                        # Aggiunge l'ordine alla repository solo se l'utente è un dipendente o il cliente che ha
+                        # creato l'ordine
+                        if (Firebase.auth.currentUserRole() != "customer"
+                                or Firebase.auth.currentUserId() == data["customer_id"]):
+                            # Crea e aggiunge un ordine alla lista di ordini della repository
+                            order = self.__instantiate_and_append_order(order_serial, data)
+
+                            # Prepara il messaggio per notificare gli osservatori della lista degli ordini
+                            message = Message(OrdersRepository.Event.ORDER_CREATED, order)
+
+                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                            self.notify(message)
 
                     # Quando viene eliminato un ordine, data è None
                     else:
@@ -83,10 +101,10 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
                                 message = Message(OrdersRepository.Event.ORDER_DELETED)
                                 order.notify(message)  # Notifica eventuali osservatori del singolo ordine
                                 message.setData(order_serial)
-                                break
 
-                    # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                    self.notify(message)
+                                # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                                self.notify(message)
+                                break
 
             # Aggiornamento di un ordine
             case "patch":
@@ -98,43 +116,45 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
                 # Prende l'ordine corrispondente
                 order = self.get_order_by_id(order_serial)
 
-                print("Found order " + order.__str__())
+                # Se un ordine è stato trovato
+                if order is not None:
+                    print("Found order " + order.__str__())
 
-                # Caso di aggiornamento dello stato dell'ordine
-                if data.get("state", False):
-                    # Estraggo i dati
-                    new_state: str = data.get("state")
+                    # Caso di aggiornamento dello stato dell'ordine
+                    if data.get("state", False):
+                        # Estraggo i dati
+                        new_state: str = data.get("state")
 
-                    # Aggiorna l'ordine nella lista
-                    order.set_state(new_state)
+                        # Aggiorna l'ordine nella lista
+                        order.set_state(new_state)
 
-                    # Prepara il messaggio per notificare gli osservatori della lista degli ordini
-                    message = Message(OrdersRepository.Event.ORDER_STATE_UPDATED)
-                    order.notify(message)  # Notifica eventuali osservatori del singolo ordine
-                    message.setData(order)
+                        # Prepara il messaggio per notificare gli osservatori della lista degli ordini
+                        message = Message(OrdersRepository.Event.ORDER_STATE_UPDATED)
+                        order.notify(message)  # Notifica eventuali osservatori del singolo ordine
+                        message.setData(order)
 
-                # Caso di aggiornamento dell'articolo dell'ordine
-                else:
-                    # Estraggo i dati (possono essere None se rimasti invariati)
-                    article_serial: str | None = data.get("article_serial")
-                    price: float | None = data.get("price")
-                    quantity: int | None = data.get("quantity")
+                    # Caso di aggiornamento dell'articolo dell'ordine
+                    else:
+                        # Estraggo i dati (possono essere None se rimasti invariati)
+                        article_serial: str | None = data.get("article_serial")
+                        price: float | None = data.get("price")
+                        quantity: int | None = data.get("quantity")
 
-                    # Aggiorna l'ordine nella lista
-                    if article_serial is not None:
-                        order.set_article_serial(article_serial)
-                    if price is not None:
-                        order.set_price(price)
-                    if quantity is not None:
-                        order.set_quantity(quantity)
+                        # Aggiorna l'ordine nella lista
+                        if article_serial is not None:
+                            order.set_article_serial(article_serial)
+                        if price is not None:
+                            order.set_price(price)
+                        if quantity is not None:
+                            order.set_quantity(quantity)
 
-                    # Prepara il messaggio per notificare gli osservatori della lista degli ordini
-                    message = Message(OrdersRepository.Event.ORDER_UPDATED)
-                    order.notify(message)  # Notifica eventuali osservatori del singolo ordine
-                    message.setData(order)
+                        # Prepara il messaggio per notificare gli osservatori della lista degli ordini
+                        message = Message(OrdersRepository.Event.ORDER_UPDATED)
+                        order.notify(message)  # Notifica eventuali osservatori del singolo ordine
+                        message.setData(order)
 
-                # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                self.notify(message)
+                    # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                    self.notify(message)
 
             # Terminazione imprevista dello stream
             case "cancel":
