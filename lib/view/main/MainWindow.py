@@ -21,7 +21,7 @@ from lib.view.main.BaseWidget import BaseWidget
 from lib.view.worker.WorkerListView import WorkerListView
 from lib.view.worker import WorkerProfilePage
 from lib.view.profile import AdminProfilePage, CustomerProfilePage
-from lib.view.order.OrderListView import OrderListView
+#from lib.view.order.OrderListView import OrderListView
 
 
 # Widget per la Title Bar
@@ -170,21 +170,21 @@ class MainWindow(FramelessWindow):
         match user_role:
             case "customer":
                 self.insertSubInterface(2, CustomerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
+                #self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
                 self.insertSubInterface(5, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
 
             case "admin":
                 self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
+               # self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
-                self.insertSubInterface(5, BaseWidget("Magazzino", self), FIF.LIBRARY, 'Magazzino')
+                self.insertSubInterface(5, StoragePage(self), FIF.LIBRARY, 'Magazzino')
                 self.insertSubInterface(6, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
                 self.insertSubInterface(7, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
 
             case "worker":
                 self.insertSubInterface(2, WorkerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
+                #self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
                 self.insertSubInterface(4, BaseWidget('Magazzino', self), FIF.LIBRARY, 'Magazzino')
                 self.insertSubInterface(5, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
 

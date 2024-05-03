@@ -10,8 +10,8 @@ class ArticlesRepository(Observable, metaclass=ObservableSingleton):
     def __init__(self):
         super().__init__()
         self.__article_list: list[Article] = []
-        self.__article_newtork: ArticleNetwork = ArticleNetwork()
-        self.__article_newtork.stream(self.__stream_handler)
+        self.__article_network: ArticleNetwork = ArticleNetwork()
+        self.__article_network.stream(self.__stream_handler)
 
     # Usato internamente per istanziare e aggiungere un articolo alla lista
     def __instantiate_and_append_article(self, serial: str, data: any):
@@ -104,4 +104,4 @@ class ArticlesRepository(Observable, metaclass=ObservableSingleton):
         )
 
         # Salva l'articolo nel database e ritorna il nuovo seriale
-        return self.__article_newtork.insert(article_data)
+        return self.__article_network.insert(article_data)

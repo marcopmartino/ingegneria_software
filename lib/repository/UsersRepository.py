@@ -61,7 +61,7 @@ class UsersRepository(Observable, metaclass=ObservableSingleton):
         # Notifico gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
         self.notify(message)
 
-    # Ritorna la lista degli articoli
+    # Ritorna la lista degli utenti
     def get_user_list(self, role: str) -> list[User]:
         new_users_list = list()
         for user in self.__users_list:
@@ -69,13 +69,13 @@ class UsersRepository(Observable, metaclass=ObservableSingleton):
                 new_users_list.append(user)
         return new_users_list
 
-    # Ritorna un articolo in base al suo numero
+    # Ritorna un utente in base al suo id
     def get_user_by_id(self, user_uid: str) -> User:
         for user in self.__users_list:
             if user.get_uid() == user_uid:
                 return user
 
-    # Se l'articolo esiste già, ne ritorna il seriale. Altrimenti lo crea e ritorna il nuovo seriale
+    # Crea e ritorna l'id del nuovo utente
     def create_user(self, new_user_data: dict[str, any], password) -> str:
         print(f"Nuovo utente:{new_user_data}")
 
