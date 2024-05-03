@@ -31,8 +31,8 @@ class Auth(pyrebase.pyrebase.Auth):
     def currentUserId(self) -> str:
         return self.current_user.get("localId")
 
-    def currentUserToken(self) -> str:
-        return self.current_user.get("idToken")
+    def currentUserEmail(self) -> str:
+        return self.current_user.get("email")
 
     def updateCurrentUserEmail(self, new_email: str):
         admin_auth.update_user(self.currentUserId(), email=new_email)

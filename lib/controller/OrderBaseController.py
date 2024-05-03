@@ -3,7 +3,7 @@ from abc import ABC
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 
 
-class OrderFormController(ABC):
+class OrderBaseController(ABC):
     def __init__(self):
         super().__init__()
         self.__price_catalog_repository = PriceCatalogRepository()

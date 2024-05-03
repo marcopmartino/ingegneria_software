@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QLineEdit, QVBoxLayout, QWidget, QLabel, QSizePolicy
+from qfluentwidgets import LineEdit
 
 from res import Styles
 from res.Dimensions import LineEditDimensions, FontWeight
@@ -9,10 +10,12 @@ from res.Dimensions import LineEditDimensions, FontWeight
 # Classe che rappresenta un layout personalizzato, costituito da un QVBoxLayout che contiene una
 # QLabel e un QLineEdit. Gestisce la logica di visibilità della QLabel (mostrata solo se c'è testo nel QLineEdit).
 # Il testo di QLabel e il placeholder di QLineEdit coincidono.
+
 # noinspection PyPep8Naming
 class LineEditLayout(QVBoxLayout):
 
-    def __init__(self, field_name: str, text: str = "", parent_widget: QWidget = None):
+    def __init__(self, field_name: str, text: str = "", parent_widget: QWidget = None,
+                 line_edit_class: type(QLineEdit) = QLineEdit):
         super().__init__(parent_widget)
 
         lowercase_field_name = field_name.lower()
@@ -31,7 +34,7 @@ class LineEditLayout(QVBoxLayout):
         # LineEdit
         font = QFont()
         font.setPointSize(LineEditDimensions.DEFAULT_TEXT_FONT_SIZE)
-        self.line_edit = QLineEdit(parent_widget)
+        self.line_edit = line_edit_class(parent_widget)
         self.line_edit.setFont(font)
         self.line_edit.setObjectName(f"{lowercase_field_name}_line_edit")
         self.line_edit.setMinimumSize(QSize(LineEditDimensions.DEFAULT_MINIMUM_WIDTH, 0))

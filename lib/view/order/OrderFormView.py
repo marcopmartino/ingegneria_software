@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSpacerItem, QSizePolicy, QVBo
     QDialog, QMessageBox
 from qfluentwidgets import ComboBox, SpinBox, CheckBox, PushButton, PrimaryPushButton
 
-from lib.controller.OrderFormController import OrderFormController
+from lib.controller.OrderBaseController import OrderBaseController
 from lib.controller.OrderListController import OrderListController
 from lib.layout.FrameLayouts import HFrameLayout, VFrameLayout
 from lib.controller.PriceCatalogController import PriceCatalogController
@@ -28,7 +28,7 @@ class OrderFormView(QDialog, ABC, metaclass=OrderFormViewMeta):
         super().__init__()
 
         # Controller
-        self.controller: OrderFormController
+        self.controller: OrderBaseController
         self.controller = None
 
         # Finestra e widget

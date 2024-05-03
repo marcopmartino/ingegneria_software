@@ -3,7 +3,7 @@ from abc import abstractmethod, ABC
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QValidator
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QComboBox, QCheckBox, QButtonGroup, QSpinBox
-from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit
+from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit, DatePicker
 
 from lib.layout.LineEditLayouts import LineEditLayout, LineEditCompositeLayout
 from lib.validation.ValidationRule import ValidationRule
@@ -59,6 +59,7 @@ class IFormField(ABC):
     @abstractmethod
     def clear(self):
         pass
+
 
 # Classe astratta che rappresenta un campo validabile di una form
 # noinspection PyPep8Naming
@@ -213,7 +214,7 @@ class SpinBoxFormField(IFormField):
         return self.input_field.valueChanged
 
     def clear(self):
-        self.input_field.setValue(int((self.input_field.maximum + self.input_field.minimum)/2))
+        self.input_field.setValue(int((self.input_field.maximum + self.input_field.minimum) / 2))
 
 
 # Classe adattatrice per QButtonGroup
@@ -229,6 +230,23 @@ class RadioGroupFormField(IFormField):
 
     def clear(self):
         pass
+
+
+# Classe adattatrice per DatePicker
+class DatePickerFormField(IFormField):
+    def __init__(self, date_picker: DatePicker):
+        super().__init__(date_picker)
+
+    def data(self):
+        return self.input_field.date.toString('dd/MM/yyyy')
+
+    def data_changed(self):
+        return self.input_field.dateChanged
+
+    def clear(self):
+        pass
+
+
 
 
 # Classe adattatrice per QLineEdit senza validatore

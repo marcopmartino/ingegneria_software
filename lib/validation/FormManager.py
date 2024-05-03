@@ -2,7 +2,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QPushButton, QLayout, QWidget
 
 from lib.validation.FormField import IFormField, CheckBoxFormField, SpinBoxFormField, ComboBoxFormField, \
-    LineEditFormField
+    LineEditFormField, DatePickerFormField
 
 
 # Classe per la gestione delle form. Automatizza il processo di validazione dei campi e di estrazione dei loro dati.
@@ -75,6 +75,8 @@ class FormManager(QObject):
                 self.add_fields(ComboBoxFormField(obj))
             case "QLineEdit" | "LineEdit" | "SearchLineEdit":
                 self.add_fields(LineEditFormField(obj))
+            case "DatePicker" | "CustomeDatePicker":
+                self.add_fields(DatePickerFormField(obj))
 
     # Cerca e aggiunge i campi di input figli di un Widget
     def add_widget_fields(self, *widgets: QWidget):

@@ -1,4 +1,4 @@
-from lib.controller.OrderFormController import OrderFormController
+from lib.controller.OrderBaseController import OrderBaseController
 from lib.model.Order import Order
 from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.repository.OrdersRepository import OrdersRepository
@@ -6,7 +6,7 @@ from lib.utility.ObserverClasses import Observer, AnonymousObserver
 from res.Strings import OrderStateStrings
 
 
-class OrderController(OrderFormController):
+class OrderController(OrderBaseController):
     def __init__(self, order: Order):
         super().__init__()
 

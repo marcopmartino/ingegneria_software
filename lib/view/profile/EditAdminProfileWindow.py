@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, Q
     QDialog
 
 import lib.utility.UtilityClasses as utility
-import lib.firebaseData as firebaseConfig
+from lib.firebaseData import Firebase
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
@@ -68,7 +68,7 @@ class EditAdminProfileWindow(QDialog):
         self.profileForm.setAlignment(self.nameLayout, Qt.AlignCenter)
 
         # Campo input email
-        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, firebaseConfig.currentUser['email'], self)
+        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, Firebase.auth.currentUserEmail(), self)
         self.emailLayout.line_edit.setEnabled(False)
         self.profileForm.addLayout(self.emailLayout)
         self.profileForm.setAlignment(self.emailLayout, Qt.AlignCenter)
@@ -150,7 +150,7 @@ class EditAdminProfileWindow(QDialog):
     def on_submit(self, form_data: dict[str, any]):
         newPassword = None
         print("Save_edit...")
-        currentEmail = firebaseConfig.currentUser['email']
+        currentEmail = Firebase.auth.currentUserEmail()
         password = self.passwordLayout.line_edit.text()
         if self.newPasswordLayout.line_edit.text() is not None:
             if len(self.newPasswordLayout.line_edit.text()) > 6:
@@ -178,7 +178,7 @@ class EditAdminProfileWindow(QDialog):
                 "phone": utility.format_phone(self.phoneLayout.line_edit.text()),
                 "role": "manager"
             }
-            self.controller.staff_setUserData(data, newPassword, firebaseConfig.currentUser['localId'])
+            self.controller.staff_setUserData(data, newPassword, Firebase.auth.currentUserId())
             self.close()
         except Exception as e:
             print(e)

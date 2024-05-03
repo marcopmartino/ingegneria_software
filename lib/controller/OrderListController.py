@@ -1,7 +1,7 @@
 # Controller per OrderListView
 from typing import Callable
 
-from lib.controller.OrderFormController import OrderFormController
+from lib.controller.OrderBaseController import OrderBaseController
 from lib.firebaseData import Firebase
 from lib.model.Article import Article
 from lib.model.Customer import Customer
@@ -11,7 +11,7 @@ from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 
 
-class OrderListController(OrderFormController):
+class OrderListController(OrderBaseController):
 
     def __init__(self):
         super().__init__()

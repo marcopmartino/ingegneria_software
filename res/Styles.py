@@ -221,7 +221,7 @@ DELETE_BUTTON = """/* Set style for QPushButton */\n
                 }\n
                 QPushButton:pressed {\n
                     background-color: #FFF;\n
-                    color: #0B5ED7;\n
+                    color: #ff3300;\n
                     border: 2px solid #ff8566;\n
                 }\n"""
 
