@@ -17,11 +17,11 @@ class ProductListController:
     def get_product_by_id(self, product_id: str) -> Product:
         return self.__products_repository.get_product_by_id(product_id)
 
-    # Ritorna la lista di ordini
+    # Ritorna la lista dei prodotti
     def get_products_list(self) -> list[Product]:
         return self.__products_repository.get_products_list()
 
-    # Ritorna la lista di ordini filtrata
+    # Ritorna la lista dei prodotti filtrata
     def get_filtered_product_list(self, filters: dict[str, any]) -> list[Product]:
         return self.filter_product_list(self.__products_repository.get_products_list().copy(), filters)
 
@@ -29,7 +29,7 @@ class ProductListController:
     @staticmethod
     def filter_product_list(product_list: list[Product], filters: dict[str, any]) -> list[Product]:
 
-        # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio degli ordini
+        # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio dei prodotti
 
         # Parametri di filtro scelti dall'utente
         search_text: str = filters["searchbox"]  # Valore del campo del prodotto sulla base di cui filtrare
@@ -48,7 +48,7 @@ class ProductListController:
         # Numero di campi ammessi
         allowed_types_count: int = len(allowed_types)
 
-        # Se nessuno stato è ammesso, la lista degli ordini da mostrare è quella vuota
+        # Se nessuno stato è ammesso, la lista dei prodotti da mostrare è quella vuota
         if allowed_types_count:
 
             # Dato un prodotto, ne ritorna i dettagli
@@ -57,7 +57,7 @@ class ProductListController:
 
             filter_field = product_details
 
-            # Filtra la lista degli ordini
+            # Filtra la lista dei prodotti
             for product in reversed(product_list):
 
                 # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
@@ -83,14 +83,14 @@ class ProductListController:
         product_serial = self.__products_repository.create_product(data)
 
     def get_max_storge(self):
-        return self.__products_repository.get_max_storage()
+        return self.__products_repository.get_max_storage("product")
 
     def get_available_storage(self):
-        return self.__products_repository.get_available_storage()
+        return self.__products_repository.get_available_storage("product")
 
     def get_used_storage(self):
-        return self.__products_repository.get_used_storage()
+        return self.__products_repository.get_used_storage("product")
 
     def sort_products(self, reverse: bool):
-        self.__products_repository.sort_products_list(reverse)
+        self.__products_repository.sort_list("product", reverse)
 

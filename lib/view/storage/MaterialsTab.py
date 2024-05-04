@@ -3,23 +3,22 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from qfluentwidgets import SearchLineEdit, ComboBox, CheckBox, PushButton
 
+from lib.controller.MaterialsListController import MaterialsListController
 from lib.view.main.BaseWidget import BaseWidget
-from lib.controller.ProductListController import ProductListController
 from lib.model.Product import Product
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
-from lib.validation.ValidationRule import ValidationRule
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
-from res.Dimensions import FontSize, ValidationDimensions
+from res.Dimensions import FontSize
 
 
-class ProductsPage(BaseWidget):
+class MaterialsTab(BaseWidget):
     def __init__(self, parent_widget: QWidget):
-        super().__init__("products_list_view", parent_widget)
+        super().__init__("materials_list_view", parent_widget)
         self.hideHeader()
 
-        self.controller = ProductListController()
+        self.controller = MaterialsListController()
 
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(12)
@@ -109,9 +108,9 @@ class ProductsPage(BaseWidget):
             self.search_box.setText("")
             match index:
                 case 0:
-                    self.controller.sort_products(False)
+                    self.controller.sort_materials(False)
                 case 1:
-                    self.controller.sort_products(True)
+                    self.controller.sort_materials(True)
 
         self.sort_combo_box.currentIndexChanged.connect(on_sorter_combo_index_changed)
         self.sort_combo_box.setCurrentIndex(0)
@@ -119,7 +118,7 @@ class ProductsPage(BaseWidget):
         # Button "Aggiorna lista"
         self.refresh_button = PushButton(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
-        self.refresh_button.clicked.connect(self.refresh_product_list)
+        self.refresh_button.clicked.connect(self.refresh_materials_list)
 
         # Spacer tra i due pulsanti
         self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
@@ -144,7 +143,7 @@ class ProductsPage(BaseWidget):
 
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
-        self.table_adapter.setData(self.controller.get_products_list())
+        self.table_adapter.setData(self.controller.get_materials_list())
 
         # self.table_adapter.onSelection(self.show_product_details)
 
@@ -154,18 +153,18 @@ class ProductsPage(BaseWidget):
             else:
                 self.table_adapter.removeRowByKey(message)
 
-        self.controller.observe_product_list(update_table)
+        self.controller.observe_materials_list(update_table)
 
         self.central_layout.addWidget(self.table)
 
     # Ritorna la lista di ordini filtrata
-    def get_filtered_product_list(self) -> list[Product]:
-        return self.controller.get_filtered_product_list(self.form_manager.data())
+    def get_filtered_materials_list(self) -> list[Product]:
+        return self.controller.get_filtered_materials_list(self.form_manager.data())
 
-    # Aggiorna la lista dei prodotti in base ai filtri
-    def refresh_product_list(self):
+    # Aggiorna la lista dei materiali in base ai filtri
+    def refresh_materials_list(self):
         self.table.clearSelection()
-        self.table_adapter.setData(self.get_filtered_product_list())
+        self.table_adapter.setData(self.get_filtered_materials_list())
 
     # Mostra la form per l'aggiunta dei prodotti
     '''def show_order_form(self):
@@ -182,7 +181,7 @@ class ProductsPage(BaseWidget):
 
 class StorageListAdapter(TableAdapter):
     def adaptData(self, product: Product) -> list[str]:
-        return [product.get_product_serial(),
+        return [product.get_serial(),
                 product.get_type(),
                 product.get_details(),
                 str(product.get_amount())
