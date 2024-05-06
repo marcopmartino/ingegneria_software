@@ -42,6 +42,9 @@ class LineEditLayout(QVBoxLayout):
         self.line_edit.setPlaceholderText(field_name)
         self.line_edit.setText(text)
 
+        if line_edit_class == LineEdit:
+            self.line_edit.setFixedHeight(35)
+
         if not text:
             self.line_edit.setClearButtonEnabled(True)  # Abilita il pulsante per lo svuotamento del campo
 
@@ -67,9 +70,10 @@ class LineEditLayout(QVBoxLayout):
 # Estensione di LineEditLayout che oltre a una QLabel e a un QLineEdit contiene una seconda QLabel per mostrare un
 # messaggio di errore; è utile nelle form per la validazione.
 class LineEditCompositeLayout(LineEditLayout):
-    def __init__(self, field_name: str, text: str = None, parent_widget: QWidget = None):
+    def __init__(self, field_name: str, text: str = None, parent_widget: QWidget = None,
+                 line_edit_class: type(QLineEdit) = QLineEdit):
         # Imposta il layout, la Label e il LineEdit
-        super().__init__(field_name, text, parent_widget)
+        super().__init__(field_name, text, parent_widget, line_edit_class)
 
         # Seconda Label per mostrare un errore di input, utile nella validazione
         font = QFont()
