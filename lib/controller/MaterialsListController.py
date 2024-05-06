@@ -10,6 +10,9 @@ class MaterialsListController:
         self.__materials_repository = StorageRepository()
         self.__database = firebase.database()
 
+    def open_stream(self):
+        self.__materials_repository.open_materials_stream()
+
     def observe_materials_list(self, callback: callable):
         self.__materials_repository.observe(callback)
 
@@ -32,18 +35,18 @@ class MaterialsListController:
         # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio dei materiali
 
         # Parametri di filtro scelti dall'utente
-        search_text: str = filters["searchbox"]  # Valore del campo del prodotto sulla base di cui filtrare
-        allowed_types: list[str] = []  # Stati del prodotto da mostrare
+        search_text: str = filters["searchbox"]  # Valore del campo del materiale sulla base di cui filtrare
+        allowed_types: list[str] = []  # Tipi di materiale da mostrare
 
-        # In base ai parametri di filtro, determina se uno stato è ammesso a meno
-        def append_types_if_allowed(filter_key: str, state_name: str):
+        # In base ai parametri di filtro, determina se un tipo è ammesso a meno
+        def append_types_if_allowed(filter_key: str, type_name: str):
             if filters[filter_key]:
-                allowed_types.append(state_name)
+                allowed_types.append(type_name)
 
-        # Eseguo la funzione per tutti gli stati possibili
-        append_types_if_allowed("sketches", "Abbozzo")
-        append_types_if_allowed("semifinished", "Semi-lavorato")
-        append_types_if_allowed("finished", "Forma finita")
+        # Eseguo la funzione per tutti i tipi possibili
+        append_types_if_allowed("compass", "Bussola")
+        append_types_if_allowed("ironparts", "Parti per ferratura")
+        append_types_if_allowed("other", "Altro")
 
         # Numero di campi ammessi
         allowed_types_count: int = len(allowed_types)
@@ -62,11 +65,11 @@ class MaterialsListController:
 
                 # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
                 if search_text:
-                    if search_text not in filter_field(material):
+                    if search_text not in filter_field(material).lower():
                         materials_list.remove(material)
                         continue
 
-                # Se tutti gli stati sono ammessi viene saltato il filtro sullo stato
+                # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 3:
                     if material.get_type() not in allowed_types:
                         materials_list.remove(material)

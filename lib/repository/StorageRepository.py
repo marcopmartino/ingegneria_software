@@ -16,6 +16,18 @@ class StorageRepository(Observable, metaclass=ObservableSingleton):
         self.__storage_network.materials_stream(self.__materials_stream_handler)
         self.__storage_network.wastes_stream(self.__wastes_stream_handler)
 
+    # Usato per aprire lo stream sui prodotti
+    def open_products_stream(self):
+        self.__storage_network.products_stream(self.__products_stream_handler)
+
+    # Usato per aprire lo stream sui materiali
+    def open_materials_stream(self):
+        self.__storage_network.materials_stream(self.__materials_stream_handler)
+
+    # Usato per aprire lo stream sugli scarti
+    def open_wastes_stream(self):
+        self.__storage_network.wastes_stream(self.__wastes_stream_handler)
+
     # Usato internamente per istanziare e aggiungere un prodotto alla lista
     def __instantiate_and_append_product(self, serial: str, data: any):
         self.__products_list.append(Product(

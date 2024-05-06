@@ -109,6 +109,12 @@ class TableAdapter(ITableAdapter, ABC):
                 self.table.removeRow(row)
                 break
 
+    def isTableEmpty(self):
+        if self.table.rowCount() != 0:
+            return False
+        else:
+            return True
+
     def getColumnItemClass(self, column: int) -> type(QTableWidgetItem):
         return self.__column_item_class_dict.get(column, QTableWidgetItem)
 

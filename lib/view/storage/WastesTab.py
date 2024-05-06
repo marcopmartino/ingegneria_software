@@ -58,46 +58,74 @@ class WastesTab(BaseWidget):
         self.storage_details_layout.addWidget(self.used_storage, alignment=Qt.AlignLeft)
         self.storage_details_layout.addWidget(self.available_storage, alignment=Qt.AlignLeft)
 
-        # SearchBox
+        '''# SearchBox
         self.search_box = SearchLineEdit(self.sidebar_frame)
         self.search_box.setObjectName("searchbox_line_edit")
         self.search_box.setPlaceholderText("Cerca")
-        self.search_box.searchButton.setEnabled(False)
+        self.search_box.searchButton.setEnabled(False)'''
 
         # Layout con il checkgroup
-        self.checkgroup_layout = QVBoxLayout()
-        self.checkgroup_layout.setSpacing(8)
-        self.checkgroup_layout.setObjectName("first_checkgroup_layout")
+        self.checkgroup1_layout = QVBoxLayout()
+        self.checkgroup1_layout.setSpacing(8)
+        self.checkgroup1_layout.setObjectName("first_checkgroup_layout")
 
         # Checkgroup Label
         font = QFont()
         font.setPointSize(FontSize.FLUENT_DEFAULT)
-        self.checkgroup_label = QLabel(self.sidebar_frame)
-        self.checkgroup_label.setObjectName("marking_group_label")
-        self.checkgroup_label.setText("Filtra per tipo:")
-        self.checkgroup_label.setFont(font)
-        self.checkgroup_layout.addWidget(self.checkgroup_label)
+        self.checkgroup1_label = QLabel(self.sidebar_frame)
+        self.checkgroup1_label.setObjectName("marking_group_label")
+        self.checkgroup1_label.setText("Filtra per plastica:")
+        self.checkgroup1_label.setFont(font)
+        self.checkgroup1_layout.addWidget(self.checkgroup1_label)
+
+        # CheckBox "Plastica tipo 1"
+        self.plastic1_checkbox = CheckBox(self.sidebar_frame)
+        self.plastic1_checkbox.setObjectName("plastic1_check_box")
+        self.plastic1_checkbox.setText("Tipo 1")
+        self.plastic1_checkbox.setChecked(True)
+        self.checkgroup1_layout.addWidget(self.plastic1_checkbox)
+
+        # CheckBox "Plastica tipo 2"
+        self.plastic2_check_box = CheckBox(self.sidebar_frame)
+        self.plastic2_check_box.setObjectName("plastic2_check_box")
+        self.plastic2_check_box.setText("Tipo 2")
+        self.plastic2_check_box.setChecked(True)
+        self.checkgroup1_layout.addWidget(self.plastic2_check_box)
+
+        # CheckBox "Plastica tipo 2"
+        self.plastic3_check_box = CheckBox(self.sidebar_frame)
+        self.plastic3_check_box.setObjectName("plastic3_check_box")
+        self.plastic3_check_box.setText("Tipo 3")
+        self.plastic3_check_box.setChecked(True)
+        self.checkgroup1_layout.addWidget(self.plastic3_check_box)
+
+        # Layout con il checkgroup
+        self.checkgroup2_layout = QVBoxLayout()
+        self.checkgroup2_layout.setSpacing(8)
+        self.checkgroup2_layout.setObjectName("first_checkgroup_layout")
+
+        # Checkgroup Label
+        font = QFont()
+        font.setPointSize(FontSize.FLUENT_DEFAULT)
+        self.checkgroup2_label = QLabel(self.sidebar_frame)
+        self.checkgroup2_label.setObjectName("marking_group_label")
+        self.checkgroup2_label.setText("Filtra per tipo:")
+        self.checkgroup2_label.setFont(font)
+        self.checkgroup2_layout.addWidget(self.checkgroup2_label)
 
         # CheckBox "Abbozzi"
         self.sketches_checkbox = CheckBox(self.sidebar_frame)
         self.sketches_checkbox.setObjectName("sketches_check_box")
         self.sketches_checkbox.setText("Abbozzi")
         self.sketches_checkbox.setChecked(True)
-        self.checkgroup_layout.addWidget(self.sketches_checkbox)
+        self.checkgroup2_layout.addWidget(self.sketches_checkbox)
 
         # CheckBox "Semi-lavorati"
         self.semifinished_check_box = CheckBox(self.sidebar_frame)
         self.semifinished_check_box.setObjectName("semifinished_check_box")
         self.semifinished_check_box.setText("Semi-lavorati")
         self.semifinished_check_box.setChecked(True)
-        self.checkgroup_layout.addWidget(self.semifinished_check_box)
-
-        # CheckBox "Altro"
-        self.finished_check_box = CheckBox(self.sidebar_frame)
-        self.finished_check_box.setObjectName("finished_check_box")
-        self.finished_check_box.setText("Altro")
-        self.finished_check_box.setChecked(True)
-        self.checkgroup_layout.addWidget(self.finished_check_box)
+        self.checkgroup2_layout.addWidget(self.semifinished_check_box)
 
         # Ordina ComboBox
         self.sort_combo_box = ComboBox(self.sidebar_frame)
@@ -105,15 +133,15 @@ class WastesTab(BaseWidget):
         self.sort_combo_box.insertItem(0, "Quantità crescente", userData="crescente")
         self.sort_combo_box.insertItem(1, "Quantità decrescente", userData="decrescente")
 
-        def on_sorter_combo_index_changed(index: int):
+        '''def on_sorter_combo_index_changed(index: int):
             self.search_box.setText("")
             match index:
                 case 0:
                     self.controller.sort_wastes(False)
                 case 1:
-                    self.controller.sort_wastes(True)
+                    self.controller.sort_wastes(True)'''
 
-        self.sort_combo_box.currentIndexChanged.connect(on_sorter_combo_index_changed)
+        # self.sort_combo_box.currentIndexChanged.connect(on_sorter_combo_index_changed)
         self.sort_combo_box.setCurrentIndex(0)
 
         # Button "Aggiorna lista"
@@ -127,8 +155,9 @@ class WastesTab(BaseWidget):
         # Aggiungo i campi della form al layout della sidebar
         self.sidebar_layout.addItem(self.storage_details_layout)
         self.sidebar_layout.addWidget(self.sidebar_spacer)
-        self.sidebar_layout.addWidget(self.search_box)
-        self.sidebar_layout.addItem(self.checkgroup_layout)
+        # self.sidebar_layout.addWidget(self.search_box)
+        self.sidebar_layout.addItem(self.checkgroup1_layout)
+        self.sidebar_layout.addItem(self.checkgroup2_layout)
         self.sidebar_layout.addWidget(self.sort_combo_box)
         self.sidebar_layout.addWidget(self.refresh_button)
         self.sidebar_layout.addWidget(self.sidebar_spacer)

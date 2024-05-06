@@ -10,6 +10,9 @@ class ProductListController:
         self.__products_repository = StorageRepository()
         self.__database = firebase.database()
 
+    def open_stream(self):
+        self.__products_repository.open_products_stream()
+
     def observe_product_list(self, callback: callable):
         self.__products_repository.observe(callback)
 
@@ -33,14 +36,14 @@ class ProductListController:
 
         # Parametri di filtro scelti dall'utente
         search_text: str = filters["searchbox"]  # Valore del campo del prodotto sulla base di cui filtrare
-        allowed_types: list[str] = []  # Stati del prodotto da mostrare
+        allowed_types: list[str] = []  # Tipi di prodotto da mostrare
 
-        # In base ai parametri di filtro, determina se uno stato è ammesso a meno
-        def append_types_if_allowed(filter_key: str, state_name: str):
+        # In base ai parametri di filtro, determina se un tipo è ammesso a meno
+        def append_types_if_allowed(filter_key: str, type_name: str):
             if filters[filter_key]:
-                allowed_types.append(state_name)
+                allowed_types.append(type_name)
 
-        # Eseguo la funzione per tutti gli stati possibili
+        # Eseguo la funzione per tutti i tipi possibili
         append_types_if_allowed("sketches", "Abbozzo")
         append_types_if_allowed("semifinished", "Semi-lavorato")
         append_types_if_allowed("finished", "Forma finita")
@@ -62,11 +65,11 @@ class ProductListController:
 
                 # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
                 if search_text:
-                    if search_text not in filter_field(product):
+                    if search_text not in filter_field(product).lower():
                         product_list.remove(product)
                         continue
 
-                # Se tutti gli stati sono ammessi viene saltato il filtro sullo stato
+                # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 3:
                     if product.get_type() not in allowed_types:
                         product_list.remove(product)

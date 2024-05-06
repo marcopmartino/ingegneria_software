@@ -4,6 +4,9 @@ from PyQt5.QtWidgets import (
 )
 from qfluentwidgets import SegmentedWidget
 
+from lib.controller.MaterialsListController import MaterialsListController
+from lib.controller.ProductListController import ProductListController
+from lib.controller.WastesListController import WastesListController
 from lib.view.main.BaseWidget import BaseWidget
 from lib.view.storage.MaterialsTab import MaterialsTab
 from lib.view.storage.ProductsTab import ProductsTab
@@ -20,7 +23,7 @@ class StoragePage(BaseWidget):
         self.setTitleText("Magazzino")
         self.setSubtitleText("Visualizzazione magazzino formificio")
 
-        self.pivot = SegmentedWidget(self)
+        self.navigation = SegmentedWidget(self)
         self.stackedWidget = QStackedWidget(self)
         self.vBoxLayout = QVBoxLayout(self.central_frame)
 
@@ -33,20 +36,20 @@ class StoragePage(BaseWidget):
         self.addSubInterface(self.materialsInterface, 'materialsInterface', 'Materiali')
         self.addSubInterface(self.wasteInterface, 'wasteInterface', 'Scarti')
 
-        self.vBoxLayout.addWidget(self.pivot)
+        self.vBoxLayout.addWidget(self.navigation)
         self.vBoxLayout.addWidget(self.stackedWidget)
         self.vBoxLayout.setContentsMargins(30, 10, 30, 30)
 
         self.stackedWidget.currentChanged.connect(self.onCurrentIndexChanged)
         self.stackedWidget.setCurrentWidget(self.productsInterface)
-        self.pivot.setCurrentItem(self.productsInterface.objectName())
+        self.navigation.setCurrentItem(self.productsInterface.objectName())
 
         self.central_layout.addLayout(self.vBoxLayout)
         self.central_layout.setAlignment(self.vBoxLayout, Qt.AlignCenter)
 
     def addSubInterface(self, widget: BaseWidget, objectName, text):
         self.stackedWidget.addWidget(widget)
-        self.pivot.addItem(
+        self.navigation.addItem(
             routeKey=objectName,
             text=text,
             onClick=lambda: self.stackedWidget.setCurrentWidget(widget),
@@ -54,6 +57,12 @@ class StoragePage(BaseWidget):
 
     def onCurrentIndexChanged(self, index):
         widget = self.stackedWidget.widget(index)
-        self.pivot.setCurrentItem(widget.objectName())
+        self.navigation.setCurrentItem(widget.objectName())
+
+    @staticmethod
+    def open_stream():
+        ProductListController().open_stream()
+        MaterialsListController().open_stream()
+        WastesListController().open_stream()
 
 

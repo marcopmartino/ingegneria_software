@@ -79,22 +79,22 @@ class MaterialsTab(BaseWidget):
 
         # CheckBox "Abbozzi"
         self.sketches_checkbox = CheckBox(self.sidebar_frame)
-        self.sketches_checkbox.setObjectName("sketches_check_box")
-        self.sketches_checkbox.setText("Abbozzi")
+        self.sketches_checkbox.setObjectName("compass_check_box")
+        self.sketches_checkbox.setText("Bussola")
         self.sketches_checkbox.setChecked(True)
         self.checkgroup_layout.addWidget(self.sketches_checkbox)
 
         # CheckBox "Semi-lavorati"
         self.semifinished_check_box = CheckBox(self.sidebar_frame)
-        self.semifinished_check_box.setObjectName("semifinished_check_box")
-        self.semifinished_check_box.setText("Semi-lavorati")
+        self.semifinished_check_box.setObjectName("ironparts_check_box")
+        self.semifinished_check_box.setText("Parti per ferratura")
         self.semifinished_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.semifinished_check_box)
 
         # CheckBox "Forme finite"
         self.finished_check_box = CheckBox(self.sidebar_frame)
-        self.finished_check_box.setObjectName("finished_check_box")
-        self.finished_check_box.setText("Forma finita")
+        self.finished_check_box.setObjectName("other_check_box")
+        self.finished_check_box.setText("Altro")
         self.finished_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.finished_check_box)
 
