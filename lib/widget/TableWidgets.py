@@ -4,7 +4,7 @@ from abc import abstractmethod, ABC
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QColor, QFont
 from PyQt5.QtWidgets import QTableWidget, QWidget, QFrame, QAbstractItemView, QHeaderView, QStyledItemDelegate, \
-    QTableWidgetItem
+    QTableWidgetItem, QAbstractScrollArea
 
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.utility.Singleton import Singleton
@@ -78,7 +78,7 @@ class PriceTableItem(QTableWidgetItem):
         super().__init__(text)
 
     # Stabilisce se un numero è più piccolo di un altro
-    def __lt__(self, other: NumberTableItem):
+    def __lt__(self, other: PriceTableItem):
         return PriceFormatter.unformat(self.text()) < PriceFormatter.unformat(other.text())
 
 
@@ -152,7 +152,7 @@ class ExtendedTableWidget(QTableWidget):
     # Colora una riga della tabella
     def setRowColor(self, row: int, color: QColor):
         for column in range(self.columnCount()):
-            self.item(row, column).setBackground(QBrush(color))
+            self.item(row, column).setBackground(color)
 
 
 # Tabella standard usata nell'applicazione
@@ -170,6 +170,7 @@ class StandardTable(ExtendedTableWidget):
         self.setSelectionMode(QAbstractItemView.SingleSelection)  # Imposta la seleziona singola anziché multipla
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Impedisce di modificare da tastiera le celle
         self.setSortingEnabled(True)  # Abilita l'ordinamento automatico delle righe in base ai valori di una colonna
+        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)  # Ridimensiona la tabella in base al contenuto
 
         # Header
         self.verticalHeader().hide()  # Nasconde gli header verticali (laterali sinistri)
