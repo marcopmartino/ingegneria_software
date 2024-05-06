@@ -141,12 +141,14 @@ class TableAdapter(ITableAdapter, ABC):
     def setColumnItemClass(self, column: int, item_type: type(QTableWidgetItem)):
         self.__column_item_class_dict.update({column: item_type})
 
-    # Eseguita successivamente all'aggiunta di una riga alla tabella
-    def onRowAdded(self, data: any, row: int) -> None:
+    # Eseguita successivamente all'aggiornamento di una riga della tabella
+    def _onRowUpdated(self, row_data: list[str], row: int) -> None:
         pass
 
     # Popola la tabella con nuovi dati - imposta i QTableWidgetItem
     def setData(self, data: list[any]):
+        self.table.setSortingEnabled(False)  # Disabilita il sorting mentre la tabella viene modificata
+        self.table.clearContents()  # Svuota la tabella
         self.table.setRowCount(len(data))
 
         for row in range(0, self.table.rowCount()):
@@ -156,9 +158,18 @@ class TableAdapter(ITableAdapter, ABC):
             for column in range(0, self.table.columnCount()):
                 self.table.setItem(row, column, self.getColumnItemClass(column)(adapted_element[column]))
 
-            self.onRowAdded(element, row)
+            self._onRowUpdated(adapted_element, row)
+
+        self.table.setSortingEnabled(True)  # Abilita il sorting una volta finito di modificare la tabella
+
+        # Se il sorting è attivo mentre vengono aggiunte righe alla tabella, la riga viene ordinata automaticamente
+        # non appena la cella oggetto di ordinamento viene popolata. Ciò può comportare lo spostamento della nuova
+        # riga in un altro punto della tabella, e una delle vecchie righe prende il suo posto in fondo alla tabella.
+        # Le celle successive a quella oggetto di ordinamento della riga che è appena stata spostata in fondo vengono
+        # sovrascritte, mentre le celle successive della nuova riga rimangono vuote.
 
     def addData(self, data: any):
+        self.table.setSortingEnabled(False)  # Disabilita il sorting mentre la tabella viene modificata
         adapted_data: list = self.adaptData(data)
         row_count: int = self.table.rowCount()
         self.table.setRowCount(row_count + 1)
@@ -166,10 +177,12 @@ class TableAdapter(ITableAdapter, ABC):
         for column in range(0, self.table.columnCount()):
             self.table.setItem(row_count, column, self.getColumnItemClass(column)(adapted_data[column]))
 
-        self.onRowAdded(data, row_count)
+        self._onRowUpdated(adapted_data, row_count)
+        self.table.setSortingEnabled(True)  # Abilita il sorting una volta finito di modificare la tabella
 
     # Aggiorna i dati di una riga della tabella - agisce sui QTableWidgetItem già impostati
     def updateData(self, data: any):
+        self.table.setSortingEnabled(False)  # Disabilita il sorting mentre la tabella viene modificata
         data: list = self.adaptData(data)
         key_column: int = self.__key_column
         data_key: str = data[key_column]
@@ -179,10 +192,14 @@ class TableAdapter(ITableAdapter, ABC):
                 for column in range(0, self.table.columnCount()):
                     self.table.item(row, column).setText(data[column])
 
+                self._onRowUpdated(data, row)
                 break
+
+        self.table.setSortingEnabled(True)  # Abilita il sorting una volta finito di modificare la tabella
 
     # Aggiorna i dati di alcune colonne di una riga della tabella - agisce sui QTableWidgetItem già impostati
     def updateDataColumns(self, data: list, columns: list[int]):
+        self.table.setSortingEnabled(False)  # Disabilita il sorting mentre la tabella viene modificata
         data: list = self.adaptData(data)
         key_column: int = self.__key_column
         data_key: str = data[key_column]
@@ -192,4 +209,7 @@ class TableAdapter(ITableAdapter, ABC):
                 for column in columns:
                     self.table.item(row, column).setText(data[column])
 
+                self._onRowUpdated(data, row)
                 break
+
+        self.table.setSortingEnabled(True)  # Abilita il sorting una volta finito di modificare la tabella
