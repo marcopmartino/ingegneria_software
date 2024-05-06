@@ -37,6 +37,10 @@ class OrderListView(BaseWidget):
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(24)
 
+        # Label
+        self.search_label = QLabel(self.sidebar_frame)
+        self.search_label.setText("Cerca in base a:")
+
         # SearchBox
         self.search_box = SearchLineEdit(self.sidebar_frame)
         self.search_box.setObjectName("searchbox_line_edit")
@@ -48,16 +52,20 @@ class OrderListView(BaseWidget):
         # ComboBox
         self.search_combo_box = ComboBox(self.sidebar_frame)
         self.search_combo_box.setObjectName("searchcombobox_line_edit")
-        self.search_combo_box.insertItem(0, "Cerca in base all'ordine", userData="ordine")
-        self.search_combo_box.insertItem(1, "Cerca in base all'articolo", userData="articolo")
+        self.search_combo_box.insertItem(0, "Ordine", userData="ordine")
+        self.search_combo_box.insertItem(1, "Articolo", userData="articolo")
+        self.search_combo_box.currentIndexChanged.connect(
+            lambda: self.search_box.setPlaceholderText(f"Cerca {self.search_combo_box.currentData()}")
+        )
         self.search_combo_box.setCurrentIndex(0)
 
         # Layout di ricerca con SearchBox e ComboBox
         self.search_box_layout = QVBoxLayout(self.sidebar_frame)
         self.search_box_layout.setContentsMargins(0, 0, 0, 0)
         self.search_box_layout.setSpacing(12)
-        self.search_box_layout.addWidget(self.search_box)
+        self.search_box_layout.addWidget(self.search_label)
         self.search_box_layout.addWidget(self.search_combo_box)
+        self.search_box_layout.addWidget(self.search_box)
 
         # Layout con il checkgroup
         self.checkgroup_layout = QVBoxLayout(self.sidebar_frame)

@@ -1,7 +1,7 @@
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QCloseEvent, QFont, QPalette
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QHeaderView, QScrollArea, QProgressBar
-from qfluentwidgets import PrimaryPushButton, ProgressBar
+from qfluentwidgets import PrimaryPushButton, ProgressBar, BodyLabel
 
 from lib.controller.MachineController import MachineController
 from lib.model.Machine import Machine
@@ -109,7 +109,8 @@ class MachineView(BaseWidget):
         small_font.setPointSize(FontSize.SMALL)
 
         # Label che indica di selezionare un'operazione dalla lista per visualizzare maggiori dettagli
-        self.select_operation_label = QLabel("Seleziona un'operazione per vedere ulteriori dettagli ed eseguirla")
+        self.select_operation_label = BodyLabel(
+            text="Seleziona un'operazione per vedere ulteriori dettagli ed eseguirla")
         self.select_operation_label.setFont(small_font)
         self.select_operation_label.setWordWrap(True)
         self.select_operation_label.setFixedHeight(70)
@@ -155,7 +156,7 @@ class MachineView(BaseWidget):
         self.required_for_start_label.setContentsMargins(0, 6, 0, 2)
 
         self.operation_progress_label = QLabel("Progresso operazione")
-        #self.operation_progress_label.setAlignment(Qt.AlignCenter)
+        # self.operation_progress_label.setAlignment(Qt.AlignCenter)
         self.operation_progress_label.setFont(big_font)
         self.operation_progress_label.setContentsMargins(0, 12, 0, 6)
 
@@ -175,8 +176,8 @@ class MachineView(BaseWidget):
 
         self.emergency_stop_button = PrimaryPushButton(text="Ferma macchinario")
 
-        self.emergency_stop_label = QLabel(
-            "Fermare il macchinario solo in caso di emergenza. I materiali in lavorazione finiranno negli scarti.")
+        self.emergency_stop_label = BodyLabel(
+            text="Fermare il macchinario solo in caso di emergenza. I materiali in lavorazione finiranno negli scarti.")
         self.emergency_stop_label.setFont(small_font)
         self.emergency_stop_label.setWordWrap(True)
         self.emergency_stop_label.setAlignment(Qt.AlignCenter)

@@ -30,7 +30,7 @@ class Customer(User, Observable):
             self._uid = data['uid']
             self.__company = data['company']
             self._phone = data['phone']
-            self._email = data['email']
+            self._email = data['mail']
             self.__delivery = data['delivery']
             self.__IVA = data['IVA']
             self._role = data['role']

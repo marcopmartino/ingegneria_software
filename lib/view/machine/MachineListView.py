@@ -28,12 +28,23 @@ class MachineListView(BaseWidget):
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(24)
 
+        # Label
+        self.search_label = QLabel(self.sidebar_frame)
+        self.search_label.setText("Cerca in base al nome:")
+
         # SearchBox
         self.search_box = SearchLineEdit(self.sidebar_frame)
         self.search_box.setObjectName("searchbox_line_edit")
         self.search_box.setPlaceholderText("Cerca nome")
         self.search_box.searchButton.setEnabled(False)
         self.search_box.setMaxLength(20)
+
+        # Layout di ricerca con SearchBox e ComboBox
+        self.search_box_layout = QVBoxLayout(self.sidebar_frame)
+        self.search_box_layout.setContentsMargins(0, 0, 0, 0)
+        self.search_box_layout.setSpacing(12)
+        self.search_box_layout.addWidget(self.search_label)
+        self.search_box_layout.addWidget(self.search_box)
 
         # Layout con il checkgroup per il tipo
         self.type_checkgroup_layout = QVBoxLayout(self.sidebar_frame)
@@ -118,7 +129,7 @@ class MachineListView(BaseWidget):
         self.state_checkgroup_layout.addWidget(self.working_checkbox)
 
         # Aggiungo i campi della form al layout della sidebar
-        self.sidebar_layout.addWidget(self.search_box)
+        self.sidebar_layout.addLayout(self.search_box_layout)
         self.sidebar_layout.addLayout(self.type_checkgroup_layout)
         self.sidebar_layout.addLayout(self.state_checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)

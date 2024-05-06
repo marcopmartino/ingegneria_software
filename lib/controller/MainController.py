@@ -25,3 +25,4 @@ class MainController:
     def close_streams(self):
         for repository in self.__repositories:
             repository.close_stream()
+            repository.detachAll()
