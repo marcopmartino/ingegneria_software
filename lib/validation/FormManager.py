@@ -111,3 +111,7 @@ class FormManager(QObject):
     # Aggiunge un pulsante per la sola estrazione dei dati, che vengono passati a una funzione di callback
     def add_data_button(self, submit_button: QPushButton, callback: callable):
         submit_button.clicked.connect(lambda: callback(self.data()))
+
+    # Aggiunge un pulsante per la sola estrazione del token, che viene passato a una funzione di callback
+    def add_token_button(self, submit_button: QPushButton, callback: callable):
+        submit_button.clicked.connect(lambda: callback(self.form_token))

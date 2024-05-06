@@ -24,6 +24,8 @@ class AccessStrings:
 class FormStrings:
     COMPANY_NAME = "Nome azienda"
     DELIVERY_ADDRESS = "Indirizzo di recapito"
+    DESCRIPTION = "Descrizione"
+    AMOUNT = "Importo"
     EMAIL = "Email"
     IVA_NUMBER = "Partita IVA"
     NAME = "Nome"

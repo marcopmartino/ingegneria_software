@@ -1,6 +1,8 @@
 import re
 from datetime import datetime
 
+from PyQt5.QtCore import QDate
+
 
 class PhoneFormatter:
     @staticmethod
@@ -30,3 +32,14 @@ class DatetimeUtils:
     @staticmethod
     def current_date() -> str:
         return datetime.today().strftime('%d/%m/%Y')
+
+    # Converte una stringa DD/MM/YYYY in un oggetto QDate
+    @staticmethod
+    def format(dd_mm_yyyy_string: str) -> QDate:
+        date_parts: list = dd_mm_yyyy_string.split('/')
+        return QDate(int(date_parts[2]), int(date_parts[1]), int(date_parts[0]))
+
+    # Converte un oggetto QDate in una stringa DD/MM/YYYY
+    @staticmethod
+    def unformat(date: QDate) -> str:
+        return date.toString('dd/MM/yyyy')

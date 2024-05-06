@@ -13,19 +13,21 @@ from lib.utility.UtilityClasses import DatetimeUtils
 class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
     class Event(Enum):
         CASH_REGISTER_INITIALIZED = 0
-        TRANSACTION_CREATED = 1
-        TRANSACTION_DELETED = 2
-        TRANSACTION_UPDATED = 3
+        CASH_AVAILABILITY_UPDATED = 1
+        TRANSACTION_CREATED = 2
+        TRANSACTION_DELETED = 3
+        TRANSACTION_UPDATED = 4
 
     def __init__(self):
-        self.__transaction_list: list[CashRegisterTransaction] = []  # Inizializza il registro di cassa
+        self.__cash_availability: float = 0  # Inizializza la disponibilità di cassa
+        self.__transaction_list: list[CashRegisterTransaction] = []  # Inizializza la lista delle transazioni
         self.__cash_register_network = CashRegisterNetwork()
         super().__init__(self.__cash_register_network.stream)
 
     # Usato internamente per istanziare e aggiungere una nuova transazione al registro
     def __instantiate_and_append_transaction(self, serial: str, data: any) -> CashRegisterTransaction:
         order = CashRegisterTransaction(
-            serial, data["description"], data["creation_date"], data["amount"], data["is_revenue"]
+            serial, data["description"], data["payment_date"], data["amount"]
         )
         self.__transaction_list.append(order)
         return order
@@ -48,48 +50,69 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
                 if path == "/":
                     # Se c'è almeno una transazione nella lista
                     if data:
-                        for key, value in data.items():
-                            # Crea e aggiunge una transazione al registro di cassa della repository
-                            self.__instantiate_and_append_transaction(key, value)
+                        # Aggiorno la disponibilità di cassa
+                        self.__cash_availability = data.get("cash_availability", 0)
 
-                        # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                        self.notify(Message(
-                            CashRegisterRepository.Event.CASH_REGISTER_INITIALIZED,
-                            self.__transaction_list
-                        ))
+                        # Estraggo le transazioni
+                        data = data.get("transactions")
+
+                        if data:
+                            for key, value in data.items():
+                                # Crea e aggiunge una transazione al registro di cassa della repository
+                                self.__instantiate_and_append_transaction(key, value)
+
+                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                            self.notify(Message(
+                                CashRegisterRepository.Event.CASH_REGISTER_INITIALIZED,
+                                (self.__cash_availability, self.__transaction_list)
+                            ))
 
                 # Se il path è diverso allora siamo nell'ambito di una singola transazione
                 else:
-                    # Estrae l'id della transazione dal path
-                    transaction_id = path.split("/")[1]
 
-                    # Quando viene creata una nuova transazione, data non è None
-                    if data:
-                        # Crea e aggiunge una transazione al registro di cassa della repository
-                        transaction = self.__instantiate_and_append_transaction(transaction_id, data)
+                    # Estrae le sezioni del percorso
+                    path_sections = path.split("/")
+
+                    # Stabilisce se si tratta di un aggiornamento alla disponibilità di cassa o a una transazione
+                    if path_sections[1] == "cash_availability":
+                        # Aggiorna la disponibilità di cassa
+                        self.__cash_availability = data
 
                         # Prepara il messaggio per notificare gli osservatori del registro di cassa
-                        message = Message(CashRegisterRepository.Event.TRANSACTION_CREATED, transaction)
+                        message = Message(CashRegisterRepository.Event.CASH_AVAILABILITY_UPDATED, data)
 
-                    # Quando viene eliminata una transazione, data è None
                     else:
-                        for transaction in self.__transaction_list:
-                            if transaction.get_transaction_id() == transaction_id:
-                                # Rimuove la transazione dal registro di cassa
-                                self.__transaction_list.remove(transaction)
+                        # Estrae l'id della transazione dal path
+                        transaction_id = path_sections[2]
 
-                                # Prepara il messaggio per notificare gli osservatori del registro di cassa
-                                message = Message(CashRegisterRepository.Event.TRANSACTION_DELETED)
-                                message.setData(transaction_id)
-                                break
+                        # Quando viene creata una nuova transazione, data non è None
+                        if data:
+                            # Crea e aggiunge una transazione al registro di cassa della repository
+                            transaction = self.__instantiate_and_append_transaction(transaction_id, data)
+
+                            # Prepara il messaggio per notificare gli osservatori del registro di cassa
+                            message = Message(CashRegisterRepository.Event.TRANSACTION_CREATED, transaction)
+
+                        # Quando viene eliminata una transazione, data è None
+                        else:
+                            for transaction in self.__transaction_list:
+                                if transaction.get_transaction_id() == transaction_id:
+                                    # Rimuove la transazione dal registro di cassa
+                                    self.__transaction_list.remove(transaction)
+
+                                    # Prepara il messaggio per notificare gli osservatori del registro di cassa
+                                    message = Message(CashRegisterRepository.Event.TRANSACTION_DELETED)
+                                    message.setData(transaction_id)
+                                    break
 
                     # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
                     self.notify(message)
 
             # Aggiornamento di una transazione
             case "patch":
+
                 # Estrae l'id della transazione dal path
-                transaction_id = path.split("/")[1]
+                transaction_id = path.split("/")[2]
 
                 print("Updating transaction " + transaction_id)
 
@@ -100,22 +123,23 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
 
                 # Estraggo i dati (possono essere None se rimasti invariati)
                 description: str | None = data.get("description")
-                is_revenue: bool | None = data.get("is_revenue")
+                date: str | None = data.get("payment_date")
                 amount: float | None = data.get("amount")
 
                 # Aggiorna la transazione
                 if description is not None:
                     transaction.set_description(description)
-                if is_revenue is not None:
-                    transaction.set_transaction_type(is_revenue)
+                if date is not None:
+                    transaction.set_payment_date(date)
                 if amount is not None:
                     transaction.set_amount(amount)
 
-                # Prepara il messaggio per notificare gli osservatori della lista delle transazioni
+                # Prepara il messaggio per notificare gli osservatori del registro di cassa
                 message = Message(CashRegisterRepository.Event.TRANSACTION_UPDATED, transaction)
 
                 # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
                 self.notify(message)
+
 
             # Terminazione imprevista dello stream
             case "cancel":
@@ -132,24 +156,23 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
                 return transaction
 
     # Salva la nuova transazione nel database
-    def create_transaction(self, description: str, amount: float, is_revenue: bool) -> str:
+    def create_transaction(self, description: str, amount: float, payment_date: str) -> str:
         # Crea un dizionario con i dati dela nuova transazione
         transaction_data = dict(
             description=description,
             amount=amount,
-            is_revenue=is_revenue,
-            creation_date=DatetimeUtils.current_date()
+            payment_date=payment_date
         )
         # Salva la transazione nel database e ne ritorna l'id
         return self.__cash_register_network.insert(transaction_data)
 
     # Aggiorna una transazione
-    def update_transaction_by_id(self, transaction_id: str, description: str, amount: float, is_revenue: bool):
+    def update_transaction_by_id(self, transaction_id: str, description: str, amount: float, payment_date: str):
         # Crea un dizionario con i campi della transazione da aggiornare
         transaction_data = dict(
             description=description,
             amount=amount,
-            is_revenue=is_revenue,
+            payment_date=payment_date,
         )
         # Salva la transazione nel database e ne ritorna l'id
         return self.__cash_register_network.update(transaction_id, transaction_data)

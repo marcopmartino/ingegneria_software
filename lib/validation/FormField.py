@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QValidator
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QComboBox, QCheckBox, QButtonGroup, QSpinBox
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QComboBox, QCheckBox, QButtonGroup, QSpinBox, QAbstractSpinBox
 from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit, DatePicker
 
 from lib.layout.LineEditLayouts import LineEditLayout, LineEditCompositeLayout
@@ -204,7 +204,7 @@ class CheckBoxFormField(IFormField):
 
 # Classe adattatrice per QSpinBox
 class SpinBoxFormField(IFormField):
-    def __init__(self, spin_box: QSpinBox):
+    def __init__(self, spin_box: QAbstractSpinBox):
         super().__init__(spin_box)
 
     def data(self):

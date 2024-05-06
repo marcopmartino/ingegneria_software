@@ -63,9 +63,9 @@ class CashRegisterController:
 
             # In base a un parametro di filtro, assegna la funzione che ritorna il campo da filtrare
             match search_field:
-                case "ordine":
+                case "id":
                     filter_field = transaction_id
-                case "articolo":
+                case "descrizione":
                     filter_field = description
 
             # Filtra la lista delle transazioni
@@ -78,7 +78,7 @@ class CashRegisterController:
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 2:
-                    if transaction.is_revenue() not in allowed_types:
+                    if transaction.get_amount() > 0 not in allowed_types:
                         continue
 
                 filtered_transaction_list.append(transaction)
@@ -87,12 +87,12 @@ class CashRegisterController:
 
     # Crea una transazione a partire dai dati della form
     def create_transaction(self, data: dict[str, any]):
-        self.__cash_register_repository.create_transaction(data["description"], data["amount"], data["is_revenue"])
+        self.__cash_register_repository.create_transaction(data["descrizione"], data["importo"], data["data"])
 
     # Aggiorna una transazione
-    def update_transaction_by_id(self, data: dict[str, any]):
+    def update_transaction_by_id(self, transaction_id: str, data: dict[str, any]):
         self.__cash_register_repository.update_transaction_by_id(
-            data["form_token"], data["description"], data["amount"], data["is_revenue"])
+            transaction_id, data["descrizione"], data["importo"], data["data"])
 
     # Elimina una transazione
     def delete_transaction_by_id(self,  transaction_id: str):
