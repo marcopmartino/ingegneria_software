@@ -8,13 +8,13 @@ from lib.model.Machine import Machine
 from lib.repository.MachinesRepository import MachinesRepository
 from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter, TableAdapter
-from lib.view.main.BaseWidget import BaseWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.widget.Separators import VerticalSpacer, HorizontalLine
 from res import Colors, Styles
 from res.Dimensions import FontSize, FontWeight
 
 
-class MachineView(BaseWidget):
+class MachineView(SubInterfaceChildWidget):
     messageReceived = pyqtSignal(Message)
 
     # Eseguito alla chiusura della finestra (dopo la chiamata "self.close()")

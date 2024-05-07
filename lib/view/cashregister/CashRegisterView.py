@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHeaderView
-from qfluentwidgets import SearchLineEdit, ComboBox, CheckBox, PushButton, PrimaryPushButton
+from qfluentwidgets import SearchLineEdit, ComboBox, CheckBox, PushButton, PrimaryPushButton, FluentIconBase
 
 from lib.controller.CashRegisterController import CashRegisterController
 from lib.model.CashRegisterTransaction import CashRegisterTransaction
@@ -12,16 +12,17 @@ from lib.utility.UtilityClasses import PriceFormatter
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.cashregister.TransactionFormView import TransactionFormView
-from lib.view.main.BaseWidget import BaseWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
 from res import Styles
+from res.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 
 
-class CashRegisterView(BaseWidget):
-    def __init__(self, parent_widget: QWidget):
-        super().__init__("cash_register_view", parent_widget)
+class CashRegisterView(SubInterfaceWidget):
+    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = CustomIcon.CASH_REGISTER):
+        super().__init__("cash_register_view", parent_widget, svg_icon)
 
         # Controller
         self.controller = CashRegisterController()
@@ -105,20 +106,35 @@ class CashRegisterView(BaseWidget):
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_transaction_list)
 
-        # Spacer tra i due pulsanti
-        self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
+        # Spacer tra i filtri e la cassa
+        self.first_sidebar_spacer = HorizontalLine(self.sidebar_frame)
+        '''
+        # Layout disponibilità di cassa
+        self.cash_register_availability_layout = QVBoxLayout(self.sidebar_frame)
 
+        # Labels disponibilità di cassa
+        self.cash_register_availability_label = QLabel(self.sidebar_frame)
+        self.cash_register_availability_label.setText("Disponibilità cassa:")
+        self.cash_register_availability_layout.addWidget(self.cash_register_availability_label)
+
+        self.cash_register_availability_value_label = QLabel(self.sidebar_frame)
+        self.cash_register_availability_layout.addWidget(self.cash_register_availability_value_label)
+
+        # Spacer tra la cassa e il pulsante di registrazione transazione
+        self.second_sidebar_spacer = HorizontalLine(self.sidebar_frame)
+        '''
         # Button "Registra transazione"
         self.create_button = PrimaryPushButton(self.sidebar_frame)
         self.create_button.setText("Registra transazione")
         self.create_button.clicked.connect(self.show_new_transaction_form)
 
-        # Aggiungo i campi della form al layout della sidebar
+        # Aggiungo i filtri della form e altri widget al layout della sidebar
         self.sidebar_layout.addLayout(self.search_box_layout)
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
-
-        self.sidebar_layout.addWidget(self.sidebar_spacer)
+        self.sidebar_layout.addWidget(self.first_sidebar_spacer)
+        # self.sidebar_layout.addLayout(self.cash_register_availability_layout)
+        # self.sidebar_layout.addWidget(self.second_sidebar_spacer)
         self.sidebar_layout.addWidget(self.create_button)
 
         # Form Manager
@@ -146,9 +162,9 @@ class CashRegisterView(BaseWidget):
         def update_cash_register_view(message: Message):
             data = message.data()
             match message.event():
-                case CashRegisterRepository.Event.CASH_REGISTER_INITIALIZED:
+                case CashRegisterRepository.Event.TRANSACTIONS_INITIALIZED:
                     self.table_adapter.setData(self.controller.filter_transactions(
-                        self.form_manager.data(), *data[1]))
+                        self.form_manager.data(), *data))
 
                 case CashRegisterRepository.Event.TRANSACTION_CREATED:
                     if len(self.controller.filter_transactions(self.form_manager.data(), message.data())) != 0:
@@ -192,4 +208,4 @@ class TransactionListAdapter(TableAdapter):
 
     def _onRowUpdated(self, row_data: list[str], row: int) -> None:
         self.table.setRowColor(row, QColor(125, 195, 95) if PriceFormatter.unformat(row_data[3]) > 0
-                               else QColor(255, 80, 80))
+        else QColor(255, 80, 80))

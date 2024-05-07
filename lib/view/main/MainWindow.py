@@ -1,30 +1,27 @@
 # coding:utf-8
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QIcon, QFont, QBrush, QPainter
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, QWidget
-
-from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter, NavigationTreeWidget, FluentIconBase)
 from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter)
 from qframelesswindow import FramelessWindow, TitleBar
 
 from lib.controller.MainController import MainController
 from lib.firebaseData import Firebase
-from lib.repository.OrdersRepository import OrdersRepository
+from lib.repository.CashRegisterRepository import CashRegisterRepository
+from lib.utility.ObserverClasses import Message
+from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.cashregister.CashRegisterView import CashRegisterView
 from lib.view.machine.MachineListView import MachineListView
+from lib.view.main.NavigationWidgets import CashRegisterAvailabilityNavigationWidget, RemovableNavigationWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget
+from lib.view.order.OrderListView import OrderListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
-from lib.utility.ResourceManager import ResourceManager
+from lib.view.profile import AdminProfilePage, CustomerProfilePage
+from lib.view.worker import WorkerProfilePage
+from lib.view.worker.WorkerListView import WorkerListView
 # from lib.view.storage.StoragePage import StoragePage
 from res.CustomIcon import CustomIcon as CustomFIF
-
-from lib.model.Customer import Customer
-from lib.model.Staff import Staff
-
-from lib.view.main.BaseWidget import BaseWidget
-from lib.view.worker.WorkerListView import WorkerListView
-from lib.view.worker import WorkerProfilePage
-from lib.view.profile import AdminProfilePage, CustomerProfilePage
-from lib.view.order.OrderListView import OrderListView
 
 
 # Widget per la Title Bar
@@ -60,29 +57,6 @@ class CustomTitleBar(TitleBar):
 
     def setIcon(self, icon):
         self.iconLabel.setPixmap(QIcon(icon).pixmap(18, 18))
-
-
-# NavigationWidget rimuovibile
-class RemovableNavigationWidget(NavigationTreeWidget):
-
-    def __init__(self, parent_widget: QWidget, icon: str | QIcon | FluentIconBase, text: str):
-        # Inizializza il NavigationWidget
-        super().__init__(icon, text, True, parent_widget)
-
-        # Carica l'icona per chiudere l'interfaccia corrispondente
-        self.close_icon = ResourceManager.icon("close_icon.png")
-
-    # Personalizza la grafica
-    def paintEvent(self, e):
-        painter = QPainter(self)
-        painter.setRenderHints(QPainter.SmoothPixmapTransform | QPainter.Antialiasing)
-        painter.setPen(Qt.NoPen)  # Imposta la penna
-        painter.setBrush(QBrush(self.close_icon))  # Imposta il pennello
-
-        # Mentre il cursore è sulla voce del menù, mostra l'icona per chiudere l'interfaccia
-        if self.isEnter:
-            painter.translate(160, 6)  # Sposta il cursore del QPainter
-            painter.drawEllipse(0, 0, 24, 24)  # Traccia l'icona
 
 
 # Finestra principale, che contiene sia il menù di navigazione sia i Widget associati alle singole voci
@@ -174,42 +148,94 @@ class MainWindow(FramelessWindow):
         user_role: str = Firebase.auth.currentUserRole()
         print("Tipo account: " + str(user_role))
 
-        # Sezione Top
+        # Popolo il menù laterale di navigazione
         match user_role:
             case "customer":
-                self.insertSubInterface(2, CustomerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'I tuoi ordini')
-                self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
 
-            case "admin":
-                self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
-                self.insertSubInterface(4, PriceCatalogView(self), FIF.DOCUMENT, 'Listino prezzi')
-                # self.insertSubInterface(5, StoragePage(self), FIF.LIBRARY, 'Magazzino')
-                self.insertSubInterface(6, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
-                self.insertSubInterface(7, CashRegisterView(self), FIF.SHOPPING_CART, 'Registro di cassa')
-                self.insertSubInterface(8, WorkerListView(self), CustomFIF.WORKER, 'Gestione dipendenti')
+                # Sezione Top
+                self.insertSubInterface(2, CustomerProfilePage.ProfileWidget(self), 'Profilo')
+                self.insertSubInterface(3, OrderListView(self), 'I tuoi ordini')
+                self.insertSubInterface(4, PriceCatalogView(self), 'Listino prezzi')
+
+                # Sezione Bottom
+                # Informazioni sull'utente
+                self.navigationInterface.insertItem(
+                    index=1,
+                    routeKey="user_info",
+                    icon=FIF.INFO,
+                    selectable=False,
+                    text=f"Autenticato come\ncliente",
+                    position=NavigationItemPosition.BOTTOM
+                )
 
             case "worker":
-                self.insertSubInterface(2, WorkerProfilePage.ProfileWidget(self), FIF.PEOPLE, 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), FIF.DOCUMENT, 'Lista ordini')
-                self.insertSubInterface(4, BaseWidget('Magazzino', self), FIF.LIBRARY, 'Magazzino')
-                self.insertSubInterface(5, MachineListView(self), CustomFIF.MACHINERY, 'Macchinari')
+
+                # Sezione Top
+                self.insertSubInterface(2, WorkerProfilePage.ProfileWidget(self), 'Profilo')
+                self.insertSubInterface(3, OrderListView(self), 'Lista ordini')
+                self.insertSubInterface(4, SubInterfaceWidget('Magazzino', self, FIF.LIBRARY), 'Magazzino')
+                self.insertSubInterface(5, MachineListView(self), 'Macchinari')
+
+                # Sezione Bottom
+                # Informazioni sull'utente
+                self.navigationInterface.insertItem(
+                    index=1,
+                    routeKey="user_info",
+                    icon=FIF.INFO,
+                    selectable=False,
+                    text=f"Autenticato come\ndipendente",
+                    position=NavigationItemPosition.BOTTOM
+                )
+
+            case "admin":
+
+                # Sezione Top
+                self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), 'Profilo')
+                self.insertSubInterface(3, OrderListView(self), 'Lista ordini')
+                self.insertSubInterface(4, PriceCatalogView(self), 'Listino prezzi')
+                # self.insertSubInterface(5, StoragePage(self), 'Magazzino')
+                self.insertSubInterface(6, MachineListView(self), 'Macchinari')
+                self.insertSubInterface(7, CashRegisterView(self), 'Registro di cassa')
+                self.insertSubInterface(8, WorkerListView(self), 'Gestione dipendenti')
+
+                # Sezione Bottom
+                # Informazioni sulla disponibilità di cassa
+                cash_register_availability_item: CashRegisterAvailabilityNavigationWidget = \
+                    CashRegisterAvailabilityNavigationWidget(parent_widget=self, icon=CustomFIF.EURO, text="0,00")
+
+                self.navigationInterface.insertWidget(
+                    index=1,  # Inserito come primo elemento in lista
+                    routeKey="cash_register_availability",
+                    widget=cash_register_availability_item,
+                    position=NavigationItemPosition.BOTTOM,
+                )
+
+                # Callback che aggiorna il valore della disponibilità di cassa
+                def update_cash_register_availability(message: Message):
+                    match message.event():
+                        case CashRegisterRepository.Event.CASH_AVAILABILITY_INITIALIZED | (
+                            CashRegisterRepository.Event.CASH_AVAILABILITY_UPDATED
+                        ):
+                            data = message.data()
+                            cash_register_availability_item.setText(PriceFormatter.format(data))
+                            cash_register_availability_item.update()
+
+                self.controller.observe_cash_register(update_cash_register_availability)
+
+                # Informazioni sull'utente
+                self.navigationInterface.insertItem(
+                    index=2,
+                    routeKey="user_info",
+                    icon=FIF.INFO,
+                    selectable=False,
+                    text=f"Autenticato come\namministratore",
+                    position=NavigationItemPosition.BOTTOM
+                )
 
             case "unauthenticated":
                 return
 
         # Sezione Bottom
-
-        # Informazioni sull'utente
-        self.navigationInterface.insertItem(
-            index=1,
-            routeKey="user_info",
-            icon=FIF.INFO,
-            selectable=False,
-            text=f"Autenticato come\n{Firebase.auth.currentUserId()}",
-            position=NavigationItemPosition.BOTTOM
-        )
 
         # Logout
         self.navigationInterface.addItem(
@@ -222,14 +248,14 @@ class MainWindow(FramelessWindow):
             tooltip="Logout"
         )
 
-        # !IMPORTANT: don't forget to set the default route key
-        qrouter.setDefaultRouteKey(self.stackedWidget, "Profilo")
         self.navigationInterface.setCurrentItem("Profilo")
+
+        # Imposta la route key iniziale
+        qrouter.setDefaultRouteKey(self.stackedWidget, "Profilo")
 
     # Funzione per aggiungere le pagine ai pulsanti della sidebar
     def addSubInterface(self,
-                        interface: QWidget,
-                        icon: str | QIcon | FluentIconBase = FIF.INFO,
+                        interface: SubInterfaceWidget,
                         text: str = "Nuova interfaccia",
                         position: NavigationItemPosition = NavigationItemPosition.TOP):
 
@@ -239,7 +265,7 @@ class MainWindow(FramelessWindow):
         # Aggiunge un elemento di navigazione alla NavigationInterface
         self.navigationInterface.addItem(
             routeKey=interface.objectName(),
-            icon=icon,
+            icon=interface.svg_icon,
             text=text,
             onClick=lambda: self.switchTo(interface),
             position=position,
@@ -249,8 +275,7 @@ class MainWindow(FramelessWindow):
     # Funzione per inserire le pagine ai pulsanti della sidebar
     def insertSubInterface(self,
                            index,
-                           interface: QWidget,
-                           icon: str | QIcon | FluentIconBase = FIF.INFO,
+                           interface: SubInterfaceWidget,
                            text: str = "Nuova interfaccia",
                            position: NavigationItemPosition = NavigationItemPosition.TOP):
 
@@ -261,7 +286,7 @@ class MainWindow(FramelessWindow):
         self.navigationInterface.insertItem(
             index=index,
             routeKey=interface.objectName(),
-            icon=icon,
+            icon=interface.svg_icon,
             text=text,
             onClick=lambda: self.switchTo(interface),
             position=position,
@@ -270,8 +295,7 @@ class MainWindow(FramelessWindow):
 
     # Aggiunge un'interfaccia rimuovibile
     def addRemovableSubInterface(self,
-                                 interface: QWidget,
-                                 icon: str | QIcon | FluentIconBase = FIF.DOCUMENT,
+                                 interface: SubInterfaceWidget,
                                  text: str = "Nuova interfaccia"):
 
         # Aggiunge l'interfaccia allo StackedWidget
@@ -287,7 +311,7 @@ class MainWindow(FramelessWindow):
             else:
                 self.removeSubInterface(interface)
 
-        removable_navigation_widget = RemovableNavigationWidget(self, icon, text)
+        removable_navigation_widget = RemovableNavigationWidget(self, interface.svg_icon, text)
         removable_navigation_widget.mousePressEvent = onRemovableSubInterfaceClicked  # Callback al click sull'elemento
 
         # Inserisce un elemento di navigazione nella NavigationInterface

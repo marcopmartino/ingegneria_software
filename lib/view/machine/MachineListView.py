@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
-from qfluentwidgets import CheckBox, PushButton, SearchLineEdit
+from qfluentwidgets import CheckBox, PushButton, SearchLineEdit, FluentIconBase
 
 from lib.controller.MachineListController import MachineListController
 from lib.model.Machine import Machine
@@ -10,14 +10,15 @@ from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.machine.MachineView import MachineView
-from lib.view.main.BaseWidget import BaseWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.widget.TableWidgets import StandardTable
+from res.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 
 
-class MachineListView(BaseWidget):
-    def __init__(self, parent_widget: QWidget):
-        super().__init__("machine_list_view", parent_widget)
+class MachineListView(SubInterfaceWidget):
+    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = CustomIcon.MACHINERY):
+        super().__init__("machine_list_view", parent_widget, svg_icon)
         self.controller = MachineListController()
 
         # Titolo e sottotitolo

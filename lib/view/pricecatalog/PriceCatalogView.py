@@ -1,20 +1,22 @@
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QInputDialog, QDialog, QLabel
+from qfluentwidgets import FluentIconBase
 
 from lib.firebaseData import Firebase
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
-from lib.view.main.BaseWidget import BaseWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.controller.PriceCatalogController import PriceCatalogController
 from lib.widget.TableWidgets import PriceCatalogTable, PriceCatalogTableBuilder, TitleAndSubtitleSection, \
     SixColumnsHeaderSection, SixColumnsDataSection, HorizontalTreeSection, NamedTableItem
 from res import Styles
+from res.CustomIcon import CustomIcon
 
 
-class PriceCatalogView(BaseWidget):
-    def __init__(self, parent_widget: QWidget = None):
-        super().__init__("price_list_view", parent_widget)
+class PriceCatalogView(SubInterfaceWidget):
+    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = CustomIcon.PRICE):
+        super().__init__("price_list_view", parent_widget, svg_icon)
 
         # Controller
         self.controller = PriceCatalogController()

@@ -12,7 +12,7 @@ from lib.firebaseData import Firebase
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Observer, Message
 from lib.utility.UtilityClasses import PriceFormatter
-from lib.view.main.BaseWidget import BaseWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.model.Article import Article
 from lib.model.Order import Order
 from lib.utility.ResourceManager import ResourceManager
@@ -24,7 +24,7 @@ from res.Dimensions import FontSize, FontWeight
 from res.Strings import OrderStateStrings
 
 
-class OrderView(BaseWidget):
+class OrderView(SubInterfaceChildWidget):
     messageReceived = pyqtSignal(Message)
 
     # Eseguito alla chiusura della finestra (dopo la chiamata "self.close()")

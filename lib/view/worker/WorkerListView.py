@@ -3,19 +3,21 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QTableWidgetItem, QWidget, QAbstractItemView, QPushButton
 )
+from qfluentwidgets import FluentIconBase
 
-from lib.view.main.BaseWidget import BaseWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.controller.WorkerListController import WorkerListController
 from lib.view.worker.AddWorkerWindow import AddWorkerWindow
 from lib.view.worker.EditWorkerWindow import EditWorkerWindow
 from lib.widget.TableWidgets import StandardTable
 from res import Styles
+from res.CustomIcon import CustomIcon
 from res.Dimensions import FontWeight
 
 
-class WorkerListView(BaseWidget):
-    def __init__(self, parent_widget: QWidget = None):
-        super().__init__("worker_list_view", parent_widget)
+class WorkerListView(SubInterfaceWidget):
+    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = CustomIcon.WORKER):
+        super().__init__("worker_list_view", parent_widget, svg_icon)
         # self.central_frame.setMinimumWidth(800)
 
         self.setTitleText("Gestione dipendenti")

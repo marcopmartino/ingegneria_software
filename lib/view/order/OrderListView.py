@@ -3,13 +3,13 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel
 )
-from qfluentwidgets import SearchLineEdit, CheckBox, PushButton, ComboBox, PrimaryPushButton
+from qfluentwidgets import SearchLineEdit, CheckBox, PushButton, ComboBox, PrimaryPushButton, FluentIconBase, FluentIcon
 
 from lib.firebaseData import Firebase
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
-from lib.view.main.BaseWidget import BaseWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.controller.OrderListController import OrderListController
 from lib.model.Order import Order
 from lib.view.order.CreateOrderView import CreateOrderView
@@ -22,9 +22,9 @@ from lib.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem
 from res.Dimensions import FontSize
 
 
-class OrderListView(BaseWidget):
-    def __init__(self, parent_widget: QWidget):
-        super().__init__("order_list_view", parent_widget)
+class OrderListView(SubInterfaceWidget):
+    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = FluentIcon.SHOPPING_CART):
+        super().__init__("order_list_view", parent_widget, svg_icon)
 
         # Controller
         self.controller = OrderListController()

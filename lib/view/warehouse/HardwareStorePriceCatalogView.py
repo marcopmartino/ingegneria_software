@@ -3,13 +3,13 @@ from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QInputDialog, QDi
 
 from lib.firebaseData import getUserRole
 from lib.utility.UtilityClasses import PriceFormatter
-from lib.view.main.BaseWidget import BaseWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.widget.TableWidgets import PriceCatalogTableBuilder, SixColumnsHeaderSection, SixColumnsDataSection, \
     TitleAndSubtitleSection, HorizontalTreeSection, PriceCatalogTable, NamedTableItem
 from res import Styles
 
 
-class BlockCenterPriceCatalogView(BaseWidget):
+class BlockCenterPriceCatalogView(SubInterfaceWidget):
     def __init__(self, parent_widget: QWidget = None):
         super().__init__("price_list_view", parent_widget)
 

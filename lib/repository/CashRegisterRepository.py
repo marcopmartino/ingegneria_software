@@ -12,11 +12,12 @@ from lib.utility.UtilityClasses import DatetimeUtils
 
 class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
     class Event(Enum):
-        CASH_REGISTER_INITIALIZED = 0
+        CASH_AVAILABILITY_INITIALIZED = 0
         CASH_AVAILABILITY_UPDATED = 1
-        TRANSACTION_CREATED = 2
-        TRANSACTION_DELETED = 3
-        TRANSACTION_UPDATED = 4
+        TRANSACTIONS_INITIALIZED = 2
+        TRANSACTION_CREATED = 3
+        TRANSACTION_DELETED = 4
+        TRANSACTION_UPDATED = 5
 
     def __init__(self):
         self.__cash_availability: float = 0  # Inizializza la disponibilità di cassa
@@ -53,6 +54,12 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
                         # Aggiorno la disponibilità di cassa
                         self.__cash_availability = data.get("cash_availability", 0)
 
+                        # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                        self.notify(Message(
+                            CashRegisterRepository.Event.CASH_AVAILABILITY_INITIALIZED,
+                            self.__cash_availability
+                        ))
+
                         # Estraggo le transazioni
                         data = data.get("transactions")
 
@@ -63,8 +70,8 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
 
                             # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
                             self.notify(Message(
-                                CashRegisterRepository.Event.CASH_REGISTER_INITIALIZED,
-                                (self.__cash_availability, self.__transaction_list)
+                                CashRegisterRepository.Event.TRANSACTIONS_INITIALIZED,
+                                self.__transaction_list
                             ))
 
                 # Se il path è diverso allora siamo nell'ambito di una singola transazione
@@ -139,7 +146,6 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
 
                 # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
                 self.notify(message)
-
 
             # Terminazione imprevista dello stream
             case "cancel":

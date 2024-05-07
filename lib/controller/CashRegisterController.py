@@ -78,7 +78,7 @@ class CashRegisterController:
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 2:
-                    if transaction.get_amount() > 0 not in allowed_types:
+                    if (transaction.get_amount() > 0) not in allowed_types:
                         continue
 
                 filtered_transaction_list.append(transaction)

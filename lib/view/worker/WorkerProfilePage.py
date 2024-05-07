@@ -1,19 +1,22 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QHBoxLayout
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QHBoxLayout, QWidget
+from qfluentwidgets import FluentIconBase
 
 import lib.firebaseData as firebaseConfig
 
 from lib.layout.QLabelLayout import QLabelLayout
 from lib.controller.ProfileController import ProfileController
 from lib.model.Staff import Staff
+from lib.view.main.SubInterfaces import SubInterfaceWidget
 from res import Styles
+from res.CustomIcon import CustomIcon
 from res.Strings import FormStrings, ProfileStrings
 
 
-class ProfileWidget(QFrame):
+class ProfileWidget(SubInterfaceWidget):
 
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
+    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = CustomIcon.PROFILE):
+        super().__init__("profile_view", parent_widget, svg_icon)
 
         # Inizializzo una reference da una eventuale pagina di modifica, senza fare questo la pagina si chiuderebbe
         # appena aperta perché il garbage collector la eliminerebbe

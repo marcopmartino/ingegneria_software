@@ -1,14 +1,21 @@
 from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QWidget, QFrame, QVBoxLayout, QLabel, QSizePolicy, QHBoxLayout
-from qfluentwidgets import SingleDirectionScrollArea
+from qfluentwidgets import SingleDirectionScrollArea, FluentIconBase, FluentIcon
 
 from res import Styles
 
 
 # Widget ereditato da tutte le sotto-interfacce della MainWindow
 # noinspection PyPep8Naming
-class BaseWidget(QWidget):
-    def __init__(self, name: str, parent_widget: QWidget, scrollable: bool = False, scrollable_sidebar: bool = False):
+class SubInterfaceWidget(QWidget):
+
+    def __init__(self,
+                 name: str,
+                 parent_widget: QWidget,
+                 svg_icon: FluentIconBase,
+                 scrollable: bool = False,
+                 scrollable_sidebar: bool = False):
         super().__init__(parent_widget)
 
         # Base Widget - il widget Base include il frame Header e il widget Body
@@ -29,9 +36,21 @@ class BaseWidget(QWidget):
         self.header_frame.setObjectName("header_frame")
 
         # Header Layout
-        self.header_layout = QVBoxLayout(self.header_frame)
+        self.header_layout = QHBoxLayout(self.header_frame)
         self.header_layout.setObjectName("header_layout")
         self.header_layout.setContentsMargins(16, 12, 16, 12)
+        self.header_layout.setSpacing(16)
+
+        # Header Icon
+        self.svg_icon = svg_icon
+        self.svg_icon_widget = QSvgWidget(svg_icon.path())
+        self.svg_icon_widget.setFixedSize(48, 48)
+
+        # Header Text Layout
+        self.header_text_layout = QVBoxLayout(self.header_frame)
+        self.header_text_layout.setObjectName("header_text_layout")
+        self.header_text_layout.setContentsMargins(0, 0, 0, 0)
+        self.header_text_layout.setSpacing(0)
 
         # Header Title Label
         self.header_title_label = QLabel(self.header_frame)
@@ -44,9 +63,13 @@ class BaseWidget(QWidget):
         self.header_subtitle_label.setObjectName("header_subtitle_label")
         self.header_subtitle_label.setStyleSheet(Styles.LABEL_SUBTITLE)
 
-        # Aggiungo titolo e sottotitolo al layout dell'header
-        self.header_layout.addWidget(self.header_title_label)
-        self.header_layout.addWidget(self.header_subtitle_label)
+        # Aggiungo titolo e sottotitolo al layout testuale dell'header
+        self.header_text_layout.addWidget(self.header_title_label)
+        self.header_text_layout.addWidget(self.header_subtitle_label)
+
+        # Aggiungo l'icona e il layout testuale dell'header al layout dell'header
+        self.header_layout.addWidget(self.svg_icon_widget)
+        self.header_layout.addLayout(self.header_text_layout)
 
         # Body Widget - il widget Body include i frame Central e Sidebar
         self.body_widget = QWidget(self)
@@ -132,3 +155,16 @@ class BaseWidget(QWidget):
     # Nascone il sottotitolo
     def hideSidebar(self):
         self.sidebar_frame.setHidden(True)
+
+
+# Widget per le sotto-interfacce di secondo livello
+# noinspection PyPep8Naming
+class SubInterfaceChildWidget(SubInterfaceWidget):
+
+    def __init__(self,
+                 name: str,
+                 parent_interface: SubInterfaceWidget,
+                 scrollable: bool = False,
+                 scrollable_sidebar: bool = False):
+        super().__init__(name, parent_interface, parent_interface.svg_icon, scrollable, scrollable_sidebar)
+
