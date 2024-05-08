@@ -51,6 +51,8 @@ class MaterialsListController:
         # Numero di campi ammessi
         allowed_types_count: int = len(allowed_types)
 
+        filtered_materials_list: list[Product] = []
+
         # Se nessuno stato è ammesso, la lista dei materiali da mostrare è quella vuota
         if allowed_types_count:
 
@@ -61,23 +63,21 @@ class MaterialsListController:
             filter_field = material_details
 
             # Filtra la lista dei materiali
-            for material in reversed(materials_list):
+            for material in materials_list:
 
                 # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
                 if search_text:
-                    if search_text not in filter_field(material).lower():
-                        materials_list.remove(material)
+                    if search_text.lower() not in filter_field(material).lower():
                         continue
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 3:
                     if material.get_type() not in allowed_types:
-                        materials_list.remove(material)
+                        continue
 
-        else:
-            materials_list = []
+                filtered_materials_list.append(material)
 
-        return materials_list
+        return filtered_materials_list
 
     # Crea un materiale a partire dai dati della form
     def create_material(self, data: dict[str, any]):

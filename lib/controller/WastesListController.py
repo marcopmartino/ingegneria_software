@@ -60,40 +60,29 @@ class WastesListController:
         allowed_types_count: int = len(allowed_types)
         allowed_plastic_count: int = len(allowed_plastic)
 
+        filtered_wastes_list: list[Product] = []
+
         # Se nessuno stato è ammesso, la lista degli scarti da mostrare è quella vuota
         if allowed_types_count or allowed_plastic_count:
 
-            # Dato un prodotto, ne ritorna i dettagli
-            def waste_details(product_: Product) -> str:
-                return product_.get_details()
-
-            filter_field = waste_details
-
             # Filtra la lista degli scarti
-            for waste in reversed(wastes_list):
-
-                # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
-                '''if search_text:
-                    if search_text not in filter_field(waste).lower():
-                        wastes_list.remove(waste)
-                        continue'''
+            for waste in wastes_list:
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 2:
                     if waste.get_type() not in allowed_types:
                         if waste in wastes_list:
-                            wastes_list.remove(waste)
+                            continue
 
                 # Se tutti i tipi di plastica sono ammessi viene saltato il filtro sul tipo di plastica
                 if allowed_plastic_count != 3:
                     if waste.get_details() not in allowed_plastic:
                         if waste in wastes_list:
-                            wastes_list.remove(waste)
+                            continue
 
-        else:
-            wastes_list = []
+                filtered_wastes_list.append(waste)
 
-        return wastes_list
+        return filtered_wastes_list
 
     # Crea uno scarto a partire dai dati della form
     def create_waste(self, data: dict[str, any]):

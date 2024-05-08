@@ -104,23 +104,6 @@ class MaterialsTab(BaseWidget):
         self.finished_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.finished_check_box)
 
-        # Ordina ComboBox
-        self.sort_combo_box = ComboBox(self.sidebar_frame)
-        self.sort_combo_box.setObjectName("sort_combobox_line_edit")
-        self.sort_combo_box.insertItem(0, "Quantità crescente", userData="crescente")
-        self.sort_combo_box.insertItem(1, "Quantità decrescente", userData="decrescente")
-
-        def on_sorter_combo_index_changed(index: int):
-            self.search_box.setText("")
-            match index:
-                case 0:
-                    self.controller.sort_materials(False)
-                case 1:
-                    self.controller.sort_materials(True)
-
-        self.sort_combo_box.currentIndexChanged.connect(on_sorter_combo_index_changed)
-        self.sort_combo_box.setCurrentIndex(0)
-
         # Button "Aggiorna lista"
         self.refresh_button = PushButton(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
@@ -134,7 +117,6 @@ class MaterialsTab(BaseWidget):
         self.sidebar_layout.addWidget(self.sidebar_spacer)
         self.sidebar_layout.addWidget(self.search_box)
         self.sidebar_layout.addItem(self.checkgroup_layout)
-        self.sidebar_layout.addWidget(self.sort_combo_box)
         self.sidebar_layout.addWidget(self.refresh_button)
         self.sidebar_layout.addWidget(self.sidebar_spacer)
 

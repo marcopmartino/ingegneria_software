@@ -57,12 +57,6 @@ class WastesTab(BaseWidget):
         self.storage_details_layout.addWidget(self.used_storage, alignment=Qt.AlignLeft)
         self.storage_details_layout.addWidget(self.available_storage, alignment=Qt.AlignLeft)
 
-        '''# SearchBox
-        self.search_box = SearchLineEdit(self.sidebar_frame)
-        self.search_box.setObjectName("searchbox_line_edit")
-        self.search_box.setPlaceholderText("Cerca")
-        self.search_box.searchButton.setEnabled(False)'''
-
         # Label per magazzino vuoto
         self.empty_storage = QLabel(self.central_frame)
         self.empty_storage.setObjectName("empty_label")
@@ -132,20 +126,6 @@ class WastesTab(BaseWidget):
         self.semifinished_check_box.setChecked(True)
         self.checkgroup2_layout.addWidget(self.semifinished_check_box)
 
-        # Ordina ComboBox
-        self.sort_combo_box = ComboBox(self.sidebar_frame)
-        self.sort_combo_box.setObjectName("sort_combobox_line_edit")
-        self.sort_combo_box.insertItem(0, "Quantità crescente", userData="crescente")
-        self.sort_combo_box.insertItem(1, "Quantità decrescente", userData="decrescente")
-
-        '''def on_sorter_combo_index_changed(index: int):
-            self.search_box.setText("")
-            match index:
-                case 0:
-                    self.controller.sort_wastes(False)
-                case 1:
-                    self.controller.sort_wastes(True)'''
-
         # self.sort_combo_box.currentIndexChanged.connect(on_sorter_combo_index_changed)
         self.sort_combo_box.setCurrentIndex(0)
 
@@ -163,7 +143,6 @@ class WastesTab(BaseWidget):
         # self.sidebar_layout.addWidget(self.search_box)
         self.sidebar_layout.addItem(self.checkgroup1_layout)
         self.sidebar_layout.addItem(self.checkgroup2_layout)
-        self.sidebar_layout.addWidget(self.sort_combo_box)
         self.sidebar_layout.addWidget(self.refresh_button)
         self.sidebar_layout.addWidget(self.sidebar_spacer)
 

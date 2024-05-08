@@ -105,23 +105,6 @@ class ProductsTab(BaseWidget):
         self.finished_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.finished_check_box)
 
-        # Ordina ComboBox
-        self.sort_combo_box = ComboBox(self.sidebar_frame)
-        self.sort_combo_box.setObjectName("sort_combobox_line_edit")
-        self.sort_combo_box.insertItem(0, "Quantità crescente", userData="crescente")
-        self.sort_combo_box.insertItem(1, "Quantità decrescente", userData="decrescente")
-
-        def on_sorter_combo_index_changed(index: int):
-            self.search_box.setText("")
-            match index:
-                case 0:
-                    self.controller.sort_products(False)
-                case 1:
-                    self.controller.sort_products(True)
-
-        self.sort_combo_box.currentIndexChanged.connect(on_sorter_combo_index_changed)
-        self.sort_combo_box.setCurrentIndex(0)
-
         # Button "Aggiorna lista"
         self.refresh_button = PushButton(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
@@ -135,7 +118,6 @@ class ProductsTab(BaseWidget):
         self.sidebar_layout.addWidget(self.sidebar_spacer)
         self.sidebar_layout.addWidget(self.search_box)
         self.sidebar_layout.addItem(self.checkgroup_layout)
-        self.sidebar_layout.addWidget(self.sort_combo_box)
         self.sidebar_layout.addWidget(self.refresh_button)
         self.sidebar_layout.addWidget(self.sidebar_spacer)
 
@@ -147,7 +129,6 @@ class ProductsTab(BaseWidget):
         self.table = StandardTable(self.central_frame)
         headers = ["Seriale", "Tipo", "Dettagli", "Quantità"]
         self.table.setHeaders(headers)
-        self.table.setSortingEnabled(False)
 
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)

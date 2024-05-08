@@ -51,6 +51,8 @@ class ProductListController:
         # Numero di campi ammessi
         allowed_types_count: int = len(allowed_types)
 
+        filtered_products_list: list[Product] = []
+
         # Se nessuno stato è ammesso, la lista dei prodotti da mostrare è quella vuota
         if allowed_types_count:
 
@@ -61,23 +63,21 @@ class ProductListController:
             filter_field = product_details
 
             # Filtra la lista dei prodotti
-            for product in reversed(product_list):
+            for product in product_list:
 
                 # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
                 if search_text:
-                    if search_text not in filter_field(product).lower():
-                        product_list.remove(product)
+                    if search_text.lower() not in filter_field(product).lower():
                         continue
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 3:
                     if product.get_type() not in allowed_types:
-                        product_list.remove(product)
+                        continue
 
-        else:
-            product_list = []
+                filtered_products_list.append(product)
 
-        return product_list
+        return filtered_products_list
 
     # Crea un ordine a partire dai dati della form
     def create_product(self, data: dict[str, any]):
