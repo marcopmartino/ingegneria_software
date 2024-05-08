@@ -2,7 +2,7 @@
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, QWidget
-from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import FluentIcon as FIF, Flyout, InfoBar, InfoBarPosition
 from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter)
 from qframelesswindow import FramelessWindow, TitleBar
 
@@ -145,6 +145,26 @@ class MainWindow(FramelessWindow):
     # Popola le tre sezioni del menù e finalizza la navigazione
     def setupNavigation(self):
 
+        # Inserisce una voce del menù con informazioni sul ruolo dell'utente autenticato
+        def insertUserInfoItem(text: str, index: int = 1):
+
+            self.navigationInterface.insertItem(
+                index=index,
+                routeKey="user_info",
+                icon=CustomFIF.USER_INFO,
+                selectable=False,
+                onClick=lambda: InfoBar.new(
+                    icon=CustomFIF.USER_INFO,
+                    title="Info utente",
+                    content=f"Stai usando l'applicazione come {text.lower()}",
+                    duration=3000,
+                    position=InfoBarPosition.BOTTOM,
+                    parent=self
+                ),
+                text=text,
+                position=NavigationItemPosition.BOTTOM
+            )
+
         # Tipo di account
         user_role: str = Firebase.auth.currentUserRole()
         print("Tipo account: " + str(user_role))
@@ -160,14 +180,7 @@ class MainWindow(FramelessWindow):
 
                 # Sezione Bottom
                 # Informazioni sull'utente
-                self.navigationInterface.insertItem(
-                    index=1,
-                    routeKey="user_info",
-                    icon=FIF.INFO,
-                    selectable=False,
-                    text=f"Autenticato come\ncliente",
-                    position=NavigationItemPosition.BOTTOM
-                )
+                insertUserInfoItem("Cliente")
 
             case "worker":
 
@@ -180,14 +193,7 @@ class MainWindow(FramelessWindow):
 
                 # Sezione Bottom
                 # Informazioni sull'utente
-                self.navigationInterface.insertItem(
-                    index=1,
-                    routeKey="user_info",
-                    icon=FIF.INFO,
-                    selectable=False,
-                    text=f"Autenticato come\ndipendente",
-                    position=NavigationItemPosition.BOTTOM
-                )
+                insertUserInfoItem("Dipendente")
 
             case "admin":
 
@@ -206,11 +212,20 @@ class MainWindow(FramelessWindow):
                 cash_register_availability_item: CashRegisterAvailabilityNavigationWidget = \
                     CashRegisterAvailabilityNavigationWidget(parent_widget=self, icon=CustomFIF.EURO, text="0,00")
 
+                # Inserisce l'elemento con la disponibilità di cassa
                 self.navigationInterface.insertWidget(
                     index=1,  # Inserito come primo elemento in lista
                     routeKey="cash_register_availability",
                     widget=cash_register_availability_item,
                     position=NavigationItemPosition.BOTTOM,
+                    onClick=lambda: InfoBar.new(
+                        icon=CustomFIF.EURO,
+                        title="Disponibilità di cassa",
+                        content=f"Indicatore della ricchezza di cui il formificio dispone",
+                        duration=3000,
+                        position=InfoBarPosition.BOTTOM,
+                        parent=self
+                    ),
                 )
 
                 # Callback che aggiorna il valore della disponibilità di cassa
@@ -226,14 +241,7 @@ class MainWindow(FramelessWindow):
                 self.controller.observe_cash_register(update_cash_register_availability)
 
                 # Informazioni sull'utente
-                self.navigationInterface.insertItem(
-                    index=2,
-                    routeKey="user_info",
-                    icon=FIF.INFO,
-                    selectable=False,
-                    text=f"Autenticato come\namministratore",
-                    position=NavigationItemPosition.BOTTOM
-                )
+                insertUserInfoItem("Amministratore", 2)
 
             case "unauthenticated":
                 return
@@ -370,6 +378,9 @@ class MainWindow(FramelessWindow):
 
         # Rimuove la voce del menù con informazioni sull'account
         self.navigationInterface.removeWidget("user_info")
+
+        # Rimuove la voce del menù con la disponibilità di cassa
+        self.navigationInterface.removeWidget("cash_register_availability")
 
     # Reimposta la navigazione
     def setup(self):

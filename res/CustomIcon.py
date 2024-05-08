@@ -12,6 +12,7 @@ class CustomIcon(FluentIconBase, Enum):
     PRICE = "price"
     PROFILE = "profile"
     WORKER = "worker"
+    USER_INFO = "user_info"
 
     def path(self, theme=Theme.AUTO):
         return f'res/customIcon/{self.value}_black_icon.svg'
