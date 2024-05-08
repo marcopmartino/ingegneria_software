@@ -7,8 +7,7 @@ from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter
 from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, TitleBar
 
-from lib.firebaseData import currentUserId, getUserRole
-from lib.network.StorageNetwork import StorageNetwork
+from lib.controller.ProfileController import ProfileController
 from lib.view.machine.MachineListView import MachineListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.utility.ResourceManager import ResourceManager
@@ -166,7 +165,7 @@ class MainWindow(FramelessWindow):
     def setupNavigation(self):
 
         # Tipo di account
-        user_role: str = getUserRole()
+        user_role: str = ProfileController().get_role()
         print("Tipo account: " + str(user_role))
 
         # Sezione Top
@@ -204,7 +203,7 @@ class MainWindow(FramelessWindow):
             routeKey="user_info",
             icon=FIF.INFO,
             selectable=False,
-            text=f"Autenticato come\n{currentUserId()}",
+            text=f"Autenticato come\n{ProfileController().get_uid()}",
             position=NavigationItemPosition.BOTTOM
         )
 
@@ -323,7 +322,7 @@ class MainWindow(FramelessWindow):
     # Mostra la schermata di accesso dopo aver effettuato il logout
     def show_access_window(self):
         self.logout.emit()
-        if getUserRole() == 'customer':
+        if AuthenticationController().get_role() == 'customer':
             Customer().close_stream()
         else:
             Staff().close_stream()

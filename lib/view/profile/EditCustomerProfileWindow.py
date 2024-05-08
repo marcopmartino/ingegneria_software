@@ -1,9 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog
-from PyQt5.uic.properties import QtCore
 
 import lib.utility.UtilityClasses as utility
-import lib.firebaseData as firebaseConfig
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
@@ -21,7 +19,7 @@ class EditCustomerProfileWindow(QDialog):
 
         self.controller = self.parent().controller
 
-        data = self.controller.get_customer_model()
+        data = self.controller.get_user_data()
 
         # Finestra
         self.setWindowTitle(Config.APPLICATION_NAME)
@@ -150,7 +148,7 @@ class EditCustomerProfileWindow(QDialog):
     def on_submit(self, form_data: dict[str, any]):
         newPassword = None
         print("Save_edit...")
-        currentEmail = firebaseConfig.currentUser['email']
+        currentData = self.controller.get_user_data()
         password = self.passwordLayout.line_edit.text()
         if self.newPasswordLayout.line_edit.text() != "":
             if len(self.newPasswordLayout.line_edit.text()) > 6:
@@ -169,14 +167,14 @@ class EditCustomerProfileWindow(QDialog):
                 self.newPasswordLayout.error_label.setText(ValidationStrings.MIN_PASSWORD_ERROR)
 
         try:
-            self.controller.customer_checkLogin(currentEmail, password)
+            self.controller.check_login(currentData['mail'], password)
             data = {
                 "company": self.companyNameLayout.line_edit.text(),
                 "IVA": self.IVANumberLayout.line_edit.text(),
                 "delivery": self.deliveryAddressLayout.line_edit.text(),
-                "phone": utility.format_phone(self.phoneLayout.line_edit.text())
+                "phone": utility.PhoneFormatter().format(self.phoneLayout.line_edit.text())
             }
-            self.controller.customer_setUserData(data, newPassword, firebaseConfig.currentUser['localId'])
+            self.controller.set_user_data(data, newPassword, currentData['uid'])
             self.close()
         except Exception as e:
             print(e)

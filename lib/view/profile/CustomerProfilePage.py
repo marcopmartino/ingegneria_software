@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QWidget
 
 from lib.layout.QLabelLayout import QLabelLayout
 from lib.view.main.BaseWidget import BaseWidget
-from lib.model.Customer import Customer
 from lib.view.profile.EditCustomerProfileWindow import EditCustomerProfileWindow
 from lib.controller.ProfileController import ProfileController
 
@@ -20,7 +19,9 @@ class ProfileWidget(BaseWidget):
         # Inizializzo una reference da una eventuale pagina di modifica, senza fare questo la pagina si chiuderebbe
         # appena aperta perché il garbage collector la eliminerebbe
         self.controller = ProfileController()
-        self.controller.open_customer_stream()
+        self.controller.open_stream()
+
+        initial_data = self.controller.get_user_data()
 
         self.setTitleText("Profilo")
 
@@ -29,7 +30,7 @@ class ProfileWidget(BaseWidget):
         self.profileInfo.setSpacing(15)
         self.profileInfo.setObjectName("ProfileInfo")
 
-        self.companyNameLabel = QLabel()
+        self.companyNameLabel = QLabel(initial_data['company'])
         self.companyNameLabel.adjustSize()
         self.companyNameLabel.setMinimumSize(450, 50)
         self.companyNameLabel.setStyleSheet(Styles.PROFILE_INFO_NAME)
@@ -37,10 +38,10 @@ class ProfileWidget(BaseWidget):
         self.profileInfo.addWidget(self.companyNameLabel)
         self.profileInfo.setAlignment(self.companyNameLabel, Qt.AlignLeft)
 
-        self.emailLayout = QLabelLayout(FormStrings.EMAIL)
-        self.phoneLayout = QLabelLayout(FormStrings.PHONE)
-        self.deliveryAddressLayout = QLabelLayout(FormStrings.DELIVERY_ADDRESS)
-        self.IVANumberLayout = QLabelLayout(FormStrings.IVA_NUMBER)
+        self.emailLayout = QLabelLayout(FormStrings.EMAIL, initial_data['mail'], self)
+        self.phoneLayout = QLabelLayout(FormStrings.PHONE, initial_data['phone'], self)
+        self.deliveryAddressLayout = QLabelLayout(FormStrings.DELIVERY_ADDRESS, initial_data['delivery'], self)
+        self.IVANumberLayout = QLabelLayout(FormStrings.IVA_NUMBER, initial_data['IVA'], self)
 
         self.profileInfoTable = QVBoxLayout()
         self.profileInfoTable.setContentsMargins(0, 0, 1, 1)
@@ -102,7 +103,7 @@ class ProfileWidget(BaseWidget):
                     case 'IVA':
                         self.IVANumberLayout.edit_text(value)
 
-        self.controller.set_customer_observer(update_data)
+        self.controller.set_observer(update_data)
 
         self.central_layout.addLayout(self.profileInfo)
 

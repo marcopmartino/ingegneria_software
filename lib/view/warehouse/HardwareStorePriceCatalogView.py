@@ -1,11 +1,11 @@
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QInputDialog, QDialog
 
-from lib.firebaseData import getUserRole
+from lib.controller.ProfileController import ProfileController
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.BaseWidget import BaseWidget
-from lib.widget.TableWidgets import PriceCatalogTableBuilder, SixColumnsHeaderSection, SixColumnsDataSection, \
-    TitleAndSubtitleSection, HorizontalTreeSection, PriceCatalogTable, NamedTableItem
+from lib.widget.TableWidgets import PriceCatalogTableBuilder, TitleAndSubtitleSection, HorizontalTreeSection, \
+    PriceCatalogTable, NamedTableItem
 from res import Styles
 
 
@@ -49,9 +49,9 @@ class BlockCenterPriceCatalogView(BaseWidget):
                                    "PIASTRA SOTTILE LUNGA (x10)", "PIASTRA SOTTILE LUNGA (x50)",
                                    "PIASTRA PER PUNTA FERRATA (x20)"],
                                   ["piastra_corta_10", "piastra_corta_50"
-                                   "piastra_media_10", "piastra_media_50"
-                                   "piastra_lunga_10", "piastra_lunga_50"
-                                   "piastra_punta_20"],
+                                             "piastra_media_10", "piastra_media_50"
+                                             "piastra_lunga_10", "piastra_lunga_50"
+                                             "piastra_punta_20"],
                                   grey_rows={2, 3, 6}
                                   ),
 
@@ -84,7 +84,7 @@ class BlockCenterPriceCatalogView(BaseWidget):
         self.table.updateAllNamedItems(self.controller.get_price_catalog())
 
         # Connetto il segnale "itemClicked" allo slot "on_item_clicked"
-        if getUserRole() != "customer":
+        if ProfileController().get_role() != "customer":
             self.table.itemClicked.connect(self.on_item_clicked)
 
         # Imposta la tabella nel layout centrale

@@ -1,37 +1,28 @@
 from pyrebase.pyrebase import Stream
 
-from lib.model.User import User
+from lib.model.Staff import Staff
 from lib.network.UserNetwork import UserNetwork
 from lib.utility.ObserverClasses import Observable
+from lib.utility.Singleton import ObservableSingleton
 
 
-class Staff(User, Observable):
-
+class AuthenticatedStaff(Staff, Observable):
     def __init__(self, uid: str = None, name: str = None, mail: str = None,
                  phone: str = None, CF: str = None, birth_date: str = None, role: str = None):
-        super().__init__(uid, phone, mail, role)
-        self._name = name
-        self._CF = CF
-        self._birth_date = birth_date
-        self._stream: Stream | None = None
+        super().__init__(uid, name, mail, phone, CF, birth_date, role)
+        self.__stream: Stream | None = None
 
+    # Usato per aprire lo stream
     def open_stream(self):
-        self._stream = UserNetwork.stream_by_id(self._uid, self.__stream_handler)
+        self.__stream = UserNetwork().stream_by_id(self._uid, self.__stream_handler)
 
+    '''def set_data(self, uid: str = None, name: str = None, mail: str = None,
+                 phone: str = None, CF: str = None, birth_date: str = None, role: str = None):
+        self.__init__(uid, name, mail, phone, CF, birth_date, role)'''
+
+    # Usato per chiudere lo stream
     def close_stream(self):
-        self._stream.close()
-
-    # Usato per aggiungere i dati di un utente
-    def __add_data(self, data: any):
-        print(f"{data}")
-        if data is not None:
-            self._uid = data['uid']
-            self._name = data['name']
-            self._mail = data['mail']
-            self._phone = data['phone']
-            self._CF = data['CF']
-            self._birth_date = data['birth_date']
-            self._role = data['role']
+        self.__stream.close()
 
     # Usato per modificare i dati di un utente
     def __edit_data(self, key: str, data: any):
@@ -52,11 +43,11 @@ class Staff(User, Observable):
     # Usato per rimuovere i dati di un utente (in caso di eliminazione)
     def __remove_data(self):
         self.delete(self, self._mail)
-        self._name = None
+        self.__name = None
         self._phone = None
         self._email = None
-        self._birth_date = None
-        self._CF = None
+        self.__birth_date = None
+        self.__CF = None
         self._role = None
 
     # Stream handler che aggiorna automaticamente i dati dell'utente
@@ -67,8 +58,8 @@ class Staff(User, Observable):
         data = message['data']
         if data is not None:
             match message['event']:
-                case "put":  # Funzione di aggiunta dati
-                    self.__add_data(data)
+                case "put":
+                    pass
                 case "patch":  # Funzione di modifica dei dati
                     for key, value in data.items():
                         self.__edit_data(key, value)
@@ -83,12 +74,12 @@ class Staff(User, Observable):
 
     @staticmethod
     def checkLogin(currentEmail, password):
-        UserNetwork.checkLogin(currentEmail, password)
+        UserNetwork().checkLogin(currentEmail, password)
 
     # Modifica i dati degli utenti nel database
     @staticmethod
-    def setUserData(form_data: dict[str, any], newPassword, uid):
-        UserNetwork.update(form_data, newPassword, uid)
+    def set_user_data(form_data: dict[str, any], newPassword, uid):
+        UserNetwork().update(form_data, newPassword, uid)
 
     # Ritorna i dati dell'utente
     def get(self):
@@ -97,12 +88,12 @@ class Staff(User, Observable):
     # Crea il profilo di un nuovo utente
     @staticmethod
     def add_profile(email: str, password: str):
-        UserNetwork.create_profile(email, password)
+        UserNetwork().create_profile(email, password)
 
     # Salva un nuovo utente nel database
     @staticmethod
     def add_data(form_data: dict[str, any], user):
-        UserNetwork.create_data(form_data, user)
+        UserNetwork().create_data(form_data, user)
 
     def get_dict(self):
         return dict(
@@ -119,7 +110,7 @@ class Staff(User, Observable):
     @staticmethod
     def delete(self, email: str):
         try:
-            UserNetwork.delete_by_email(email)
+            UserNetwork().delete_by_email(email)
             self.__remove_data()
         except Exception as e:
             print(e)

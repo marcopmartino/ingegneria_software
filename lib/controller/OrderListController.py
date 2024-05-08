@@ -2,13 +2,10 @@
 from typing import Callable
 
 from lib.controller.OrderFormController import OrderFormController
-from lib.firebaseData import getUserRole, currentUserId
-from lib.model.Article import Article
-from lib.model.Customer import Customer
-from lib.repository.ArticlesRepository import ArticlesRepository
+from lib.controller.ProfileController import ProfileController
 from lib.model.Order import Order
+from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.repository.OrdersRepository import OrdersRepository
-from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 
 
 class OrderListController(OrderFormController):
@@ -84,14 +81,14 @@ class OrderListController(OrderFormController):
 
             # Ritorna True se l'ordine è stato creato da un utente diverso
             def customer_filter(creator_id: str) -> bool:
-                return creator_id != currentUserId()
+                return creator_id != ProfileController().get_uid()
 
             # Il filtro è passato automaticamente
             def no_filter(_: str) -> bool:
                 return False
 
             # In base a un parametro di filtro, assegna la funzione che ritorna il campo da filtrare
-            match getUserRole():
+            match ().get_role():
                 case "customer":
                     filter_user = customer_filter
                 case _:

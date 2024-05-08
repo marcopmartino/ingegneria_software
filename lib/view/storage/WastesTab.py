@@ -1,14 +1,13 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
-from qfluentwidgets import SearchLineEdit, ComboBox, CheckBox, PushButton
+from qfluentwidgets import ComboBox, CheckBox, PushButton
 
-from lib.controller.MaterialsListController import MaterialsListController
 from lib.controller.WastesListController import WastesListController
-from lib.view.main.BaseWidget import BaseWidget
 from lib.model.Product import Product
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
+from lib.view.main.BaseWidget import BaseWidget
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
 from res.Dimensions import FontSize
@@ -63,6 +62,12 @@ class WastesTab(BaseWidget):
         self.search_box.setObjectName("searchbox_line_edit")
         self.search_box.setPlaceholderText("Cerca")
         self.search_box.searchButton.setEnabled(False)'''
+
+        # Label per magazzino vuoto
+        self.empty_storage = QLabel(self.central_frame)
+        self.empty_storage.setObjectName("empty_label")
+        self.empty_storage.setText("Nessun prodotto presente in magazzino")
+        self.empty_storage.setFont(font)
 
         # Layout con il checkgroup
         self.checkgroup1_layout = QVBoxLayout()
@@ -183,9 +188,24 @@ class WastesTab(BaseWidget):
             else:
                 self.table_adapter.removeRowByKey(message)
 
+            if self.table_adapter.isTableEmpty():
+                self.empty_storage.setVisible(True)
+                self.table.setVisible(False)
+            else:
+                self.empty_storage.setVisible(False)
+                self.table.setVisible(True)
+
         self.controller.observe_wastes_list(update_table)
 
         self.central_layout.addWidget(self.table)
+        self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
+
+        if self.table_adapter.isTableEmpty():
+            self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Ritorna la lista degli scarti filtrata
     def get_filtered_wastes_list(self) -> list[Product]:
@@ -195,6 +215,12 @@ class WastesTab(BaseWidget):
     def refresh_wastes_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_wastes_list())
+        if self.table_adapter.isTableEmpty():
+            self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Mostra la form per l'aggiunta degli scarti
     '''def show_order_form(self):

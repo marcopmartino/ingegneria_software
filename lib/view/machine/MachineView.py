@@ -1,7 +1,7 @@
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QCloseEvent, QFont, QPalette
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QHeaderView, QScrollArea, QProgressBar
-from qfluentwidgets import PrimaryPushButton, ProgressBar
+from PyQt5.QtGui import QCloseEvent, QFont
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QProgressBar
+from qfluentwidgets import PrimaryPushButton
 
 from lib.controller.MachineController import MachineController
 from lib.model.Machine import Machine

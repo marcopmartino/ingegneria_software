@@ -3,7 +3,6 @@ from typing import Any
 
 import firebase_admin
 import pyrebase
-from requests import RequestException
 
 from lib.network.HTTPErrorHelper import HTTPErrorHelper
 
@@ -21,25 +20,3 @@ firebase = pyrebase.initialize_app(firebaseConfig)
 cred = firebase_admin.credentials.Certificate('lib/firebaseKey.json')
 firebase_users = firebase_admin.initialize_app(cred, {
     'database_url': firebaseConfig.get('databaseURL')})
-currentUser: Any = None
-
-
-# noinspection PyPep8Naming
-def currentUserId():
-    return currentUser["localId"]
-
-
-# Ottiene il tipo di utente che sta effettuando l'accesso
-# noinspection PyPep8Naming
-def getUserRole():
-
-    return HTTPErrorHelper.handle(
-        lambda: firebase.database().child('users').child(currentUserId()).get().val()['role'],
-        {TypeError: lambda: "unauthenticated"},
-        True
-    )
-
-
-def init():
-    global currentUser
-    currentUser = None

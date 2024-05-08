@@ -8,9 +8,9 @@ class User:
         self._role = role
 
     def get_uid(self):
-        return self._uid
+        return self._uid if self._uid is not None else None
 
     def get_role(self):
-        return self._role
+        return self._role if self._role is not None else None
 
 

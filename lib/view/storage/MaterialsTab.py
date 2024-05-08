@@ -63,6 +63,12 @@ class MaterialsTab(BaseWidget):
         self.search_box.setPlaceholderText("Cerca")
         self.search_box.searchButton.setEnabled(False)
 
+        # Label per magazzino vuoto
+        self.empty_storage = QLabel(self.central_frame)
+        self.empty_storage.setObjectName("empty_label")
+        self.empty_storage.setText("Nessun prodotto presente in magazzino")
+        self.empty_storage.setFont(font)
+
         # Layout con il checkgroup
         self.checkgroup_layout = QVBoxLayout()
         self.checkgroup_layout.setSpacing(8)
@@ -153,9 +159,22 @@ class MaterialsTab(BaseWidget):
             else:
                 self.table_adapter.removeRowByKey(message)
 
+            if self.table_adapter.isTableEmpty():
+                self.empty_storage.setVisible(True)
+            else:
+                self.empty_storage.setVisible(False)
+
         self.controller.observe_materials_list(update_table)
 
         self.central_layout.addWidget(self.table)
+        self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
+
+        if self.table_adapter.isTableEmpty():
+            self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Ritorna la lista di ordini filtrata
     def get_filtered_materials_list(self) -> list[Product]:
@@ -165,6 +184,12 @@ class MaterialsTab(BaseWidget):
     def refresh_materials_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_materials_list())
+        if self.table_adapter.isTableEmpty():
+            self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Mostra la form per l'aggiunta dei prodotti
     '''def show_order_form(self):

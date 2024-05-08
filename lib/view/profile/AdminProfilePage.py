@@ -1,12 +1,9 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QWidget
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QPushButton, QWidget
 
-import lib.firebaseData as firebaseConfig
-
+from lib.controller.ProfileController import ProfileController
 from lib.layout.QLabelLayout import QLabelLayout
 from lib.view.main.BaseWidget import BaseWidget
-from lib.controller.ProfileController import ProfileController
-from lib.model.Staff import Staff
 from lib.view.profile.EditAdminProfileWindow import EditAdminProfileWindow
 from res import Styles
 from res.Strings import FormStrings, ProfileStrings
@@ -22,7 +19,9 @@ class ProfileWidget(BaseWidget):
         self.edit_window = None
 
         self.controller = ProfileController()
-        self.controller.open_staff_stream()
+        self.controller.open_stream()
+
+        initial_data = self.controller.get_user_data()
 
         self.setTitleText("Profilo")
 
@@ -31,7 +30,7 @@ class ProfileWidget(BaseWidget):
         self.profileInfo.setSpacing(15)
         self.profileInfo.setObjectName("ProfileInfo")
 
-        self.nameLabel = QLabel()
+        self.nameLabel = QLabel(initial_data['name'])
         self.nameLabel.adjustSize()
         self.nameLabel.setMinimumSize(450, 50)
         self.nameLabel.setStyleSheet(Styles.PROFILE_INFO_NAME)
@@ -45,10 +44,10 @@ class ProfileWidget(BaseWidget):
         self.profileInfoTable.setAlignment(Qt.AlignLeft)
         self.profileInfoTable.setObjectName("ProfileInfoTable")
 
-        self.emailLabel = QLabelLayout(FormStrings.EMAIL)
-        self.phoneLayout = QLabelLayout(FormStrings.PHONE)
-        self.birthDateLabel = QLabelLayout(FormStrings.BIRTH_DATE)
-        self.CFNumberLayout = QLabelLayout(FormStrings.CF)
+        self.emailLabel = QLabelLayout(FormStrings.EMAIL, initial_data['mail'], self)
+        self.phoneLayout = QLabelLayout(FormStrings.PHONE, initial_data['phone'], self)
+        self.birthDateLabel = QLabelLayout(FormStrings.BIRTH_DATE, initial_data['birth_date'], self)
+        self.CFNumberLayout = QLabelLayout(FormStrings.CF, initial_data['CF'], self)
 
         self.profileInfoTable.addLayout(self.CFNumberLayout)
         self.profileInfoTable.addLayout(self.emailLabel)
@@ -86,20 +85,21 @@ class ProfileWidget(BaseWidget):
         self.profileInfo.setAlignment(self.buttonsBox, Qt.AlignCenter)
 
         def update_data(data):
-            for key, value in data.items():
-                match key:
-                    case 'name':
-                        self.nameLabel.setText(value)
-                    case 'mail':
-                        self.emailLabel.edit_text(value)
-                    case 'phone':
-                        self.phoneLayout.edit_text(value)
-                    case 'birth_date':
-                        self.birthDateLabel.edit_text(value)
-                    case 'CF':
-                        self.CFNumberLayout.edit_text(value)
+            if data is not None:
+                for key, value in data.items():
+                    match key:
+                        case 'name':
+                            self.nameLabel.setText(value)
+                        case 'mail':
+                            self.emailLabel.edit_text(value)
+                        case 'phone':
+                            self.phoneLayout.edit_text(value)
+                        case 'birth_date':
+                            self.birthDateLabel.edit_text(value)
+                        case 'CF':
+                            self.CFNumberLayout.edit_text(value)
 
-        self.controller.set_staff_observer(update_data)
+        self.controller.set_observer(update_data)
 
         self.central_layout.addLayout(self.profileInfo)
 

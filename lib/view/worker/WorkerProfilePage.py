@@ -1,13 +1,10 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QHBoxLayout
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel
 
-import lib.firebaseData as firebaseConfig
-
-from lib.layout.QLabelLayout import QLabelLayout
 from lib.controller.ProfileController import ProfileController
-from lib.model.Staff import Staff
+from lib.layout.QLabelLayout import QLabelLayout
 from res import Styles
-from res.Strings import FormStrings, ProfileStrings
+from res.Strings import FormStrings
 
 
 class ProfileWidget(QFrame):

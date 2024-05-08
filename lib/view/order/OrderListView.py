@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
 )
 from qfluentwidgets import SearchLineEdit, CheckBox, PushButton, ComboBox, PrimaryPushButton
 
-from lib.firebaseData import getUserRole
+from lib.controller.ProfileController import ProfileController
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
@@ -28,7 +28,8 @@ class OrderListView(BaseWidget):
         self.controller = OrderListController()
 
         # Titolo e sottotitolo
-        self.setTitleText("I tuoi ordini" if getUserRole() == "customer" else "Lista degli ordini")
+        self.setTitleText(
+            "I tuoi ordini" if ProfileController().get_role() == "customer" else "Lista degli ordini")
         self.setSubtitleText("Clicca due volte su un ordine per visualizzare maggiori dettagli")
 
         # Sidebar
@@ -117,7 +118,7 @@ class OrderListView(BaseWidget):
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
 
-        if getUserRole() == "customer":
+        if ProfileController().get_role() == "customer":
             self.sidebar_layout.addWidget(self.sidebar_spacer)
             self.sidebar_layout.addWidget(self.create_button)
         else:

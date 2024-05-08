@@ -38,8 +38,8 @@ class UserNetwork:
             lambda: firebase.database().child('users').child(user['localId']).set(form_data))
 
     @staticmethod
-    def get_by_id(order_id: int):
-        return firebase.database().child("users").child(order_id).get().val()
+    def get_by_id(user_id: int):
+        return firebase.database().child("users").child(user_id).get().val()
 
     @staticmethod
     def stream_by_id(user_id: str, stream_handler: callable):

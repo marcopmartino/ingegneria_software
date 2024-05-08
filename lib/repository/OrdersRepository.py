@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from enum import Enum
 
-from lib.firebaseData import currentUserId
+from lib.controller.ProfileController import ProfileController
 from lib.model.Order import Order
+from lib.network.AuthenticationNetwork import AuthenticationNetwork
 from lib.network.OrderNetwork import OrderNetwork
 from lib.utility.ObserverClasses import Observable, Message
 from lib.utility.Singleton import ObservableSingleton
@@ -154,7 +155,7 @@ class OrdersRepository(Observable, metaclass=ObservableSingleton):
             quantity=quantity,
             price=price,
             creation_date=DatetimeUtils.current_date(),
-            customer_id=currentUserId(),
+            customer_id=ProfileController().get_uid(),
             state=OrderStateStrings.NOT_STARTED
         )
         # Salva l'ordine nel database e ne ritorna l'id

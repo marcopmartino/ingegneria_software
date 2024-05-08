@@ -7,8 +7,9 @@ from PyQt5.QtGui import QFont, QCloseEvent
 from PyQt5.QtWidgets import QWidget, QLabel, QSizePolicy, QVBoxLayout, QHeaderView, QGridLayout, QMessageBox
 from qfluentwidgets import PrimaryPushButton, StrongBodyLabel, BodyLabel
 
+
 from lib.controller.OrderController import OrderController
-from lib.firebaseData import getUserRole, currentUserId
+from lib.controller.ProfileController import ProfileController
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Observer, Message
 from lib.utility.UtilityClasses import PriceFormatter
@@ -196,7 +197,7 @@ class OrderView(BaseWidget):
                     self.on_transition_to_next_state()
 
                 case OrdersRepository.Event.ORDER_DELETED:
-                    if order.get_customer_id() != currentUserId():
+                    if order.get_customer_id() != ProfileController().get_uid():
                         # Informo che il cliente ha eliminato l'ordine
                         self.show_deletion_info_dialog()
 
@@ -369,7 +370,7 @@ class OrderStateCreated(OrderState):
         # Imposto la descrizione dello stato
         self._view.state_description_label.setText("In attesa che la lavorazione abbia inizio")
 
-        match getUserRole():
+        match ProfileController().get_role():
             case "customer":
                 # Aggiunge i pulsanti di modifica e annullamento dell'ordine al layout
                 self._view.sidebar_layout.addWidget(self._view.modify_order_button)
@@ -414,7 +415,7 @@ class OrderStateProcessing(OrderState):
         # Imposta la descrizione dello stato
         self._view.state_description_label.setText("In attesa che l'ordine sia completato")
 
-        match getUserRole():
+        match ProfileController().get_role():
             case "customer":
                 # Aggiunge i pulsanti (disabilitati) di modifica e annullamento dell'ordine al layout
                 self._view.sidebar_layout.addWidget(self._view.modify_order_button)
@@ -446,7 +447,7 @@ class OrderStateProcessing(OrderState):
         # Aggiorna la descrizione dello stato
         self._view.state_description_label.setText("In attesa che l'ordine sia completato")
 
-        match getUserRole():
+        match ProfileController().get_role():
             case "customer":
                 # Disabilita i pulsanti di modifica e di eliminazione dell'ordine
                 self._view.modify_order_button.setEnabled(False)
@@ -491,7 +492,7 @@ class OrderStateCompleted(OrderState):
         # Imposta la descrizione dello stato
         self._view.state_description_label.setText("L'ordine è pronto per essere ritirato")
 
-        match getUserRole():
+        match ProfileController().get_role():
             case "manager" | "admin":
                 # Aggiunge le Label con le informazioni sul completamento dell'ordne
                 self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
@@ -508,7 +509,7 @@ class OrderStateCompleted(OrderState):
         # Aggiorna la descrizione dello stato
         self._view.state_description_label.setText("L'ordine è pronto per essere ritirato")
 
-        match getUserRole():
+        match ProfileController().get_role():
             case "customer":
                 # Nasconde i pulsanti di modifica e di eliminazione dell'ordine
                 self._view.modify_order_button.setHidden(True)
@@ -553,7 +554,7 @@ class OrderStateDelivered(OrderState):
         # Aggiorna la descrizione dello stato
         self._view.state_description_label.setText("L'ordine è stato consegnato")
 
-        match getUserRole():
+        match ProfileController().get_role():
             case "manager" | "admin":
                 self._view.state_transition_button.setHidden(True)
 

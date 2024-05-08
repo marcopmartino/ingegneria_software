@@ -62,7 +62,6 @@ class StorageRepository(Observable, metaclass=ObservableSingleton):
                     if path == "/":
                         for key, value in data.items():
                             self.__instantiate_and_append_product(key, value)
-
                     # Quando viene creato un nuovo prodotto
                     else:
                         self.__instantiate_and_append_product(path.split("/")[1], data)

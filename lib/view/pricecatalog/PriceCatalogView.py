@@ -1,10 +1,11 @@
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem, QInputDialog, QDialog, QLabel
 
-from lib.firebaseData import getUserRole
+
+from lib.controller.PriceCatalogController import PriceCatalogController
+from lib.controller.ProfileController import ProfileController
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.BaseWidget import BaseWidget
-from lib.controller.PriceCatalogController import PriceCatalogController
 from lib.widget.TableWidgets import PriceCatalogTable, PriceCatalogTableBuilder, TitleAndSubtitleSection, \
     SixColumnsHeaderSection, SixColumnsDataSection, HorizontalTreeSection, NamedTableItem
 from res import Styles
@@ -111,7 +112,7 @@ class PriceCatalogView(BaseWidget):
         # Aggiorna l'intero listino
         self.table.updateAllNamedItems(self.controller.get_price_catalog())
 
-        if getUserRole() != "customer":
+        if ProfileController().get_role() != "customer":
             # Connette il segnale "itemClicked" allo slot "on_item_clicked"
             self.table.itemClicked.connect(self.on_item_clicked)
 

@@ -69,7 +69,6 @@ class SignUpView(AccessView):
 
     # Codice eseguito se la validazione ha successo
     def on_submit(self, form_data: dict[str, any]):
-        print(firebaseConfig.currentUser)
         print(form_data)
         print("Sign up...")
         try:

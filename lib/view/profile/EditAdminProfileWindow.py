@@ -1,14 +1,15 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow, \
-    QDialog
+from PyQt5.QtCore import Qt, QDate
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog
 
 import lib.utility.UtilityClasses as utility
-import lib.firebaseData as firebaseConfig
+from lib.layout.CustomDatePicker import CustomDatePicker
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from res import Styles, Dimensions
+from res.Dimensions import LineEditDimensions, FontWeight
 from res.Strings import FormStrings, Config, ProfileStrings, ValidationStrings
 
 
@@ -21,7 +22,7 @@ class EditAdminProfileWindow(QDialog):
 
         self.controller = self.parent().controller
 
-        data = self.controller.get_staff_model()
+        data = self.controller.get_user_data()
 
         # Finestra
         self.setWindowTitle(Config.APPLICATION_NAME)
@@ -68,7 +69,7 @@ class EditAdminProfileWindow(QDialog):
         self.profileForm.setAlignment(self.nameLayout, Qt.AlignCenter)
 
         # Campo input email
-        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, firebaseConfig.currentUser['email'], self)
+        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, data['mail'], self)
         self.emailLayout.line_edit.setEnabled(False)
         self.profileForm.addLayout(self.emailLayout)
         self.profileForm.setAlignment(self.emailLayout, Qt.AlignCenter)
@@ -78,8 +79,25 @@ class EditAdminProfileWindow(QDialog):
         self.profileForm.addLayout(self.phoneLayout)
         self.profileForm.setAlignment(self.phoneLayout, Qt.AlignCenter)
 
-        # Campo input indirizzo
-        self.birthDateLayout = LineEditCompositeLayout(FormStrings.BIRTH_DATE, data['birth_date'], self)
+        # Campo data di nascità
+        self.birthDateLayout = QHBoxLayout()
+
+        self.birthDateLabel = QLabel("Data di nascita: ")
+        font = QFont()
+        font.setPointSize(LineEditDimensions.DEFAULT_LABEL_FONT_SIZE)
+        font.setBold(True)
+        font.setWeight(FontWeight.BOLD)
+        self.birthDateLabel.setFont(font)
+
+        self.birthDatePicker = CustomDatePicker()
+        date = data['birth_date'].split('/')
+        default_date = QDate()
+        default_date.setDate(int(date[2]), int(date[1]), int(date[0]))
+        self.birthDatePicker.setDate(default_date)
+
+        self.birthDateLayout.addWidget(self.birthDateLabel)
+        self.birthDateLayout.addWidget(self.birthDatePicker)
+
         self.profileForm.addLayout(self.birthDateLayout)
         self.profileForm.setAlignment(self.birthDateLayout, Qt.AlignCenter)
 
@@ -133,7 +151,6 @@ class EditAdminProfileWindow(QDialog):
 
         name_field = LineEditCompositeFormField.LayoutAndRule(self.nameLayout, ValidationRule.Required())
         fiscal_code = LineEditCompositeFormField.LayoutAndRule(self.CFNumberLayout, ValidationRule.FiscalCode())
-        birth_date = LineEditCompositeFormField.LayoutAndRule(self.birthDateLayout, ValidationRule.Address())
         email_field = LineEditCompositeFormField.LayoutAndRule(self.emailLayout, ValidationRule.Email())
         phone_field = LineEditCompositeFormField.LayoutAndRule(self.phoneLayout, ValidationRule.Phone())
         new_password_field = (LineEditCompositeFormField.Layout(self.newPasswordLayout))
@@ -141,7 +158,7 @@ class EditAdminProfileWindow(QDialog):
         password_field = LineEditCompositeFormField.LayoutAndRule(self.passwordLayout, ValidationRule.Password())
 
         self.form_manager = FormManager()
-        self.form_manager.add_fields(name_field, fiscal_code, birth_date,
+        self.form_manager.add_fields(name_field, fiscal_code,
                                      email_field, phone_field, new_password_field, password_field,
                                      new_password_field, confirm_new_password_field)
         self.form_manager.add_submit_button(self.saveEditButton, self.on_submit)
@@ -150,11 +167,11 @@ class EditAdminProfileWindow(QDialog):
     def on_submit(self, form_data: dict[str, any]):
         newPassword = None
         print("Save_edit...")
-        currentEmail = firebaseConfig.currentUser['email']
+        currentData = self.controller.get_user_data()
         password = self.passwordLayout.line_edit.text()
-        if self.newPasswordLayout.line_edit.text() is not None:
+        if self.newPasswordLayout.line_edit.text() != "":
             if len(self.newPasswordLayout.line_edit.text()) > 6:
-                if self.confirmNewPasswordLayout.line_edit.text() is not None:
+                if self.confirmNewPasswordLayout.line_edit.text() != "":
                     if self.newPasswordLayout.line_edit.text() != self.confirmNewPasswordLayout.line_edit.text():
                         print("Le password non combaciano")
                         self.newPasswordLayout.error_label.setText(ValidationStrings.PASSWORD_CONFIRM_DIFFERENT)
@@ -165,20 +182,19 @@ class EditAdminProfileWindow(QDialog):
                     print("Conferma nuova password richiesta")
                     self.confirmNewPasswordLayout.error_label.setText(ValidationStrings.FIELD_REQUIRED)
             else:
-                print(self.newPassword)
                 print("Il campo nuova password deve essere lungo almeno 6 caratteri.")
                 self.newPasswordLayout.error_label.setText(ValidationStrings.MIN_PASSWORD_ERROR)
 
         try:
-            self.controller.staff_checkLogin(currentEmail, password)
+            self.controller.check_login(currentData['mail'], password)
             data = {
                 "name": self.nameLayout.line_edit.text(),
                 "CF": self.CFNumberLayout.line_edit.text(),
-                "birth": self.birthDateLayout.line_edit.text(),
-                "phone": utility.format_phone(self.phoneLayout.line_edit.text()),
+                "birth": self.birthDatePicker.date.toString('dd/MM/yyyy'),
+                "phone": utility.PhoneFormatter().format(self.phoneLayout.line_edit.text()),
                 "role": "manager"
             }
-            self.controller.staff_setUserData(data, newPassword, firebaseConfig.currentUser['localId'])
+            self.controller.set_user_data(data, newPassword, currentData['uid'])
             self.close()
         except Exception as e:
             print(e)

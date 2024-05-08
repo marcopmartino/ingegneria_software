@@ -1,5 +1,6 @@
 from functools import wraps
 
+from lib.utility.AuthenticationClass import Authentication
 from lib.utility.ObserverClasses import Observable
 
 
@@ -35,4 +36,13 @@ class ObservableSingleton(type(Observable)):
         self._instance = super(ObservableSingleton, self).__call__()
 
     def __call__(self, *args, **kw):
+        return self._instance
+
+
+class AuthenticationSingleton(type(Authentication)):
+    def __init__(self, name, bases, mmbs):
+        super(AuthenticationSingleton, self).__init__(name, bases, mmbs)
+        self._instance = super(AuthenticationSingleton, self).__call__()
+
+    def __call__(self, *args, **kwargs):
         return self._instance

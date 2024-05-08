@@ -1,36 +1,26 @@
 from pyrebase.pyrebase import Stream
 
-from lib.model.User import User
+from lib.model.Customer import Customer
 from lib.network.UserNetwork import UserNetwork
 from lib.utility.ObserverClasses import Observable
+from lib.utility.Singleton import ObservableSingleton
 
 
-class Customer(User, Observable):
-
+class AuthenticatedCustomer(Customer, Observable):
     def __init__(self, uid: str = None, company: str = None, phone: str = None, mail: str = None,
                  delivery: str = None, IVA: str = None, role: str = None):
-        super().__init__(uid, phone, mail, role)
-        self._company = company
-        self._delivery = delivery
-        self._IVA = IVA
-        self._stream: Stream | None = None
+        super().__init__(uid, company, phone, mail, delivery, IVA, role)
+        self.__stream: Stream | None = None
 
     def open_stream(self):
-        self.__stream = UserNetwork.stream_by_id(self._uid, self.__stream_handler)
+        self.__stream = UserNetwork().stream_by_id(self._uid, self.__stream_handler)
+
+    '''def set_data(self, uid: str = None, company: str = None, phone: str = None, mail: str = None,
+                 delivery: str = None, IVA: str = None, role: str = None):
+        self.__init__(uid, company, phone, mail, delivery, IVA, role)'''
 
     def close_stream(self):
         self.__stream.close()
-
-    # Usato per aggiungere i dati di un utente
-    def __add_data(self, data: any):
-        if data is not None:
-            self._uid = data['uid']
-            self._company = data['company']
-            self._phone = data['phone']
-            self._email = data['email']
-            self._delivery = data['delivery']
-            self._IVA = data['IVA']
-            self._role = data['role']
 
     # Usato per modificare i dati di un utente
     def __edit_data(self, key: str, data: any):
@@ -68,7 +58,7 @@ class Customer(User, Observable):
         if data is not None:
             match message['event']:
                 case "put":  # Funzione di aggiunta dati
-                    self.__add_data(data)
+                    pass
                 case "patch":  # Funzione di modifica dei dati
                     for key, value in data.items():
                         self.__edit_data(key, value)
@@ -86,20 +76,12 @@ class Customer(User, Observable):
 
     @staticmethod
     def checkLogin(currentEmail, password):
-        UserNetwork.checkLogin(currentEmail, password)
+        UserNetwork().checkLogin(currentEmail, password)
 
     # Modifica i dati degli utenti nel database
     @staticmethod
-    def setUserData(form_data: dict[str, any], newPassword, uid):
-        UserNetwork.update(form_data, newPassword, uid)
-
-    # Salva un nuovo utente nel database
-    # @staticmethod
-    '''def add(customer: Customer) -> str:
-        # Converte l'utente in dizionario
-        customer_dict = vars(customer)
-        # Salva l'utente nel database e ne ritorna l'id
-        return UserNetwork.create(customer_dict)'''
+    def set_user_data(form_data: dict[str, any], newPassword, uid):
+        UserNetwork().update(form_data, newPassword, uid)
 
     def to_dict(self):
         return vars(self)
@@ -108,6 +90,6 @@ class Customer(User, Observable):
     @staticmethod
     def delete(self, email: str):
         try:
-            UserNetwork.delete_by_email(email)
+            UserNetwork().delete_by_email(email)
         except Exception as e:
             print(e)

@@ -64,16 +64,16 @@ class ProductsTab(BaseWidget):
         self.search_box.setPlaceholderText("Cerca")
         self.search_box.searchButton.setEnabled(False)
 
-        # Layout con il checkgroup
-        self.checkgroup_layout = QVBoxLayout()
-        self.checkgroup_layout.setSpacing(8)
-        self.checkgroup_layout.setObjectName("first_checkgroup_layout")
-
         # Label per magazzino vuoto
         self.empty_storage = QLabel(self.central_frame)
         self.empty_storage.setObjectName("empty_label")
         self.empty_storage.setText("Nessun prodotto presente in magazzino")
         self.empty_storage.setFont(font)
+
+        # Layout con il checkgroup
+        self.checkgroup_layout = QVBoxLayout()
+        self.checkgroup_layout.setSpacing(8)
+        self.checkgroup_layout.setObjectName("first_checkgroup_layout")
 
         # Checkgroup Label
         font = QFont()
@@ -147,6 +147,7 @@ class ProductsTab(BaseWidget):
         self.table = StandardTable(self.central_frame)
         headers = ["Seriale", "Tipo", "Dettagli", "Quantità"]
         self.table.setHeaders(headers)
+        self.table.setSortingEnabled(False)
 
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
@@ -155,7 +156,6 @@ class ProductsTab(BaseWidget):
         # self.table_adapter.onSelection(self.show_product_details)
 
         def update_table(message: Product | dict | str):
-            self.empty_storage.setVisible(False)
             if type(message) is Product:
                 self.table_adapter.addData([message])
             else:
@@ -169,7 +169,14 @@ class ProductsTab(BaseWidget):
         self.controller.observe_product_list(update_table)
 
         self.central_layout.addWidget(self.table)
-        # self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignCenter)
+        self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
+
+        if self.table_adapter.isTableEmpty():
+            self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Ritorna la lista di ordini filtrata
     def get_filtered_product_list(self) -> list[Product]:
@@ -178,13 +185,13 @@ class ProductsTab(BaseWidget):
     # Aggiorna la lista dei prodotti in base ai filtri
     def refresh_products_list(self):
         self.table.clearSelection()
-        new_data = self.get_filtered_product_list()
-        if len(new_data) != 0:
-            self.empty_storage.setVisible(False)
-            self.table_adapter.setData(self.get_filtered_product_list())
-        else:
-            self.table_adapter.setData(new_data)
+        self.table_adapter.setData(self.get_filtered_product_list())
+        if self.table_adapter.isTableEmpty():
             self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Mostra la form per l'aggiunta dei prodotti
     '''def show_order_form(self):

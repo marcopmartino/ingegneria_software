@@ -81,12 +81,14 @@ class WastesListController:
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 2:
                     if waste.get_type() not in allowed_types:
-                        wastes_list.remove(waste)
+                        if waste in wastes_list:
+                            wastes_list.remove(waste)
 
                 # Se tutti i tipi di plastica sono ammessi viene saltato il filtro sul tipo di plastica
                 if allowed_plastic_count != 3:
                     if waste.get_details() not in allowed_plastic:
-                        wastes_list.remove(waste)
+                        if waste in wastes_list:
+                            wastes_list.remove(waste)
 
         else:
             wastes_list = []
