@@ -25,6 +25,10 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
         self.__cash_register_network = CashRegisterNetwork()
         super().__init__(self.__cash_register_network.stream)
 
+    def clear(self):
+        self.__cash_availability = 0
+        self.__transaction_list = []
+
     # Usato internamente per istanziare e aggiungere una nuova transazione al registro
     def __instantiate_and_append_transaction(self, serial: str, data: any) -> CashRegisterTransaction:
         order = CashRegisterTransaction(

@@ -2,7 +2,7 @@
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, QWidget
-from qfluentwidgets import FluentIcon as FIF, Flyout, InfoBar, InfoBarPosition
+from qfluentwidgets import FluentIcon as FIF, InfoBar, InfoBarPosition
 from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter)
 from qframelesswindow import FramelessWindow, TitleBar
 
@@ -367,8 +367,8 @@ class MainWindow(FramelessWindow):
 
     # Esegue il reset della navigazione
     def reset(self):
-        # Chiude gli stream di dati
-        self.controller.close_streams()
+        # Esegue il reset delle repository
+        self.controller.reset_repositories()
 
         # Rimuove ed elimina i widget dello StackedWidget e le corrispondenti voci del menù
         for index in reversed(range(self.stackedWidget.count())):

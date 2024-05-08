@@ -32,11 +32,12 @@ class MainController:
         for repository in self.__repositories.values():
             repository.open_stream()
 
-    # Chiudo tutti gli stream e rimuovo tutti gli osservatori dalle repository
-    def close_streams(self):
+    # Chiudo gli stream, rimuovo gli osservatori e svuoto le repository
+    def reset_repositories(self):
         for repository in self.__repositories.values():
             repository.close_stream()
             repository.detachAll()
+            repository.clear()
 
     # Imposta un osservatore per la repository del registro di cassa
     def observe_cash_register(self, callback: callable):

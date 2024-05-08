@@ -13,6 +13,9 @@ class UsersRepository(Repository, metaclass=RepositoryMeta):
         self.__user_network: UsersNetwork = UsersNetwork()
         super().__init__(self.__user_network.stream)
 
+    def clear(self):
+        self.__users_list = []
+
     # Usato internamente per istanziare e aggiungere un utente alla lista
     def __instantiate_and_append_customer(self, uid: str, data: any):
         self.__users_list.append(Customer(

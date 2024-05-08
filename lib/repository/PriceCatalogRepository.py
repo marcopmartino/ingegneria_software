@@ -19,6 +19,9 @@ class PriceCatalogRepository(Repository, metaclass=RepositoryMeta):
         self.__price_catalog_network: PriceCatalogNetwork = PriceCatalogNetwork()
         super().__init__(self.__price_catalog_network.stream)
 
+    def clear(self):
+        self.__price_catalog = {}
+
     # Stream handler che aggiorna automaticamente il listino
     def _stream_handler(self, message):
 

@@ -25,6 +25,9 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
         self.__order_network = OrdersNetwork()
         super().__init__(self.__order_network.stream)
 
+    def clear(self):
+        self.__order_list = []
+
     # Usato internamente per istanziare e aggiungere un nuovo ordine alla lista
     def __instantiate_and_append_order(self, serial: str, data: any) -> Order:
         order = Order(

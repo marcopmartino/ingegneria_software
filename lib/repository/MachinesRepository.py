@@ -18,6 +18,9 @@ class MachinesRepository(Repository, metaclass=RepositoryMeta):
         self.__machine_network = MachinesNetwork()
         super().__init__(self.__machine_network.stream)
 
+    def clear(self):
+        self.__machine_list = []
+
     # Usato internamente per istanziare e aggiungere un nuovo macchinario alla lista
     def __instantiate_and_append_machine(self, serial: str, data: any) -> Machine:
         order = Machine(

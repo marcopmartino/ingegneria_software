@@ -31,3 +31,8 @@ class Repository(Observable, ABC):
     @abstractmethod
     def _stream_handler(self, message):
         pass
+
+    # Svuota la repository
+    @abstractmethod
+    def clear(self):
+        pass

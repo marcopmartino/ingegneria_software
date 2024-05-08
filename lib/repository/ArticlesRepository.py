@@ -9,6 +9,7 @@ from lib.utility.UtilityClasses import DatetimeUtils
 
 
 class ArticlesRepository(Repository, metaclass=RepositoryMeta):
+
     class Event(Enum):
         ARTICLES_INITIALIZED = 0
         ARTICLE_CREATED = 1
@@ -18,6 +19,9 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
         self.__article_list: list[Article] = []
         self.__article_network: ArticlesNetwork = ArticlesNetwork()
         super().__init__(self.__article_network.stream)
+
+    def clear(self):
+        self.__article_list = []
 
     # Usato internamente per istanziare e aggiungere un articolo alla lista
     def __instantiate_and_append_article(self, serial: str, data: any) -> Article:
