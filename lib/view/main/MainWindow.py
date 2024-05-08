@@ -195,7 +195,7 @@ class MainWindow(FramelessWindow):
                 # Informazioni sull'utente
                 insertUserInfoItem("Dipendente")
 
-            case "admin":
+            case "manager":
 
                 # Sezione Top
                 self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), 'Profilo')
@@ -241,7 +241,7 @@ class MainWindow(FramelessWindow):
                 self.controller.observe_cash_register(update_cash_register_availability)
 
                 # Informazioni sull'utente
-                insertUserInfoItem("Amministratore", 2)
+                insertUserInfoItem("Manager", 2)
 
             case "unauthenticated":
                 return

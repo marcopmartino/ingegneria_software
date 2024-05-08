@@ -119,7 +119,7 @@ class PriceCatalogView(SubInterfaceWidget):
         # Aggiorno i dati della tabella ogni volta che cambiano
         self.controller.observe_price_catalog(update_price_catalog_view)
 
-        if Firebase.auth.currentUserRole() == "admin":
+        if Firebase.auth.currentUserRole() == "manager":
             # Connette il segnale "itemClicked" allo slot "on_item_clicked"
             self.table.itemClicked.connect(self.on_item_clicked)
 

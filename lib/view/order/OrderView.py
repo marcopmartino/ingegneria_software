@@ -137,20 +137,22 @@ class OrderView(SubInterfaceChildWidget):
         self.delete_order_button.clicked.connect(self.show_confirm_deletion_dialog)
 
         # Label sul completamento dell'ordine
-        self.order_completion_number_label = QLabel()
+        self.order_completion_number_label = QLabel(f"0/{str(self.controller.get_order().get_quantity())}")
         font = QFont()
         font.setPointSize(FontSize.SUBTITLE)
         self.order_completion_number_label.setFont(font)
         self.order_completion_text_label = BodyLabel(text="paia completate")
+        self.order_completion_text_label.setContentsMargins(0, 0, 0, 8)
 
         # Widget e layout con le Label sul completamento dell'ordine
         self.order_completion_labels_widget = QWidget()
         order_completion_labels_layout = QVBoxLayout(self.order_completion_labels_widget)
         order_completion_labels_layout.setSpacing(0)
         order_completion_labels_layout.setContentsMargins(0, 0, 0, 0)
-        order_completion_labels_layout.addWidget(self.order_completion_number_label)
-        order_completion_labels_layout.addWidget(self.order_completion_text_label)
+        order_completion_labels_layout.addWidget(self.order_completion_number_label, alignment=Qt.AlignHCenter)
+        order_completion_labels_layout.addWidget(self.order_completion_text_label, alignment=Qt.AlignHCenter)
         self.order_completion_labels_widget.setLayout(order_completion_labels_layout)
+        self.order_completion_labels_widget.setHidden(True)
 
         # Label di informazione sulla possibilità di modifica ed eliminazione dell'ordine
         self.order_changes_info_label = BodyLabel()
@@ -180,6 +182,7 @@ class OrderView(SubInterfaceChildWidget):
 
         # Callback per l'observer
         def update_order_view(message: Message):
+            print(message.event())
             match message.event():
                 case OrdersRepository.Event.ORDER_UPDATED:
                     # Aggiorno la tabella dell'ordine
@@ -194,6 +197,7 @@ class OrderView(SubInterfaceChildWidget):
                     self.order_table.columnItem(2).setText(self.controller.get_order_state())
                     # Aggiorno la sidebar
                     self.on_transition_to_next_state()
+                    print("Stato aggiornato")
 
                 case OrdersRepository.Event.ORDER_DELETED:
                     if order.get_customer_id() != Firebase.auth.currentUserId():
@@ -316,8 +320,22 @@ class OrderState(ABC):
 
     # Aggiorna un riga del layout dello stato dell'ordine
     def _update_state_row(self, row: int, state_icon: callable, state_name: str):
-        self._view.order_states_layout.removeItem(self._view.order_states_layout.itemAtPosition(row, 1))
-        self._view.order_states_layout.removeItem(self._view.order_states_layout.itemAtPosition(row, 2))
+        # Rimuove e nasconde gli item della riga "row"
+        arrow_item = self._view.order_states_layout.itemAtPosition(row, 0)
+        icon_item = self._view.order_states_layout.itemAtPosition(row, 1)
+        text_item = self._view.order_states_layout.itemAtPosition(row, 2)
+
+        if arrow_item is not None:
+            self._view.order_states_layout.removeItem(arrow_item)
+            arrow_item.widget().setHidden(True)
+
+        self._view.order_states_layout.removeItem(icon_item)
+        self._view.order_states_layout.removeItem(text_item)
+
+        icon_item.widget().setHidden(True)
+        text_item.widget().setHidden(True)
+
+        # Imposta nuovamente la riga
         self._set_state_row(row, state_icon, state_name)
 
     @abstractmethod
@@ -380,7 +398,7 @@ class OrderStateCreated(OrderState):
                 self._view.order_changes_info_label.setText(
                     "Sarà possibile modificare o annullare l'ordine solo finché la lavorazione non avrà inizio."
                 )
-            case "admin":
+            case "manager":
                 # Aggiunge il pulsante per mettere l'ordine in lavorazione
                 self._view.sidebar_layout.addWidget(self._view.state_transition_button)
                 self._view.state_transition_button.setText("Metti in lavorazione")
@@ -427,16 +445,16 @@ class OrderStateProcessing(OrderState):
                 self._view.order_changes_info_label.setText(
                     "Non è più possibile modificare o annullare l'ordine poiché la lavorazione è iniziata"
                 )
-            case "worker":
-                # Aggiunge le Label con le informazioni sul completamento dell'ordne
-                self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
-            case "admin":
+            case "worker" | "manager":
                 # Aggiunge le Label con le informazioni sul completamento dell'ordne
                 self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
 
                 # Aggiunge il pulsante per il passaggio al prossimo stato
                 self._view.sidebar_layout.addWidget(self._view.state_transition_button)
                 self._view.state_transition_button.setText("Completa ordine")
+
+                # Mostra le Label di completamento dell'ordine
+                self._view.order_completion_labels_widget.setHidden(False)
 
     def update_sidebar(self):
         # Aggiorna gli stati
@@ -459,12 +477,27 @@ class OrderStateProcessing(OrderState):
             case "worker":
                 # Aggiunge le Label con le informazioni sul completamento dell'ordne
                 self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
-            case "admin":
-                # Aggiunge le Label con le informazioni sul completamento dell'ordne
-                self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
 
                 # Aggiorna il testo del pulsante per il passaggio al prossimo stato
                 self._view.state_transition_button.setText("Completa ordine")
+
+                # Aggiunge il pulsante per il passaggio al prossimo stato
+                self._view.sidebar_layout.addWidget(self._view.state_transition_button)
+
+                # Mostra le Label di completamento dell'ordine
+                self._view.order_completion_labels_widget.setHidden(False)
+            case "manager":
+                # Aggiunge le Label con le informazioni sul completamento dell'ordine
+                self._view.sidebar_layout.insertWidget(
+                    self._view.sidebar_layout.count() - 1,  # Viene aggiunta prima del pulsante (penultima posizione)
+                    self._view.order_completion_labels_widget
+                )
+
+                # Aggiorna il testo del pulsante per il passaggio al prossimo stato
+                self._view.state_transition_button.setText("Completa ordine")
+
+                # Mostra le Label di completamento dell'ordine
+                self._view.order_completion_labels_widget.setHidden(False)
 
     def _next_state_class(self) -> type(OrderState):
         return OrderStateCompleted
@@ -492,10 +525,7 @@ class OrderStateCompleted(OrderState):
         self._view.state_description_label.setText("L'ordine è pronto per essere ritirato")
 
         match Firebase.auth.currentUserRole():
-            case "manager" | "admin":
-                # Aggiunge le Label con le informazioni sul completamento dell'ordne
-                self._view.sidebar_layout.addWidget(self._view.order_completion_labels_widget)
-
+            case "manager":
                 # Aggiorna il testo del pulsante per il passaggio al prossimo stato
                 self._view.state_transition_button.setText("Conferma consegna ordine")
 
@@ -522,7 +552,11 @@ class OrderStateCompleted(OrderState):
 
                 # Nasconde il pulsante per il passaggio al prossimo stato
                 self._view.state_transition_button.setHidden(True)
-            case "manager" | "admin":
+
+            case "manager":
+                # Nasconde il widget con le Label di info sul completamento dell'ordine
+                self._view.order_completion_labels_widget.setHidden(True)
+
                 # Aggiorna il testo del pulsante per il passaggio al prossimo stato
                 self._view.state_transition_button.setText("Conferma consegna ordine")
 
@@ -554,7 +588,7 @@ class OrderStateDelivered(OrderState):
         self._view.state_description_label.setText("L'ordine è stato consegnato")
 
         match Firebase.auth.currentUserRole():
-            case "admin":
+            case "manager":
                 self._view.state_transition_button.setHidden(True)
 
     def transition_to_next_state(self):

@@ -14,7 +14,7 @@ class Repository(Observable, ABC):
         self.__stream_source: Callable[[Callable[[any], None]], Stream] = stream_source
 
         # Stream
-        self.__stream: Stream | None = None  # Visibilità "protected"
+        self.__stream: Stream | None = None  # Visibilità "private"
 
     # Apre uno stream di dati (lo Stream creato viene salvato nella proprietà "__stream")
     def open_stream(self):

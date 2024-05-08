@@ -19,6 +19,7 @@ class AccessController:
             lambda: self.__users_repository.authenticate_user(form_data['email'], form_data['password']))
         print("Fine Login")
 
+    '''Da spostare in UsersRepository'''
     # Registra un nuovo account
     def register(self, form_data: dict[str, any]):
         Firebase.auth.currentUser = HTTPErrorHelper.differentiate(

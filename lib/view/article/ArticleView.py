@@ -178,6 +178,7 @@ class ArticleView(SubInterfaceChildWidget):
         # Aggiorna l'altezza dell'albero
         total_produced_shoe_lasts_item.setExpanded(True)
         self.tree_widget.setMaximumHeight(99)
+        self.tree_widget.setFixedWidth(400)
 
         # Callback per l'observer
         def update_order_view(message: Message):
