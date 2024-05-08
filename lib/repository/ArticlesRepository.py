@@ -1,12 +1,18 @@
+from enum import Enum
+
 from lib.model.Article import Article
 from lib.network.ArticlesNetwork import ArticlesNetwork
 from lib.repository.Repository import Repository
-from lib.utility.ObserverClasses import Observable
-from lib.utility.Singleton import ObservableSingleton, RepositoryMeta
+from lib.utility.ObserverClasses import Message
+from lib.utility.Singleton import RepositoryMeta
 from lib.utility.UtilityClasses import DatetimeUtils
 
 
 class ArticlesRepository(Repository, metaclass=RepositoryMeta):
+    class Event(Enum):
+        ARTICLES_INITIALIZED = 0
+        ARTICLE_CREATED = 1
+        ARTICLE_PRODUCED_SHOE_LASTS_UPDATED = 2
 
     def __init__(self):
         self.__article_list: list[Article] = []
@@ -14,13 +20,15 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
         super().__init__(self.__article_network.stream)
 
     # Usato internamente per istanziare e aggiungere un articolo alla lista
-    def __instantiate_and_append_article(self, serial: str, data: any):
-        self.__article_list.append(Article(
+    def __instantiate_and_append_article(self, serial: str, data: any) -> Article:
+        article = Article(
             serial, data["gender"], data["size"], data["shoe_last_type"], data["plastic_type"],
             data["reinforced_compass"], data["second_compass_type"], data["processing"], data["shoeing"],
             data["numbering_antineck"], data["numbering_lateral"], data["numbering_heel"], data["iron_tip"],
             data["pivot_under_heel"], data["creation_date"], data["produced_article_shoe_lasts"]
-        ))
+        )
+        self.__article_list.append(article)
+        return article
 
     # Stream handler che aggiorna automaticamente la lista degli articoli
     def _stream_handler(self, message):
@@ -40,16 +48,36 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
                         for key, value in data.items():
                             self.__instantiate_and_append_article(key, value)
 
+                        # Notifica gli osservatori che la repository ha concluso l'inizializzazione
+                        self.notify(Message(ArticlesRepository.Event.ARTICLES_INITIALIZED, self.__article_list))
+
                     # Quando viene creato un nuovo articolo
                     else:
-                        self.__instantiate_and_append_article(path.split("/")[1], data)
+                        new_article = self.__instantiate_and_append_article(path.split("/")[1], data)
+
+                        # Notifica gli osservatori che un articolo è stato creato
+                        self.notify(Message(ArticlesRepository.Event.ARTICLE_CREATED, new_article))
+
+                # Quando viene aggiornato il numero di paia di forme di un articolo prodotte
                 case "patch":
-                    pass
+
+                    # Estrae il seriale dell'articolo dal percorso
+                    article_serial: str = path.split("/")[1]
+
+                    # Prende l'articolo corrispondente
+                    article = self.get_article_by_id(article_serial)
+
+                    # Aggiorna l'articolo
+                    article.set_produced_article_shoe_lasts(data["produced_article_shoe_lasts"])
+
+                    # Prepara il messaggio per notificare gli osservatori della lista degli articoli
+                    message = Message(ArticlesRepository.Event.ARTICLE_PRODUCED_SHOE_LASTS_UPDATED)
+                    article.notify(message)  # Notifica eventuali osservatori del singolo articolo
+                    message.setData(article)
+                    self.notify(message)  # Notifica gli osservatori della repository
+
                 case "cancel":
                     pass
-
-        # Notifico gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-        self.notify(message)
 
     # Ritorna la lista degli articoli
     def get_article_list(self) -> list[Article]:

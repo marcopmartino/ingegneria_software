@@ -1,6 +1,7 @@
 from pyrebase.pyrebase import Stream
 
 from lib.firebaseData import Firebase
+from lib.utility.UtilityClasses import SerialNumberFormatter
 
 
 class ArticlesNetwork:
@@ -17,7 +18,7 @@ class ArticlesNetwork:
     def insert(data: dict) -> str:
         db = Firebase.database
         article_id: int = ArticlesNetwork.get_next_id()
-        serial_number: str = f"{article_id:04d}"
+        serial_number: str = SerialNumberFormatter.format(article_id)
         db.child("articles").child(serial_number).set(data)
         db.child("next_ids").update({"article": article_id + 1})
         return serial_number

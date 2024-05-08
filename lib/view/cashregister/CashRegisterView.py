@@ -87,14 +87,14 @@ class CashRegisterView(SubInterfaceWidget):
         self.checkgroup_label.setWordWrap(True)
         self.checkgroup_layout.addWidget(self.checkgroup_label)
 
-        # CheckBox "Uscite"
+        # CheckBox "Entrate"
         self.revenue_checkbox = CheckBox(self.sidebar_frame)
         self.revenue_checkbox.setObjectName("revenue_check_box")
         self.revenue_checkbox.setText("Entrate di cassa")
         self.revenue_checkbox.setChecked(True)
         self.checkgroup_layout.addWidget(self.revenue_checkbox)
 
-        # CheckBox "Entrata"
+        # CheckBox "Uscite"
         self.spending_check_box = CheckBox(self.sidebar_frame)
         self.spending_check_box.setObjectName("spending_check_box")
         self.spending_check_box.setText("Uscite di cassa")
@@ -107,22 +107,8 @@ class CashRegisterView(SubInterfaceWidget):
         self.refresh_button.clicked.connect(self.refresh_transaction_list)
 
         # Spacer tra i filtri e la cassa
-        self.first_sidebar_spacer = HorizontalLine(self.sidebar_frame)
-        '''
-        # Layout disponibilità di cassa
-        self.cash_register_availability_layout = QVBoxLayout(self.sidebar_frame)
+        self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
 
-        # Labels disponibilità di cassa
-        self.cash_register_availability_label = QLabel(self.sidebar_frame)
-        self.cash_register_availability_label.setText("Disponibilità cassa:")
-        self.cash_register_availability_layout.addWidget(self.cash_register_availability_label)
-
-        self.cash_register_availability_value_label = QLabel(self.sidebar_frame)
-        self.cash_register_availability_layout.addWidget(self.cash_register_availability_value_label)
-
-        # Spacer tra la cassa e il pulsante di registrazione transazione
-        self.second_sidebar_spacer = HorizontalLine(self.sidebar_frame)
-        '''
         # Button "Registra transazione"
         self.create_button = PrimaryPushButton(self.sidebar_frame)
         self.create_button.setText("Registra transazione")
@@ -132,9 +118,7 @@ class CashRegisterView(SubInterfaceWidget):
         self.sidebar_layout.addLayout(self.search_box_layout)
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
-        self.sidebar_layout.addWidget(self.first_sidebar_spacer)
-        # self.sidebar_layout.addLayout(self.cash_register_availability_layout)
-        # self.sidebar_layout.addWidget(self.second_sidebar_spacer)
+        self.sidebar_layout.addWidget(self.sidebar_spacer)
         self.sidebar_layout.addWidget(self.create_button)
 
         # Form Manager

@@ -36,7 +36,7 @@ class MachineListView(SubInterfaceWidget):
         # SearchBox
         self.search_box = SearchLineEdit(self.sidebar_frame)
         self.search_box.setObjectName("searchbox_line_edit")
-        self.search_box.setPlaceholderText("Cerca nome")
+        self.search_box.setPlaceholderText("Cerca macchinario")
         self.search_box.searchButton.setEnabled(False)
         self.search_box.setMaxLength(20)
 

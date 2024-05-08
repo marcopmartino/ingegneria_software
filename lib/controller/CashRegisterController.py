@@ -25,11 +25,11 @@ class CashRegisterController:
     def filter_transactions(self, filters: dict[str, any], *transactions: CashRegisterTransaction) \
             -> list[CashRegisterTransaction]:
 
-        # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio degli ordini
+        # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio delle transazioni
 
         # Parametri di filtro scelti dall'utente
         search_field: str = filters["searchcombobox"]  # Campo della transazione sulla base di cui filtrare
-        search_text: str = filters["searchbox"]  # Valore del campo dell'ordine sulla base di cui filtrare
+        search_text: str = filters["searchbox"]  # Valore del campo della transazione sulla base di cui filtrare
         allowed_types: list[bool] = []  # Tipi transazione da mostrare
 
         # In base ai parametri di filtro, determina se un tipo di transazione è ammesso a meno

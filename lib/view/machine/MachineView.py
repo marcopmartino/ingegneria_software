@@ -22,7 +22,7 @@ class MachineView(SubInterfaceChildWidget):
         super().closeEvent(event)
         self.controller.detach_machine_observer(self.observer)  # Rimuove l'osservatore dal macchinario
 
-    def __init__(self, parent_widget: QWidget, machine: Machine):
+    def __init__(self, parent_widget: SubInterfaceWidget, machine: Machine):
         # Controller
         self.controller: MachineController = MachineController(machine)
 

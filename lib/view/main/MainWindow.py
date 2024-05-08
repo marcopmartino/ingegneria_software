@@ -11,6 +11,7 @@ from lib.firebaseData import Firebase
 from lib.repository.CashRegisterRepository import CashRegisterRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
+from lib.view.article.ArticleListView import ArticleListView
 from lib.view.cashregister.CashRegisterView import CashRegisterView
 from lib.view.machine.MachineListView import MachineListView
 from lib.view.main.NavigationWidgets import CashRegisterAvailabilityNavigationWidget, RemovableNavigationWidget
@@ -175,6 +176,7 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(3, OrderListView(self), 'Lista ordini')
                 self.insertSubInterface(4, SubInterfaceWidget('Magazzino', self, FIF.LIBRARY), 'Magazzino')
                 self.insertSubInterface(5, MachineListView(self), 'Macchinari')
+                self.insertSubInterface(6, ArticleListView(self), 'Registro articoli')
 
                 # Sezione Bottom
                 # Informazioni sull'utente
@@ -195,8 +197,9 @@ class MainWindow(FramelessWindow):
                 self.insertSubInterface(4, PriceCatalogView(self), 'Listino prezzi')
                 # self.insertSubInterface(5, StoragePage(self), 'Magazzino')
                 self.insertSubInterface(6, MachineListView(self), 'Macchinari')
-                self.insertSubInterface(7, CashRegisterView(self), 'Registro di cassa')
-                self.insertSubInterface(8, WorkerListView(self), 'Gestione dipendenti')
+                self.insertSubInterface(7, ArticleListView(self), 'Registro articoli')
+                self.insertSubInterface(8, CashRegisterView(self), 'Registro di cassa')
+                self.insertSubInterface(9, WorkerListView(self), 'Gestione dipendenti')
 
                 # Sezione Bottom
                 # Informazioni sulla disponibilità di cassa
@@ -214,7 +217,7 @@ class MainWindow(FramelessWindow):
                 def update_cash_register_availability(message: Message):
                     match message.event():
                         case CashRegisterRepository.Event.CASH_AVAILABILITY_INITIALIZED | (
-                            CashRegisterRepository.Event.CASH_AVAILABILITY_UPDATED
+                        CashRegisterRepository.Event.CASH_AVAILABILITY_UPDATED
                         ):
                             data = message.data()
                             cash_register_availability_item.setText(PriceFormatter.format(data))
@@ -248,10 +251,10 @@ class MainWindow(FramelessWindow):
             tooltip="Logout"
         )
 
-        self.navigationInterface.setCurrentItem("Profilo")
+        self.navigationInterface.setCurrentItem("profile_view")
 
         # Imposta la route key iniziale
-        qrouter.setDefaultRouteKey(self.stackedWidget, "Profilo")
+        qrouter.setDefaultRouteKey(self.stackedWidget, "profile_view")
 
     # Funzione per aggiungere le pagine ai pulsanti della sidebar
     def addSubInterface(self,
@@ -301,6 +304,9 @@ class MainWindow(FramelessWindow):
         # Aggiunge l'interfaccia allo StackedWidget
         self.stackedWidget.addWidget(interface)
 
+        # Crea l'interfaccia rimuovibile
+        removable_navigation_widget = RemovableNavigationWidget(self, interface.svg_icon, text)
+
         # Gestisce il click su un elemento di navigazione rimuovibile
         def onRemovableSubInterfaceClicked(event):
             # Se il click è sul corpo principale dell'elemento
@@ -311,7 +317,6 @@ class MainWindow(FramelessWindow):
             else:
                 self.removeSubInterface(interface)
 
-        removable_navigation_widget = RemovableNavigationWidget(self, interface.svg_icon, text)
         removable_navigation_widget.mousePressEvent = onRemovableSubInterfaceClicked  # Callback al click sull'elemento
 
         # Inserisce un elemento di navigazione nella NavigationInterface

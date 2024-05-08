@@ -9,16 +9,16 @@ from qfluentwidgets import PrimaryPushButton, StrongBodyLabel, BodyLabel
 
 from lib.controller.OrderController import OrderController
 from lib.firebaseData import Firebase
+from lib.model.Order import Order
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Observer, Message
-from lib.utility.UtilityClasses import PriceFormatter
-from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
-from lib.model.Article import Article
-from lib.model.Order import Order
 from lib.utility.ResourceManager import ResourceManager
+from lib.utility.TableAdapters import SingleRowTableAdapter
+from lib.utility.UtilityClasses import PriceFormatter
+from lib.view.article.ArticleView import ArticleMainDetailsAdapter, ArticleAccessoriesAdapter
+from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.view.order.EditOrderView import EditOrderView
 from lib.widget.Separators import VerticalSpacer
-from lib.utility.TableAdapters import SingleRowTableAdapter
 from res import Colors
 from res.Dimensions import FontSize, FontWeight
 from res.Strings import OrderStateStrings
@@ -32,7 +32,7 @@ class OrderView(SubInterfaceChildWidget):
         super().closeEvent(event)
         self.controller.detach_order_observer(self.observer)  # Rimuove l'osservatore dall'ordine
 
-    def __init__(self, parent_widget: QWidget, order: Order):
+    def __init__(self, parent_widget: SubInterfaceWidget, order: Order):
 
         # Controller
         self.controller: OrderController = OrderController(order)
@@ -573,47 +573,4 @@ class OrderDetailsAdapter(SingleRowTableAdapter):
             order.get_state(),
             str(order.get_quantity()),
             PriceFormatter.format(order.get_price())
-        ]
-
-
-class ArticleMainDetailsAdapter(SingleRowTableAdapter):
-    def adaptData(self, article: Article) -> list[str]:
-        return [
-            article.get_gender().capitalize(),
-            article.get_size(),
-            article.get_shoe_last_type().capitalize(),
-            f"Tipo {str(article.get_plastic_type())}",
-            "Nessuna" if article.get_processing() == "nessuna"
-            else "Cuneo" if article.get_processing() == "cuneo"
-            else f"Snodo {article.get_processing()}",
-            "Nessuna" if article.get_shoeing() == "nessuna"
-            else "Tacco ferrato" if article.get_shoeing() == "tacco"
-            else "Mezza ferrata" if article.get_shoeing() == "mezza"
-            else "Tutta ferrata"
-        ]
-
-
-class ArticleAccessoriesAdapter(SingleRowTableAdapter):
-    def adaptData(self, article: Article) -> list[str]:
-        accessories: str = ""
-
-        if article.get_numbering_heel():
-            accessories += "Segno sul tallone, "
-        if article.get_numbering_lateral():
-            accessories += "Segni laterali, "
-        if article.get_numbering_antineck():
-            accessories += "Segno anticollo, "
-        if article.get_pivot_under_heel():
-            accessories += "Perno sotto tallone, "
-        if article.get_iron_tip():
-            accessories += "Punta ferrata, "
-        if accessories:
-            accessories = accessories[:-2]
-        else:
-            accessories = "Nessuno"
-
-        return [
-            "Rinforzata" if article.get_reinforced_compass() else "Standard",
-            article.get_second_compass_type().capitalize(),
-            accessories
         ]

@@ -27,6 +27,18 @@ class PriceFormatter:
         return float(text.replace(",", "."))
 
 
+class SerialNumberFormatter:
+    # Converte il valore numerico in una stringa con non meno di quattro caratteri
+    @staticmethod
+    def format(value: int) -> str:
+        return f"{value:04d}"
+
+    # Converte il seriale nel corrispondente valore numerico
+    @staticmethod
+    def unformat(text: str) -> int:
+        return int(text)
+
+
 class DatetimeUtils:
     # Ritorna la data odierna in formato DD/MM/YYYY
     @staticmethod

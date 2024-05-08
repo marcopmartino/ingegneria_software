@@ -1,6 +1,7 @@
 from pyrebase.pyrebase import Stream
 
 from lib.firebaseData import Firebase
+from lib.utility.UtilityClasses import SerialNumberFormatter
 
 
 class CashRegisterNetwork:
@@ -17,7 +18,7 @@ class CashRegisterNetwork:
     def insert(data: dict) -> str:
         db = Firebase.database
         transaction_id: int = CashRegisterNetwork.get_next_id()
-        serial_number: str = f"{transaction_id:04d}"
+        serial_number: str = SerialNumberFormatter.format(transaction_id)
 
         # Inserisce la transazione e aggiorna il contatore
         db.child("cash_register").child("transactions").child(serial_number).set(data)

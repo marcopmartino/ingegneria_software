@@ -48,7 +48,7 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
             # Ottenimento\inserimento\eliminazione di ordini
             case "put":
 
-                # # All'apertura dello Stream, quando viene caricata l'intera lista di ordini
+                # All'apertura dello Stream, quando viene caricata l'intera lista di ordini
                 if path == "/":
                     # Se c'è almeno un ordine nella lista
                     if data:
@@ -82,10 +82,10 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
                         if (Firebase.auth.currentUserRole() != "customer"
                                 or Firebase.auth.currentUserId() == data["customer_id"]):
                             # Crea e aggiunge un ordine alla lista di ordini della repository
-                            order = self.__instantiate_and_append_order(order_serial, data)
+                            new_order = self.__instantiate_and_append_order(order_serial, data)
 
                             # Prepara il messaggio per notificare gli osservatori della lista degli ordini
-                            message = Message(OrdersRepository.Event.ORDER_CREATED, order)
+                            message = Message(OrdersRepository.Event.ORDER_CREATED, new_order)
 
                             # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
                             self.notify(message)
@@ -163,6 +163,16 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
     # Ritorna la lista degli ordini
     def get_order_list(self) -> list[Order]:
         return self.__order_list
+
+    # Ritorna la lista degli ordini associati all'articolo di cui è passato come argomento il seriale
+    def get_order_list_by_article_id(self, article_serial: str) -> list[Order]:
+        filtered_order_list: list[Order] = []
+
+        for order in self.__order_list:
+            if order.get_article_serial() == article_serial:
+                filtered_order_list.append(order)
+
+        return filtered_order_list
 
     # Cerca un ordine in base al suo numero di serie e lo ritorna
     def get_order_by_id(self, order_serial: str) -> Order:

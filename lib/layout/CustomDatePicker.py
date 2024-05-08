@@ -24,8 +24,8 @@ class CustomDatePicker(DatePicker):
                                  "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
         self.setMonthFormatter(monthFormatter)
 
-        self.addColumn(self.DAY, range(1, 32), 80,
-                       formatter=self.dayFormatter())
+        self.addColumn(self.DAY, range(1, 32),
+                       80, formatter=self.dayFormatter())
         self.addColumn(self.MONTH, range(1, 13),
                        100, formatter=self.monthFormatter())
         self.addColumn(self.YEAR, range(y - 100, y + 101),

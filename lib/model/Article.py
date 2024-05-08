@@ -1,7 +1,8 @@
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
+from lib.utility.ObserverClasses import Observable
 
 
-class Article:
+class Article(Observable):
     def __init__(self, article_serial: str,
                  gender: str, size: str, shoe_last_type: str, plastic_type: int,
                  reinforced_compass: bool, second_compass_type: str, processing: str,
@@ -66,3 +67,12 @@ class Article:
 
     def get_pivot_under_heel(self):
         return self.__pivot_under_heel
+
+    def get_creation_date(self):
+        return self.__creation_date
+
+    def get_produced_article_shoe_lasts(self):
+        return self.__produced_article_shoe_lasts
+
+    def set_produced_article_shoe_lasts(self, produced_article_shoe_lasts: int):
+        self.__produced_article_shoe_lasts = produced_article_shoe_lasts
