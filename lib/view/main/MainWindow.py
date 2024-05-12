@@ -18,8 +18,7 @@ from lib.view.main.NavigationWidgets import CashRegisterAvailabilityNavigationWi
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.order.OrderListView import OrderListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
-from lib.view.profile import AdminProfilePage, CustomerProfilePage
-from lib.view.worker import WorkerProfilePage
+from lib.view.profile.ProfileView import ProfileView
 from lib.view.worker.WorkerListView import WorkerListView
 # from lib.view.storage.StoragePage import StoragePage
 from res.CustomIcon import CustomIcon as CustomFIF
@@ -64,9 +63,13 @@ class CustomTitleBar(TitleBar):
 # noinspection PyPep8Naming
 class MainWindow(FramelessWindow):
     logout = pyqtSignal()
+    initialized = pyqtSignal()
 
     def __init__(self):
         super().__init__()
+
+        # Finestra
+        self.setObjectName("main_window")
 
         # Controller
         self.controller = MainController()
@@ -88,6 +91,9 @@ class MainWindow(FramelessWindow):
         # Widget
         self.stackedWidget = QStackedWidget(self)
 
+        # Inizializza i segnali
+        self.initSignals()
+
         # Inizializza il Layout principale
         self.initLayout()
 
@@ -96,6 +102,11 @@ class MainWindow(FramelessWindow):
 
         # Inizializzo la finestra
         self.initWindow()
+
+    # Inizializza i segnali
+    def initSignals(self):
+        self.initialized.connect(self.show)
+        self.logout.connect(Firebase.auth.sign_out)
 
     # Inizializza il layout che contiene il menù (NavigationInterface) e la lista dei Widget associati (QStackedWidget)
     def initLayout(self):
@@ -119,9 +130,6 @@ class MainWindow(FramelessWindow):
         # Collega il cambiamento del widget visualizzato all'aggiornamento della voce del menù selezionata
         self.stackedWidget.currentChanged.connect(self.onCurrentInterfaceChanged)
 
-        # Carica le voci del menù in base al tipo di utente
-        self.setupNavigation()
-
         # Separatore tra sezioni Top e Scroll
         self.navigationInterface.addSeparator(NavigationItemPosition.TOP)
 
@@ -142,110 +150,27 @@ class MainWindow(FramelessWindow):
         w, h = desktop.width(), desktop.height()
         self.move(w // 2 - self.width() // 2, h // 2 - self.height() // 2)
 
-    # Popola le tre sezioni del menù e finalizza la navigazione
-    def setupNavigation(self):
-
-        # Inserisce una voce del menù con informazioni sul ruolo dell'utente autenticato
-        def insertUserInfoItem(text: str, index: int = 1):
-
-            self.navigationInterface.insertItem(
-                index=index,
-                routeKey="user_info",
+    # Inserisce una voce del menù con informazioni sul ruolo dell'utente autenticato
+    def insertUserInfoItem(self, text: str, index: int = 1):
+        self.navigationInterface.insertItem(
+            index=index,
+            routeKey="user_info",
+            icon=CustomFIF.USER_INFO,
+            selectable=False,
+            onClick=lambda: InfoBar.new(
                 icon=CustomFIF.USER_INFO,
-                selectable=False,
-                onClick=lambda: InfoBar.new(
-                    icon=CustomFIF.USER_INFO,
-                    title="Info utente",
-                    content=f"Stai usando l'applicazione come {text.lower()}",
-                    duration=3000,
-                    position=InfoBarPosition.BOTTOM,
-                    parent=self
-                ),
-                text=text,
-                position=NavigationItemPosition.BOTTOM
-            )
+                title="Info utente",
+                content=f"Stai usando l'applicazione come {text.lower()}",
+                duration=3000,
+                position=InfoBarPosition.BOTTOM,
+                parent=self
+            ),
+            text=text,
+            position=NavigationItemPosition.BOTTOM
+        )
 
-        # Tipo di account
-        user_role: str = Firebase.auth.currentUserRole()
-        print("Tipo account: " + str(user_role))
-
-        # Popolo il menù laterale di navigazione
-        match user_role:
-            case "customer":
-
-                # Sezione Top
-                self.insertSubInterface(2, CustomerProfilePage.ProfileWidget(self), 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), 'I tuoi ordini')
-                self.insertSubInterface(4, PriceCatalogView(self), 'Listino prezzi')
-
-                # Sezione Bottom
-                # Informazioni sull'utente
-                insertUserInfoItem("Cliente")
-
-            case "worker":
-
-                # Sezione Top
-                self.insertSubInterface(2, WorkerProfilePage.ProfileWidget(self), 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), 'Lista ordini')
-                self.insertSubInterface(4, SubInterfaceWidget('Magazzino', self, FIF.LIBRARY), 'Magazzino')
-                self.insertSubInterface(5, MachineListView(self), 'Macchinari')
-                self.insertSubInterface(6, ArticleListView(self), 'Registro articoli')
-
-                # Sezione Bottom
-                # Informazioni sull'utente
-                insertUserInfoItem("Dipendente")
-
-            case "manager":
-
-                # Sezione Top
-                self.insertSubInterface(2, AdminProfilePage.ProfileWidget(self), 'Profilo')
-                self.insertSubInterface(3, OrderListView(self), 'Lista ordini')
-                self.insertSubInterface(4, PriceCatalogView(self), 'Listino prezzi')
-                # self.insertSubInterface(5, StoragePage(self), 'Magazzino')
-                self.insertSubInterface(6, MachineListView(self), 'Macchinari')
-                self.insertSubInterface(7, ArticleListView(self), 'Registro articoli')
-                self.insertSubInterface(8, CashRegisterView(self), 'Registro di cassa')
-                self.insertSubInterface(9, WorkerListView(self), 'Gestione dipendenti')
-
-                # Sezione Bottom
-                # Informazioni sulla disponibilità di cassa
-                cash_register_availability_item: CashRegisterAvailabilityNavigationWidget = \
-                    CashRegisterAvailabilityNavigationWidget(parent_widget=self, icon=CustomFIF.EURO, text="0,00")
-
-                # Inserisce l'elemento con la disponibilità di cassa
-                self.navigationInterface.insertWidget(
-                    index=1,  # Inserito come primo elemento in lista
-                    routeKey="cash_register_availability",
-                    widget=cash_register_availability_item,
-                    position=NavigationItemPosition.BOTTOM,
-                    onClick=lambda: InfoBar.new(
-                        icon=CustomFIF.EURO,
-                        title="Disponibilità di cassa",
-                        content=f"Indicatore della ricchezza di cui il formificio dispone",
-                        duration=3000,
-                        position=InfoBarPosition.BOTTOM,
-                        parent=self
-                    ),
-                )
-
-                # Callback che aggiorna il valore della disponibilità di cassa
-                def update_cash_register_availability(message: Message):
-                    match message.event():
-                        case CashRegisterRepository.Event.CASH_AVAILABILITY_INITIALIZED | (
-                        CashRegisterRepository.Event.CASH_AVAILABILITY_UPDATED
-                        ):
-                            data = message.data()
-                            cash_register_availability_item.setText(PriceFormatter.format(data))
-                            cash_register_availability_item.update()
-
-                self.controller.observe_cash_register(update_cash_register_availability)
-
-                # Informazioni sull'utente
-                insertUserInfoItem("Manager", 2)
-
-            case "unauthenticated":
-                return
-
+    # Finalizza l'impostazione del menù di navigazione
+    def finalizeNavigation(self):
         # Sezione Bottom
 
         # Logout
@@ -263,6 +188,78 @@ class MainWindow(FramelessWindow):
 
         # Imposta la route key iniziale
         qrouter.setDefaultRouteKey(self.stackedWidget, "profile_view")
+
+    # Popola le tre sezioni del menù e finalizza la navigazione nel caso di un cliente autenticato
+    def setup_customer_navigation(self):
+        # Sezione Top
+        self.insertSubInterface(2, ProfileView.customer(self), 'Profilo')
+        self.insertSubInterface(3, OrderListView(self), 'I tuoi ordini')
+        self.insertSubInterface(4, PriceCatalogView(self), 'Listino prezzi')
+
+        # Sezione Bottom
+        # Informazioni sull'utente
+        self.insertUserInfoItem("Cliente")
+
+    # Popola le tre sezioni del menù e finalizza la navigazione nel caso di un operaio autenticato
+    def setup_worker_navigation(self):
+        # Sezione Top
+        self.insertSubInterface(2, ProfileView.worker(self), 'Profilo')
+        self.insertSubInterface(3, OrderListView(self), 'Lista ordini')
+        self.insertSubInterface(4, SubInterfaceWidget('Magazzino', self, FIF.LIBRARY), 'Magazzino')
+        self.insertSubInterface(5, MachineListView(self), 'Macchinari')
+        self.insertSubInterface(6, ArticleListView(self), 'Registro articoli')
+
+        # Sezione Bottom
+        # Informazioni sull'utente
+        self.insertUserInfoItem("Dipendente")
+
+    # Popola le tre sezioni del menù e finalizza la navigazione nel caso di un manager autenticato
+    def setup_manager_navigation(self):
+        # Sezione Top
+        self.insertSubInterface(2, ProfileView.manager(self), 'Profilo')
+        self.insertSubInterface(3, OrderListView(self), 'Lista ordini')
+        self.insertSubInterface(4, PriceCatalogView(self), 'Listino prezzi')
+        # self.insertSubInterface(5, StoragePage(self), 'Magazzino')
+        self.insertSubInterface(6, MachineListView(self), 'Macchinari')
+        self.insertSubInterface(7, ArticleListView(self), 'Registro articoli')
+        self.insertSubInterface(8, CashRegisterView(self), 'Registro di cassa')
+        self.insertSubInterface(9, WorkerListView(self), 'Gestione dipendenti')
+
+        # Sezione Bottom
+        # Informazioni sulla disponibilità di cassa
+        cash_register_availability_item: CashRegisterAvailabilityNavigationWidget = \
+            CashRegisterAvailabilityNavigationWidget(parent_widget=self, icon=CustomFIF.EURO, text="0,00")
+
+        # Inserisce l'elemento con la disponibilità di cassa
+        self.navigationInterface.insertWidget(
+            index=1,  # Inserito come primo elemento in lista
+            routeKey="cash_register_availability",
+            widget=cash_register_availability_item,
+            position=NavigationItemPosition.BOTTOM,
+            onClick=lambda: InfoBar.new(
+                icon=CustomFIF.EURO,
+                title="Disponibilità di cassa",
+                content=f"Indicatore della ricchezza di cui il formificio dispone",
+                duration=3000,
+                position=InfoBarPosition.BOTTOM,
+                parent=self
+            ),
+        )
+
+        # Callback che aggiorna il valore della disponibilità di cassa
+        def update_cash_register_availability(message: Message):
+            match message.event():
+                case CashRegisterRepository.Event.CASH_AVAILABILITY_INITIALIZED | (
+                CashRegisterRepository.Event.CASH_AVAILABILITY_UPDATED
+                ):
+                    data = message.data()
+                    cash_register_availability_item.setText(PriceFormatter.format(data))
+                    cash_register_availability_item.update()
+
+        self.controller.observe_cash_register(update_cash_register_availability)
+
+        # Informazioni sull'utente
+        self.insertUserInfoItem("Manager", 2)
 
     # Funzione per aggiungere le pagine ai pulsanti della sidebar
     def addSubInterface(self,
@@ -384,8 +381,23 @@ class MainWindow(FramelessWindow):
 
     # Reimposta la navigazione
     def setup(self):
-        # Imposta nuove interfacce di navigazione
-        self.setupNavigation()
+        # Tipo di account
+        user_role: str = Firebase.auth.currentUserRole()
+        print("Tipo account: " + str(user_role))
 
-        # Apre gli stream di dati
-        self.controller.open_streams()
+        # Popolo il menù laterale, imposta le interfacce di navigazione, inizializza le repository
+        match user_role:
+            case "customer":
+                self.setup_customer_navigation()
+                self.finalizeNavigation()
+                self.controller.open_customer_streams()
+            case "worker":
+                self.setup_worker_navigation()
+                self.finalizeNavigation()
+                self.controller.open_worker_streams()
+            case "manager":
+                self.setup_manager_navigation()
+                self.finalizeNavigation()
+                self.controller.open_manager_streams()
+            case "unauthenticated":
+                return

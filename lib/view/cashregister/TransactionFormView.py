@@ -235,7 +235,7 @@ class TransactionFormView(QDialog):
         # True solo se l'importo è non nullo
         if self.validate_amount():
 
-            # Crea e mostra una richiesta di conferma con indicato il prezzo
+            # Crea e mostra una richiesta di conferma
             clicked_button = QMessageBox.question(
                 self,
                 "Conferma modifica transazione",
@@ -252,7 +252,7 @@ class TransactionFormView(QDialog):
     # Eseguito al click sul pulsante di eliminazione
     def on_delete(self, form_token):
 
-        # Crea e mostra una richiesta di conferma con indicato il prezzo
+        # Crea e mostra una richiesta di conferma
         clicked_button = QMessageBox.question(
             self,
             "Conferma eliminazione transazione",

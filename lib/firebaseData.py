@@ -34,11 +34,27 @@ class Auth(pyrebase.pyrebase.Auth):
     def currentUserEmail(self) -> str:
         return self.current_user.get("email")
 
-    def updateCurrentUserEmail(self, new_email: str):
-        admin_auth.update_user(self.currentUserId(), email=new_email)
+    def create_user_with_email_and_password(self, email: str, password: str, sign_in: bool = True) -> str:
+        if sign_in:
+            self.sign_out()
+            self.current_user = super().create_user_with_email_and_password(email, password)
+            return self.currentUserId()
+        else:
+            return admin_auth.create_user(email=email, password=password).uid
 
-    def updateCurrentUserPassword(self, new_password: str):
-        admin_auth.update_user(self.currentUserId(), password=new_password)
+    def setCurrentUserRole(self, role: str):
+        self.current_user["role"] = role
+
+    @staticmethod
+    def updateUserPasswordById(uid: str, new_password: str):
+        admin_auth.update_user(uid, password=new_password)
+
+    @staticmethod
+    def deleteUserById(uid: str):
+        admin_auth.delete_user(uid)
+
+    def sign_out(self) -> None:
+        self.current_user = dict()
 
 
 class Firebase(metaclass=Singleton):

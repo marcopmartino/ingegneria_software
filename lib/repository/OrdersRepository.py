@@ -22,8 +22,8 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
 
     def __init__(self):
         self.__order_list: list[Order] = []  # Inizializza la lista degli ordini
-        self.__order_network = OrdersNetwork()
-        super().__init__(self.__order_network.stream)
+        self.__orders_network = OrdersNetwork()
+        super().__init__(self.__orders_network.stream)
 
     def clear(self):
         self.__order_list = []
@@ -69,8 +69,8 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
                                 # Crea e aggiunge un ordine alla lista di ordini della repository
                                 self.__instantiate_and_append_order(key, value)
 
-                        # Notifico gli osservatori che la repository ha concluso l'inizializzazione
-                        self.notify(Message(OrdersRepository.Event.ORDERS_INITIALIZED, self.__order_list))
+                    # Notifico gli osservatori che la repository ha concluso l'inizializzazione
+                    self.notify(Message(OrdersRepository.Event.ORDERS_INITIALIZED, self.__order_list))
 
                 # Se il path è diverso allora siamo nell'ambito di un singolo ordine della lista
                 else:
@@ -138,7 +138,7 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
 
                     # Caso di aggiornamento dell'articolo dell'ordine
                     else:
-                        # Estraggo i dati (possono essere None se rimasti invariati)
+                        # Estrae i dati (possono essere None se rimasti invariati)
                         article_serial: str | None = data.get("article_serial")
                         price: float | None = data.get("price")
                         quantity: int | None = data.get("quantity")
@@ -195,7 +195,7 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
             state=OrderStateStrings.NOT_STARTED
         )
         # Salva l'ordine nel database e ne ritorna l'id
-        return self.__order_network.insert(order_data)
+        return self.__orders_network.insert(order_data)
 
     # Aggiorna un ordine
     def update_order_by_id(self, order_serial: str, article_serial: str, quantity: int, price: float):
@@ -205,19 +205,18 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
             quantity=quantity,
             price=price
         )
-        # Salva l'ordine nel database e ne ritorna l'id
-        return self.__order_network.update(order_serial, order_data)
+        # Aggiorna l'ordine nel database
+        self.__orders_network.update(order_serial, order_data)
 
     # Aggiorna lo stato di un ordine
     def update_order_state_by_id(self, order_serial: str, state: str):
-
         # Crea un dizionario con i campi dell'ordine da aggiornare
         order_data = dict(
             state=state
         )
-        # Salva l'ordine nel database e ne ritorna l'id
-        return self.__order_network.update(order_serial, order_data)
+        # Aggiorna lo stato nel database
+        self.__orders_network.update(order_serial, order_data)
 
     # Elimina un ordine
     def delete_order_by_id(self, order_serial: str):
-        self.__order_network.delete(order_serial)
+        self.__orders_network.delete(order_serial)

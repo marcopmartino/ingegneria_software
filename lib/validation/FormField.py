@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, QDate
 from PyQt5.QtGui import QValidator
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QComboBox, QCheckBox, QButtonGroup, QSpinBox, QAbstractSpinBox
 from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit, DatePicker
@@ -244,7 +244,7 @@ class DatePickerFormField(IFormField):
         return self.input_field.dateChanged
 
     def clear(self):
-        pass
+        self.input_field.setDate(QDate.currentDate())
 
 
 

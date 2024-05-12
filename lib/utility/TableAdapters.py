@@ -4,7 +4,8 @@ from typing import Callable
 from PyQt5.QtWidgets import QWidget, QTableWidgetItem
 
 from lib.validation.FormManager import FormManager
-from lib.widget.TableWidgets import ExtendedTableWidget, SingleRowStandardTable, StandardTable
+from lib.widget.TableWidgets import ExtendedTableWidget, SingleRowStandardTable, StandardTable, \
+    SingleColumnStandardTable
 
 
 # Classe astratta rappresentante un adattatore per tabelle. Si tratta di un'interfaccia per interagire con una tabella
@@ -33,17 +34,11 @@ class ITableAdapter(ABC):
         pass
 
 
-# Adapter per tabelle composta da una sola riga
+# Adapter per tabelle composte da una sola riga
 # noinspection PyPep8Naming
 class SingleRowTableAdapter(ITableAdapter, ABC):
     def __init__(self, table: ExtendedTableWidget):
         super().__init__(table)
-
-    # Costruttore secondario che crea e assegna automaticamente una tabella all'Adapter
-    @classmethod
-    def autoSetup(cls, table_parent: QWidget = None):
-        instance = cls(SingleRowStandardTable(table_parent))
-        return instance, instance.table
 
     # Popola la tabella con nuovi dati - imposta i QTableWidgetItem
     def setData(self, data: any):
@@ -51,17 +46,42 @@ class SingleRowTableAdapter(ITableAdapter, ABC):
         for column in range(self.table.columnCount()):
             self.table.setColumnItem(column, QTableWidgetItem(data[column]))
 
-    # Aggiorna i dati di una riga della tabella - agisce sui QTableWidgetItem già impostati
+    # Aggiorna i dati della tabella - agisce sui QTableWidgetItem già impostati
     def updateData(self, data: any):
         data: list[str] = self.adaptData(data)
         for column in range(self.table.columnCount()):
             self.table.columnItem(column).setText(data[column])
 
-    # Aggiorna i dati di alcune colonne di una riga della tabella - agisce sui QTableWidgetItem già impostati
+    # Aggiorna i dati di alcune colonne della tabella - agisce sui QTableWidgetItem già impostati
     def updateDataColumns(self, data: any, columns: list[int]):
         data: list[str] = self.adaptData(data)
         for column in columns:
             self.table.columnItem(column).setText(data[column])
+
+
+# Adapter per tabelle composte da una sola colonna
+# noinspection PyPep8Naming
+class SingleColumnTableAdapter(ITableAdapter, ABC):
+    def __init__(self, table: ExtendedTableWidget):
+        super().__init__(table)
+
+    # Popola la tabella con nuovi dati - imposta i QTableWidgetItem
+    def setData(self, data: any):
+        data: list[str] = self.adaptData(data)
+        for row in range(self.table.rowCount()):
+            self.table.setRowItem(row, QTableWidgetItem(data[row]))
+
+    # Aggiorna i dati della tabella - agisce sui QTableWidgetItem già impostati
+    def updateData(self, data: any):
+        data: list[str] = self.adaptData(data)
+        for row in range(self.table.rowCount()):
+            self.table.rowItem(row).setText(data[row])
+
+    # Aggiorna i dati di alcune righe della tabella - agisce sui QTableWidgetItem già impostati
+    def updateDataRows(self, data: any, rows: list[int]):
+        data: list[str] = self.adaptData(data)
+        for row in rows:
+            self.table.rowItem(row).setText(data[row])
 
 
 # noinspection PyPep8Naming
@@ -76,12 +96,6 @@ class TableAdapter(ITableAdapter, ABC):
         # Dizionario che associa tipi di QTableWidgetItem a colonne della tabella
         # Usato per impostare QTableWidgetItem personalizzati in determinate colonne
         self.__column_item_class_dict: dict[int, type(QTableWidgetItem)] = dict()
-
-    # Costruttore secondario che crea e assegna automaticamente una tabella all'Adapter
-    @classmethod
-    def autoSetup(cls, table_parent: QWidget = None):
-        instance = cls(StandardTable(table_parent))
-        return instance, instance.table
 
     # Eseguito alla selezione di una cella (o di una riga se si usa una StandardTable con impostazioni predefinite)
     def onSelection(self, callback: Callable[[str], any]):

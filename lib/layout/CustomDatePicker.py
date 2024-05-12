@@ -3,11 +3,16 @@ from qfluentwidgets import DatePicker
 from qfluentwidgets.components.date_time.date_picker import MonthFormatter
 
 
-# noinspection PyPep8Naming
+# noinspection PyPep8Naming,PyShadowingBuiltins
 class CustomDatePicker(DatePicker):
 
     def __init__(self):
         super().__init__()
+
+        self.dayIndex = 0
+        self.monthIndex = 1
+        self.yearIndex = 2
+
         self.MONTH = self.tr('Mese')
         self.YEAR = self.tr('Anno')
         self.DAY = self.tr('Giorno')
@@ -15,9 +20,6 @@ class CustomDatePicker(DatePicker):
     def setDateFormat(self, format=None):
         self.clearColumns()
         y = QDate.currentDate().year()
-        self.dayIndex = 0
-        self.monthIndex = 1
-        self.yearIndex = 2
 
         monthFormatter = MonthFormatter()
         monthFormatter.months = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",

@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QMessageBox, QWidget
+from PyQt5.QtWidgets import QMessageBox
 
 from lib.controller.OrderListController import OrderListController
-from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.order.OrderFormView import OrderFormView
 

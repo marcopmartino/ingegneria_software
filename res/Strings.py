@@ -35,7 +35,7 @@ class FormStrings:
     NEW_PASSWORD_CONFIRM = "Conferma nuova password"
     PHONE = "Telefono"
     AGE = "Età"
-    BIRTH_DATE = "Data di nascità"
+    BIRTH_DATE = "Data di nascita"
     SURNAME = "Cognome"
     CF = "Codice fiscale"
     WORKER_TEXT = "Operaio"

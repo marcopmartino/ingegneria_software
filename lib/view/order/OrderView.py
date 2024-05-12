@@ -19,6 +19,7 @@ from lib.view.article.ArticleView import ArticleMainDetailsAdapter, ArticleAcces
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.view.order.EditOrderView import EditOrderView
 from lib.widget.Separators import VerticalSpacer
+from lib.widget.TableWidgets import SingleRowStandardTable
 from res import Colors
 from res.Dimensions import FontSize, FontWeight
 from res.Strings import OrderStateStrings
@@ -52,7 +53,8 @@ class OrderView(SubInterfaceChildWidget):
         self.order_details_title.setContentsMargins(16, 16, 16, 8)
 
         # Dettagli ordine
-        self.order_table_adapter, self.order_table = OrderDetailsAdapter.autoSetup(self)
+        self.order_table = SingleRowStandardTable(self.central_frame)
+        self.order_table_adapter = OrderDetailsAdapter(self.order_table)
         headers = ["Articolo", "Data creazione", "Stato", "Quantità (paia)", "Prezzo (euro)"]
         self.order_table.setHeaders(headers)
         self.order_table_adapter.setData(self.controller.get_order())
@@ -66,14 +68,15 @@ class OrderView(SubInterfaceChildWidget):
         article = self.controller.get_order_article()
 
         # Prima tabella articolo
-        self.article_table_adapter_main, self.article_table_main = ArticleMainDetailsAdapter.autoSetup(self)
+        self.article_table_main = SingleRowStandardTable(self.central_frame)
+        self.article_table_adapter_main = ArticleMainDetailsAdapter(self.article_table_main)
         headers = ["Genere", "Taglia", "Tipo di forma", "Tipo di plastica", "Lavorazione", "Ferratura"]
         self.article_table_main.setHeaders(headers)
         self.article_table_adapter_main.setData(article)
 
         # Seconda tabella articolo
-        self.article_table_adapter_accessories, self.article_table_accessories = ArticleAccessoriesAdapter.autoSetup(
-            self)
+        self.article_table_accessories = SingleRowStandardTable(self.central_frame)
+        self.article_table_adapter_accessories = ArticleAccessoriesAdapter(self.article_table_accessories)
         headers = ["Bussola", "Seconda bussola", "Altri accessori"]
         self.article_table_accessories.setHeaders(headers)
         self.article_table_adapter_accessories.setData(article)
@@ -185,23 +188,23 @@ class OrderView(SubInterfaceChildWidget):
             print(message.event())
             match message.event():
                 case OrdersRepository.Event.ORDER_UPDATED:
-                    # Aggiorno la tabella dell'ordine
+                    # Aggiorna la tabella dell'ordine
                     self.order_table_adapter.updateDataColumns(self.controller.get_order(), [0, 3, 4])
-                    # Aggiorno le tabelle dell'articolo
+                    # Aggiorna le tabelle dell'articolo
                     new_article = self.controller.get_order_article()
                     self.article_table_adapter_main.updateData(new_article)
                     self.article_table_adapter_accessories.updateData(new_article)
 
                 case OrdersRepository.Event.ORDER_STATE_UPDATED:
-                    # Aggiorno la tabella dell'ordine
+                    # Aggiorna la tabella dell'ordine
                     self.order_table.columnItem(2).setText(self.controller.get_order_state())
-                    # Aggiorno la sidebar
+                    # Aggiorna la sidebar
                     self.on_transition_to_next_state()
                     print("Stato aggiornato")
 
                 case OrdersRepository.Event.ORDER_DELETED:
                     if order.get_customer_id() != Firebase.auth.currentUserId():
-                        # Informo che il cliente ha eliminato l'ordine
+                        # Informa che il cliente ha eliminato l'ordine
                         self.show_deletion_info_dialog()
 
         # Imposta l'observer
@@ -222,7 +225,7 @@ class OrderView(SubInterfaceChildWidget):
             QMessageBox.Yes | QMessageBox.No
         )
 
-        # In caso di conferma, crea l'ordine e chiude la finestra
+        # In caso di conferma, elimina l'ordine e chiude la finestra
         if clicked_button == QMessageBox.Yes:
             self.controller.delete_order()
             self.window().removeSubInterface(self)

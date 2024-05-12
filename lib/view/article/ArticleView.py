@@ -11,6 +11,7 @@ from lib.utility.TableAdapters import SingleRowTableAdapter
 from lib.utility.UtilityClasses import SerialNumberFormatter
 from lib.view.main.SubInterfaces import SubInterfaceChildWidget, SubInterfaceWidget
 from lib.widget.Separators import VerticalSpacer
+from lib.widget.TableWidgets import SingleRowStandardTable
 from lib.widget.TreeWidgets import AutoResizableTreeWidget, DefaultFontTreeItemDelegate
 from res.Dimensions import FontSize
 from res.Strings import OrderStateStrings
@@ -42,14 +43,15 @@ class ArticleView(SubInterfaceChildWidget):
         self.article_details_title.setContentsMargins(16, 16, 16, 8)
 
         # Prima tabella articolo
-        self.article_table_adapter_main, self.article_table_main = ArticleMainDetailsAdapter.autoSetup(self)
+        self.article_table_main = SingleRowStandardTable(self.central_frame)
+        self.article_table_adapter_main = ArticleMainDetailsAdapter(self.article_table_main)
         headers = ["Genere", "Taglia", "Tipo di forma", "Tipo di plastica", "Lavorazione", "Ferratura"]
         self.article_table_main.setHeaders(headers)
         self.article_table_adapter_main.setData(article)
 
         # Seconda tabella articolo
-        self.article_table_adapter_accessories, self.article_table_accessories = ArticleAccessoriesAdapter.autoSetup(
-            self)
+        self.article_table_accessories = SingleRowStandardTable(self.central_frame)
+        self.article_table_adapter_accessories = ArticleAccessoriesAdapter(self.article_table_accessories)
         headers = ["Bussola", "Seconda bussola", "Altri accessori"]
         self.article_table_accessories.setHeaders(headers)
         self.article_table_adapter_accessories.setData(article)

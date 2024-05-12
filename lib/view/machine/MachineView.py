@@ -10,6 +10,7 @@ from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter, TableAdapter
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.widget.Separators import VerticalSpacer, HorizontalLine
+from lib.widget.TableWidgets import SingleRowStandardTable, StandardTable
 from res import Colors, Styles
 from res.Dimensions import FontSize, FontWeight
 
@@ -43,7 +44,8 @@ class MachineView(SubInterfaceChildWidget):
         self.machine_details_subtitle.setContentsMargins(16, 0, 16, 8)
 
         # Dettagli ordine
-        self.machine_table_adapter, self.machine_table = MachineDetailsAdapter.autoSetup(self)
+        self.machine_table = SingleRowStandardTable(self.central_frame)
+        self.machine_table_adapter = MachineDetailsAdapter(self.machine_table)
         headers = ["Capienza massima", "Durata di un ciclo"]
         self.machine_table.setFixedWidth(400)
         self.machine_table.setHeaders(headers)
@@ -59,7 +61,8 @@ class MachineView(SubInterfaceChildWidget):
         self.operation_details_subtitle.setContentsMargins(16, 0, 16, 8)
 
         # Tabella dell'operazione
-        self.operation_details_table_adapter, self.operation_details_table = MachineOperationAdapter.autoSetup(self)
+        self.operation_details_table = StandardTable(self.central_frame)
+        self.operation_details_table_adapter = MachineOperationAdapter(self.operation_details_table)
         headers = ["Input", "Output", "Caratteristiche acquisite"]
         self.operation_details_table.setHeaders(headers)
         # self.article_table_adapter_main.setData(article)
@@ -72,7 +75,8 @@ class MachineView(SubInterfaceChildWidget):
         self.operation_list_subtitle.setContentsMargins(16, 0, 16, 8)
 
         # Tabella lista operazioni
-        self.operation_list_table_adapter, self.operation_list_table = MachineOperationListAdapter.autoSetup(self)
+        self.operation_list_table = StandardTable(self.central_frame)
+        self.operation_list_table_adapter = MachineOperationListAdapter(self.operation_list_table)
         headers = ["Input", "Output", "Ordini di interesse"]
         self.operation_list_table.setHeaders(headers)
         # self.article_table_adapter_main.setData(article)

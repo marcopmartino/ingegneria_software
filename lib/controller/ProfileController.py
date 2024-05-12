@@ -1,59 +1,54 @@
+from lib.firebaseData import Firebase
 from lib.model.Customer import Customer
-from lib.model.Staff import Staff
+from lib.model.Employee import Employee
+from lib.model.User import User
+from lib.repository.UsersRepository import UsersRepository
+from lib.utility.ObserverClasses import Observer
 
 
 class ProfileController:
     def __init__(self):
         super().__init__()
-        self.__customer_model: Customer | None = None
-        self.__staff_model: Staff | None = None
 
-    # Apre uno stream sul profilo di un cliente
-    def open_customer_stream(self):
-        self.__customer_model = Customer()
-        self.__customer_model.open_stream()
+        # Respository
+        self.__users_repository = UsersRepository()
 
-    # Apre uno stream sul profilo di un membro dello staff
-    def open_staff_stream(self):
-        self.__staff_model = Staff()
-        self.__staff_model.open_stream()
+        # Model
+        self.__user: Customer | Employee | None = None
 
-    # Imposta un osservatore sui dati di un cliente
-    def set_customer_observer(self, callback: callable):
-        self.__customer_model.observe(callback)
+    # Inizializza il controller
+    def initialize_user(self):
+        self.__user = self.__users_repository.get_user_by_id(Firebase.auth.currentUserId())
 
-    # Imposta un osservatore sui dati di un membro dello staff
-    def set_staff_observer(self, callback: callable):
-        self.__staff_model.observe(callback)
+    # Imposta un osservatore sui dati di un utente
+    def observe_user(self, callback: callable) -> Observer:
+        return self.__user.observe(callback)
 
-    # Restituisce il model di un cliente
-    def get_customer_model(self):
-        return self.__customer_model.get()
+    # Imposta un osservatore sulla repository
+    def observe_users_repository(self, callback: callable) -> Observer:
+        return self.__users_repository.observe(callback)
 
-    # Restituisce il model di un membro dello staff
-    def get_staff_model(self):
-        return self.__staff_model.get_dict()
+    # Imposta un osservatore sui dati di un utente
+    def detach_users_repositor_observer(self, observer: Observer):
+        return self.__users_repository.detach(observer)
 
-    # Controlla che le credenziali inserite in fase di modifica dei dati siano corrette per un cliente
-    def customer_checkLogin(self, currentEmail, password):
-        self.__customer_model.checkLogin(currentEmail, password)
+    # Restituisce l'utente
+    def get_user(self) -> Customer | Employee | None:
+        return self.__user
 
-    # Controlla che le credenziali inserite in fase di modifica dei dati siano corrette per membro dello staff
-    def staff_checkLogin(self, currentEmail, password):
-        self.__staff_model.checkLogin(currentEmail, password)
+    # Restituisce l'id dell'utente
+    def get_user_id(self) -> str:
+        return self.__user.get_uid()
 
-    # Imposta i nuovi dati per un cliente
-    def customer_setUserData(self, data, newPassword, uid):
-        self.__customer_model.setUserData(data, newPassword, uid)
+    # Aggiorna l'utente
+    def update_user(self, form_data: dict[str, any]):
+        self.__users_repository.reauthenticate_current_user(form_data.pop("password"))
+        self.__users_repository.update_user_by_id(self.__user.get_uid(), form_data)
 
-    # Imposta i nuovi dati per un membro dello staff
-    def staff_setUserData(self, data, newPassword, uid):
-        self.__staff_model.setUserData(data, newPassword, uid)
+    # Elimina l'utente
+    def delete_user(self):
+        self.__users_repository.delete_user_by_id(self.__user.get_uid())
 
-    # Crea un nuovo profilo per un operaio
-    def staff_add_profile(self, email, password):
-        self.__staff_model.add_profile(email, password)
-
-    # Aggiunge i dati di nuovo operaio nel database
-    def staff_add_data_newprofile(self, data, user):
-        self.__staff_model.add_data(data, user)
+    # Autentica nuovamente l'utente corrente
+    def reauthenticate_current_user(self, password: str):
+        return self.__users_repository.reauthenticate_current_user(password)

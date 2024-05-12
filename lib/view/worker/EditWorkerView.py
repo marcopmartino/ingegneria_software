@@ -1,11 +1,15 @@
 from PyQt5.QtCore import Qt, QDate
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog, \
+    QMessageBox
+from qfluentwidgets import LineEdit, PushButton
 
-import lib.utility.UtilityClasses as utility
+from lib.controller.WorkerListController import WorkerListController
 from lib.layout.CustomDatePicker import CustomDatePicker
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
-from lib.validation.FormField import LineEditCompositeFormField
+from lib.model.Employee import Employee
+from lib.utility.UtilityClasses import DatetimeUtils
+from lib.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from res import Styles, Dimensions
@@ -13,21 +17,18 @@ from res.Dimensions import LineEditDimensions, FontWeight
 from res.Strings import FormStrings, Config, ValidationStrings, WorkerStrings
 
 
-class EditWorkerWindow(QDialog):
+class EditWorkerView(QDialog):
 
-    def __init__(self, controller, uid, parent=None):
-        super().__init__(parent=parent)
+    def __init__(self, controller: WorkerListController, data: Employee):
+        super().__init__()
 
-        self.uid = uid
         self.controller = controller
-
-        data = self.controller.get_worker_by_id(self.uid)
 
         # Finestra
         self.setWindowTitle(Config.APPLICATION_NAME)
         self.setObjectName("add_worker_window")
         self.resize(250, 500)
-        self.setStyleSheet(Styles.EDIT_PROFILE_PAGE)
+        self.setStyleSheet(Styles.EDIT_PROFILE_LINE_EDIT)
 
         self.outerWidget = QWidget(self)
         self.outerWidget.setObjectName("outer_widget")
@@ -39,7 +40,7 @@ class EditWorkerWindow(QDialog):
         self.innerLayout.setSpacing(0)
 
         self.titleFrame = QFrame()
-        self.titleFrame.setStyleSheet(Styles.PAGE_TITLE_FRAME)
+        #self.titleFrame.setStyleSheet(Styles.PAGE_TITLE_FRAME)
 
         self.title = QVBoxLayout(self.titleFrame)
         self.title.setContentsMargins(10, 10, 0, 10)
@@ -62,30 +63,40 @@ class EditWorkerWindow(QDialog):
         self.profileForm.setObjectName("AddWorkerForm")
 
         # Campo input nome azienda
-        self.nameLayout = LineEditCompositeLayout(FormStrings.NAME, text=data['name'], parent_widget=self)
+        self.nameLayout = LineEditCompositeLayout(FormStrings.NAME, text=data.get_name(), parent_widget=self,
+                                                  line_edit_class=LineEdit)
+        self.nameLayout.label.setStyleSheet(Styles.EDIT_PROFILE_LABEL)
         self.profileForm.addLayout(self.nameLayout)
         self.profileForm.setAlignment(self.nameLayout, Qt.AlignCenter)
 
         # Campo input email
-        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, text=data['mail'], parent_widget=self)
+        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, text=data.get_email(), parent_widget=self,
+                                                   line_edit_class=LineEdit)
         self.emailLayout.line_edit.setEnabled(False)
+        self.emailLayout.label.setStyleSheet(Styles.EDIT_PROFILE_LABEL)
         self.profileForm.addLayout(self.emailLayout)
         self.profileForm.setAlignment(self.emailLayout, Qt.AlignCenter)
 
         # Campo input telefono
-        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, text=data['phone'], parent_widget=self)
+        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, text=data.get_phone(), parent_widget=self,
+                                                   line_edit_class=LineEdit)
+        self.phoneLayout.label.setStyleSheet(Styles.EDIT_PROFILE_LABEL)
         self.profileForm.addLayout(self.phoneLayout)
         self.profileForm.setAlignment(self.phoneLayout, Qt.AlignCenter)
 
         # Campo codice fiscale
-        self.fiscalCodeLayout = LineEditCompositeLayout(FormStrings.CF, text=data['CF'], parent_widget=self)
+        self.fiscalCodeLayout = LineEditCompositeLayout(FormStrings.CF, text=data.get_CF(), parent_widget=self,
+                                                        line_edit_class=LineEdit)
+        self.fiscalCodeLayout.label.setStyleSheet(Styles.EDIT_PROFILE_LABEL)
         self.profileForm.addLayout(self.fiscalCodeLayout)
         self.profileForm.setAlignment(self.fiscalCodeLayout, Qt.AlignCenter)
 
         # Campo data di nascità
-        self.birthDateLayout = QHBoxLayout()
+        self.birthDateLayout = QVBoxLayout()
+        self.birthDateLayout.setSpacing(0)
 
-        self.birthDateLabel = QLabel("Data di nascita: ")
+        self.birthDateLabel = QLabel(FormStrings.BIRTH_DATE)
+        self.birthDateLabel.setStyleSheet(Styles.EDIT_PROFILE_LABEL)
         font = QFont()
         font.setPointSize(LineEditDimensions.DEFAULT_LABEL_FONT_SIZE)
         font.setBold(True)
@@ -93,35 +104,51 @@ class EditWorkerWindow(QDialog):
         self.birthDateLabel.setFont(font)
 
         self.birthDatePicker = CustomDatePicker()
-        date = data['birth_date'].split('/')
-        default_date = QDate()
-        default_date.setDate(int(date[2]), int(date[1]), int(date[0]))
-        self.birthDatePicker.setDate(default_date)
+        self.birthDatePicker.setObjectName("data di nascita_date_picker")
+        self.birthDatePicker.setDate(DatetimeUtils.format(data.get_birth_date()))
 
         self.birthDateLayout.addWidget(self.birthDateLabel)
         self.birthDateLayout.addWidget(self.birthDatePicker)
 
         self.profileForm.addLayout(self.birthDateLayout)
-        self.profileForm.setAlignment(self.birthDateLayout, Qt.AlignCenter)
 
         # Campo input password
-        self.passwordLayout = LineEditCompositeLayout(FormStrings.PASSWORD, parent_widget=self)
+        self.passwordWidget = QWidget(self)
+        self.passwordLayout = LineEditCompositeLayout(FormStrings.PASSWORD, parent_widget=self.passwordWidget,
+                                                      line_edit_class=LineEdit)
+        self.passwordLayout.label.setStyleSheet(Styles.EDIT_PROFILE_LABEL)
         self.passwordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
-        self.profileForm.addLayout(self.passwordLayout)
-        self.profileForm.setAlignment(self.passwordLayout, Qt.AlignCenter)
+        self.passwordLayout.setContentsMargins(0, 0, 0, 0)
+        self.profileForm.addWidget(self.passwordWidget)
 
         # Campo input conferma password
-        self.confirmPasswordLayout = LineEditCompositeLayout(FormStrings.PASSWORD_CONFIRM, parent_widget=self)
+        self.confirmPasswordWidget = QWidget(self)
+        self.confirmPasswordLayout = LineEditCompositeLayout(FormStrings.PASSWORD_CONFIRM,
+                                                             parent_widget=self.confirmPasswordWidget,
+                                                             line_edit_class=LineEdit)
         self.confirmPasswordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
-        self.profileForm.addLayout(self.confirmPasswordLayout)
-        self.profileForm.setAlignment(self.confirmPasswordLayout, Qt.AlignCenter)
+        self.confirmPasswordLayout.label.setStyleSheet(Styles.EDIT_PROFILE_LABEL)
+        self.confirmPasswordLayout.setContentsMargins(0, 0, 0, 0)
+        self.profileForm.addWidget(self.confirmPasswordWidget)
 
+        # Pulsante modifica password
+        def show_new_password_fields():
+            self.showNewPasswordFieldsButton.setHidden(True)
+            self.passwordWidget.setHidden(False)
+            self.confirmPasswordWidget.setHidden(False)
+
+        self.showNewPasswordFieldsButton = PushButton(text="Imposta nuova password")
+        self.showNewPasswordFieldsButton.clicked.connect(show_new_password_fields)
+        self.passwordWidget.setHidden(True)
+        self.confirmPasswordWidget.setHidden(True)
+        self.profileForm.addWidget(self.showNewPasswordFieldsButton)
+
+        # Sezione finale con i pulsanti
         self.buttonsBox = QHBoxLayout()
         self.buttonsBox.setSpacing(13)
         self.buttonsBox.setObjectName("ButtonsBox")
 
-        self.deleteButton = QPushButton(FormStrings.DELETE_EDIT)
-        self.deleteButton.clicked.connect(self.delete_add)
+        self.deleteButton = QPushButton("Elimina account")
         self.deleteButton.setStyleSheet(Styles.DELETE_BUTTON)
         self.deleteButton.setFixedWidth(Dimensions.GenericDimensions.MAX_BUTTON_WIDTH)
         self.deleteButton.setObjectName("DeleteEditButton")
@@ -145,58 +172,66 @@ class EditWorkerWindow(QDialog):
         cf_field = LineEditCompositeFormField.LayoutAndRule(self.fiscalCodeLayout, ValidationRule.FiscalCode())
         email_field = LineEditCompositeFormField.LayoutAndRule(self.emailLayout, ValidationRule.Email())
         phone_field = LineEditCompositeFormField.LayoutAndRule(self.phoneLayout, ValidationRule.Phone())
+        birth_field = DatePickerFormField(self.birthDatePicker)
         password_field = (LineEditCompositeFormField.Layout(self.passwordLayout))
         confirm_password_field = (LineEditCompositeFormField.Layout(self.confirmPasswordLayout))
 
-        self.form_manager = FormManager()
+        self.form_manager = FormManager(form_token=data.get_uid())
         self.form_manager.add_fields(name_field, cf_field,
-                                     email_field, phone_field, password_field, confirm_password_field)
+                                     email_field, phone_field, birth_field, password_field, confirm_password_field)
         self.form_manager.add_submit_button(self.editButton, self.on_submit)
+        self.form_manager.add_token_button(self.deleteButton, self.on_delete)
 
     # Esegue i controlli sulla password e crea un nuovo operaio
     def on_submit(self, form_data: dict[str, any]):
         print("Save_edit...")
-        print(self.birthDatePicker.date)
         print(form_data)
-        newPassword = ""
-        print(self.passwordLayout.line_edit.text() != "")
-        if self.passwordLayout.line_edit.text() != "":
-            if len(self.passwordLayout.line_edit.text()) > 6:
-                if self.confirmPasswordLayout.line_edit.text() != "":
-                    if self.passwordLayout.line_edit.text() != self.confirmPasswordLayout.line_edit.text():
+
+        # Estraggo i campi "Password" e "Conferma password"
+        password = form_data.get("password")
+        confirm_password = form_data.pop("conferma password")
+
+        # Variabile che indica se proseguire con l'aggiornamento
+        continue_submit: bool = True
+
+        # Controlli sui campi "Nuova password" e "Conferma nuova password"
+        if password:
+            if len(password) >= 6:
+                if confirm_password:
+                    if password != confirm_password:
                         print("Le password non combaciano")
                         self.passwordLayout.error_label.setText(ValidationStrings.PASSWORD_CONFIRM_DIFFERENT)
                         self.passwordLayout.error_label.setHidden(False)
-                        return
-                    else:
-                        newPassword = self.passwordLayout.line_edit.text()
+                        continue_submit = False
                 else:
-                    print("Conferma nuova password richiesta")
+                    print("Conferma password richiesta")
                     self.confirmPasswordLayout.error_label.setText(ValidationStrings.FIELD_REQUIRED)
                     self.confirmPasswordLayout.error_label.setHidden(False)
-                    return
+                    continue_submit = False
             else:
-                print(newPassword)
-                print("Il campo nuova password deve essere lungo almeno 6 caratteri.")
+                print("Il campo password deve essere lungo almeno 6 caratteri")
                 self.passwordLayout.error_label.setText(ValidationStrings.MIN_PASSWORD_ERROR)
                 self.passwordLayout.error_label.setHidden(False)
-                return
+                continue_submit = False
 
-        try:
-
-            data = {
-                "name": self.nameLayout.line_edit.text(),
-                "birth_date": self.birthDatePicker.date.toString('dd/MM/yyyy'),
-                "CF": self.fiscalCodeLayout.line_edit.text(),
-                "phone": utility.PhoneFormatter().format(self.phoneLayout.line_edit.text()),
-                "mail": self.emailLayout.line_edit.text(),
-                "role": "worker"
-            }
-            self.controller.setWorkerData(data, newPassword, uid=self.uid)
+        # Se i controlli sono passati, prosegue con l'aggiornamento
+        if continue_submit:
+            self.controller.update_worker(form_data)
             self.close()
-        except Exception as e:
-            print(e)
 
-    # Chiude la finestra alla pressione di un bottone
-    def delete_add(self):
-        self.close()
+    # Eseguito al click sul pulsante di eliminazione
+    def on_delete(self, form_token):
+
+        # Crea e mostra una richiesta di conferma con indicato il prezzo
+        clicked_button = QMessageBox.question(
+            self,
+            "Conferma eliminazione dipendente",
+            (f"Sei sicuro di voler eliminare il dipendente?\n"
+             f"L'operazione non è reversibile"),
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        # In caso di conferma, elimina la transazione e chiude la finestra
+        if clicked_button == QMessageBox.Yes:
+            self.controller.delete_worker_by_id(form_token)
+            self.close()

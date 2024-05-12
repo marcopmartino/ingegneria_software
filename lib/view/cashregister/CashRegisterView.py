@@ -106,7 +106,7 @@ class CashRegisterView(SubInterfaceWidget):
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_transaction_list)
 
-        # Spacer tra i filtri e la cassa
+        # Spacer tra i filtri e il pulsante di registrazione di una nuova transazione
         self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
 
         # Button "Registra transazione"
@@ -151,14 +151,14 @@ class CashRegisterView(SubInterfaceWidget):
                         self.form_manager.data(), *data))
 
                 case CashRegisterRepository.Event.TRANSACTION_CREATED:
-                    if len(self.controller.filter_transactions(self.form_manager.data(), message.data())) != 0:
-                        self.table_adapter.addData(message.data())
+                    if len(self.controller.filter_transactions(self.form_manager.data(), data)) != 0:
+                        self.table_adapter.addData(data)
 
                 case CashRegisterRepository.Event.TRANSACTION_DELETED:
-                    self.table_adapter.removeRowByKey(message.data())
+                    self.table_adapter.removeRowByKey(data)
 
                 case CashRegisterRepository.Event.TRANSACTION_UPDATED:
-                    self.table_adapter.updateDataColumns(message.data(), [1, 2, 3])
+                    self.table_adapter.updateDataColumns(data, [1, 2, 3])
 
         self.controller.observe_transaction_list(update_cash_register_view)
 

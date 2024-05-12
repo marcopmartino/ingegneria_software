@@ -101,6 +101,11 @@ class ExtendedTableWidget(QTableWidget):
         self.setColumnCount(len(headers))
         self.setHorizontalHeaderLabels(headers)
 
+    # Imposta header verticali e numero di righe
+    def setVerticalHeaders(self, headers: list[str]):
+        self.setRowCount(len(headers))
+        self.setVerticalHeaderLabels(headers)
+
     # Nasconde gli header
     def hideHeaders(self):
         self.horizontalHeader().hide()
@@ -196,7 +201,6 @@ class SingleRowStandardTable(ExtendedTableWidget):
         self.setStyleSheet(Styles.STANDARD_TABLE)  # Stile
         self.setFrameStyle(QFrame.NoFrame)  # Nasconde la linea di contorno esterna
         self.setShowGrid(False)  # Nasconde la griglia interna
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)  # Imposta la selezione per righe anziché celle
         self.setSelectionMode(QAbstractItemView.NoSelection)  # Imposta la seleziona singola anziché multipla
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Impedisce di modificare da tastiera le celle
         self.setSortingEnabled(False)  # Disabilita il sorting automatico delle righe in base ai valori di una colonna
@@ -214,6 +218,35 @@ class SingleRowStandardTable(ExtendedTableWidget):
     # Imposta il testo per gli Header orizzontali
     def setHeaders(self, headers: list[str]):
         self.setHorizontalHeaders(headers)
+
+
+# Tabella standard usata nell'applicazione, con una sola colonna
+# noinspection PyPep8Naming
+class SingleColumnStandardTable(ExtendedTableWidget):
+
+    def __init__(self, parent_widget: QWidget = None):
+        super().__init__(parent_widget)
+
+        # Tabella
+        self.setStyleSheet(Styles.STANDARD_TABLE)  # Stile
+        self.setFrameStyle(QFrame.NoFrame)  # Nasconde la linea di contorno esterna
+        self.setShowGrid(True)  # Mostra la griglia interna
+        self.setSelectionMode(QAbstractItemView.NoSelection)  # Imposta la seleziona singola anziché multipla
+        self.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Impedisce di modificare da tastiera le celle
+        self.setSortingEnabled(False)  # Disabilita il sorting automatico delle righe in base ai valori di una colonna
+        self.setColumnCount(1)  # Imposta una sola colonna per la tabella
+
+        # Header
+        self.horizontalHeader().hide()  # Nasconde gli header orizzontali (superiori)
+        self.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)  # Abilita il ridimensionamento automatico
+
+        # Celle
+        self.setCellHeight(TableDimensions.DEFAULT_CELL_HEIGHT)  # Imposta l'altezza di cella
+        self.setItemDelegate(AlignCenterDelegate(self))  # Imposta l'allineamento al centro per il testo delle celle
+
+    # Imposta il testo per gli Header orizzontali
+    def setHeaders(self, headers: list[str]):
+        self.setVerticalHeaders(headers)
 
 
 # Tabella usata per rappresentare i listini prezzi

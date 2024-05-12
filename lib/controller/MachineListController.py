@@ -68,7 +68,7 @@ class MachineListController:
 
                 # Se il testo di ricerca è vuoto viene saltato il filtro sul nome del macchinario
                 if search_text:
-                    if search_text not in machine.get_machine_serial():
+                    if search_text.lower() not in machine.get_machine_serial().lower():
                         continue
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo del macchinario

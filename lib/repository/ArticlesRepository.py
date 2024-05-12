@@ -17,8 +17,8 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
 
     def __init__(self):
         self.__article_list: list[Article] = []
-        self.__article_network: ArticlesNetwork = ArticlesNetwork()
-        super().__init__(self.__article_network.stream)
+        self.__articles_network: ArticlesNetwork = ArticlesNetwork()
+        super().__init__(self.__articles_network.stream)
 
     def clear(self):
         self.__article_list = []
@@ -49,8 +49,9 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
 
                     # All'avvio del programma, quando viene caricata l'intera lista di articoli
                     if path == "/":
-                        for key, value in data.items():
-                            self.__instantiate_and_append_article(key, value)
+                        if data is not None:
+                            for key, value in data.items():
+                                self.__instantiate_and_append_article(key, value)
 
                         # Notifica gli osservatori che la repository ha concluso l'inizializzazione
                         self.notify(Message(ArticlesRepository.Event.ARTICLES_INITIALIZED, self.__article_list))
@@ -136,4 +137,4 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
         )
 
         # Salva l'articolo nel database e ritorna il nuovo seriale
-        return self.__article_network.insert(article_data)
+        return self.__articles_network.insert(article_data)

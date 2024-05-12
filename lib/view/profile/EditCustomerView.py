@@ -1,10 +1,13 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog
-from PyQt5.uic.properties import QtCore
+from qfluentwidgets import LineEdit, PushButton
 
-import lib.utility.UtilityClasses as utility
 import lib.firebaseData as firebaseConfig
+import lib.utility.UtilityClasses as utility
+from lib.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
+from lib.model.Customer import Customer
+from lib.utility.HTTPErrorHelper import InvalidLoginCredentialsException
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
@@ -12,16 +15,16 @@ from res import Styles, Dimensions
 from res.Strings import FormStrings, Config, ProfileStrings, ValidationStrings
 
 
-class EditCustomerProfileWindow(QDialog):
+class EditCustomerView(QDialog):
 
-    def __init__(self, parent=QWidget):
-        super().__init__(parent)
+    def __init__(self, controller: ProfileController):
+        super().__init__()
 
         self.setWindowFlag(Qt.WindowContextHelpButtonHint, False)
 
-        self.controller = self.parent().controller
+        self.controller = controller
 
-        data = self.controller.get_customer_model()
+        data: Customer = self.controller.get_user()
 
         # Finestra
         self.setWindowTitle(Config.APPLICATION_NAME)
@@ -40,7 +43,7 @@ class EditCustomerProfileWindow(QDialog):
         self.innerLayout.setSpacing(0)
 
         self.titleFrame = QFrame()
-        # self.titleFrame.setStyleSheet(Styles.PAGE_TITLE_FRAME)
+        #self.titleFrame.setStyleSheet(Styles.PAGE_TITLE_FRAME)
 
         self.title = QVBoxLayout(self.titleFrame)
         self.title.setContentsMargins(10, 10, 0, 10)
@@ -48,7 +51,6 @@ class EditCustomerProfileWindow(QDialog):
         self.title.setObjectName("TitleVerticalBox")
 
         self.displayTitle = QLabel(ProfileStrings.EDIT_BUTTON, self)
-        self.displayTitle.setStyleSheet(Styles.LABEL_TITLE)
 
         self.title.addWidget(self.displayTitle)
         self.title.setAlignment(self.displayTitle, Qt.AlignCenter)
@@ -63,55 +65,79 @@ class EditCustomerProfileWindow(QDialog):
         self.profileForm.setObjectName("ProfileForm")
 
         # Campo input nome azienda
-        self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, data.company, self)
+        self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, data.get_company_name(), self,
+                                                         line_edit_class=LineEdit)
         self.profileForm.addLayout(self.companyNameLayout)
         self.profileForm.setAlignment(self.companyNameLayout, Qt.AlignCenter)
 
         # Campo input email
-        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, data.email, self)
+        self.emailLayout = LineEditCompositeLayout(FormStrings.EMAIL, data.get_email(), self, line_edit_class=LineEdit)
         self.emailLayout.line_edit.setEnabled(False)
         self.profileForm.addLayout(self.emailLayout)
         self.profileForm.setAlignment(self.emailLayout, Qt.AlignCenter)
 
         # Campo input telefono
-        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, data.phone, self)
+        self.phoneLayout = LineEditCompositeLayout(FormStrings.PHONE, data.get_phone(), self, line_edit_class=LineEdit)
         self.profileForm.addLayout(self.phoneLayout)
         self.profileForm.setAlignment(self.phoneLayout, Qt.AlignCenter)
 
         # Campo input indirizzo
-        self.deliveryAddressLayout = LineEditCompositeLayout(FormStrings.DELIVERY_ADDRESS, data.delivery, self)
+        self.deliveryAddressLayout = LineEditCompositeLayout(FormStrings.DELIVERY_ADDRESS, data.get_delivery_address(),
+                                                             self, line_edit_class=LineEdit)
         self.profileForm.addLayout(self.deliveryAddressLayout)
         self.profileForm.setAlignment(self.deliveryAddressLayout, Qt.AlignCenter)
 
         # Campo input partita IVA
-        self.IVANumberLayout = LineEditCompositeLayout(FormStrings.IVA_NUMBER, data.IVA, self)
+        self.IVANumberLayout = LineEditCompositeLayout(FormStrings.IVA_NUMBER, data.get_IVA(), self,
+                                                       line_edit_class=LineEdit)
         self.profileForm.addLayout(self.IVANumberLayout)
         self.profileForm.setAlignment(self.IVANumberLayout, Qt.AlignCenter)
 
-        # Campo input nuova password
-        self.newPasswordLayout = LineEditCompositeLayout(FormStrings.NEW_PASSWORD, parent_widget=self)
-        self.newPasswordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
-        self.profileForm.addLayout(self.newPasswordLayout)
-        self.profileForm.setAlignment(self.newPasswordLayout, Qt.AlignCenter)
-
-        # Campo input conferma nuova password
-        self.confirmNewPasswordLayout = LineEditCompositeLayout(FormStrings.NEW_PASSWORD_CONFIRM, parent_widget=self)
-        self.confirmNewPasswordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
-        self.profileForm.addLayout(self.confirmNewPasswordLayout)
-        self.profileForm.setAlignment(self.confirmNewPasswordLayout, Qt.AlignCenter)
-
         # Campo input vecchia password
-        self.passwordLayout = LineEditCompositeLayout(FormStrings.PASSWORD, parent_widget=self)
+        self.passwordLayout = LineEditCompositeLayout(FormStrings.PASSWORD, parent_widget=self,
+                                                      line_edit_class=LineEdit)
         self.passwordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
         self.profileForm.addLayout(self.passwordLayout)
         self.profileForm.setAlignment(self.passwordLayout, Qt.AlignCenter)
 
+        # Campo input nuova password
+        self.newPasswordWidget = QWidget(self)
+        self.newPasswordLayout = LineEditCompositeLayout(FormStrings.NEW_PASSWORD, parent_widget=self.newPasswordWidget,
+                                                         line_edit_class=LineEdit)
+        self.newPasswordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
+        self.newPasswordLayout.setContentsMargins(0, 0, 0, 0)
+        self.profileForm.addWidget(self.newPasswordWidget)
+        self.profileForm.setAlignment(self.newPasswordLayout, Qt.AlignCenter)
+
+        # Campo input conferma nuova password
+        self.confirmNewPasswordWidget = QWidget(self)
+        self.confirmNewPasswordLayout = LineEditCompositeLayout(FormStrings.NEW_PASSWORD_CONFIRM,
+                                                                parent_widget=self.confirmNewPasswordWidget,
+                                                                line_edit_class=LineEdit)
+        self.confirmNewPasswordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
+        self.confirmNewPasswordLayout.setContentsMargins(0, 0, 0, 0)
+        self.profileForm.addWidget(self.confirmNewPasswordWidget)
+        self.profileForm.setAlignment(self.confirmNewPasswordLayout, Qt.AlignCenter)
+
+        # Pulsante modifica password
+        def show_new_password_fields():
+            self.showNewPasswordFieldsButton.setHidden(True)
+            self.newPasswordWidget.setHidden(False)
+            self.confirmNewPasswordWidget.setHidden(False)
+
+        self.showNewPasswordFieldsButton = PushButton(text="Imposta nuova password")
+        self.showNewPasswordFieldsButton.clicked.connect(show_new_password_fields)
+        self.newPasswordWidget.setHidden(True)
+        self.confirmNewPasswordWidget.setHidden(True)
+        self.profileForm.addWidget(self.showNewPasswordFieldsButton)
+
+        # Sezione finale con i pulsanti
         self.buttonsBox = QHBoxLayout()
         self.buttonsBox.setSpacing(13)
         self.buttonsBox.setObjectName("ButtonsBox")
 
         self.deleteEditButton = QPushButton(FormStrings.DELETE_EDIT)
-        self.deleteEditButton.clicked.connect(self.delete_edit)
+        self.deleteEditButton.clicked.connect(self.close)
         self.deleteEditButton.setStyleSheet(Styles.DELETE_BUTTON)
         self.deleteEditButton.setFixedWidth(Dimensions.GenericDimensions.MAX_BUTTON_WIDTH)
         self.deleteEditButton.setObjectName("DeleteEditButton")
@@ -148,39 +174,42 @@ class EditCustomerProfileWindow(QDialog):
 
     # Esegue i controlli e la modifica dei dati
     def on_submit(self, form_data: dict[str, any]):
-        newPassword = None
+        print(form_data)
         print("Save_edit...")
-        currentEmail = firebaseConfig.currentUser['email']
-        password = self.passwordLayout.line_edit.text()
-        if self.newPasswordLayout.line_edit.text() != "":
-            if len(self.newPasswordLayout.line_edit.text()) > 6:
-                if self.confirmNewPasswordLayout.line_edit.text() != "":
-                    if self.newPasswordLayout.line_edit.text() != self.confirmNewPasswordLayout.line_edit.text():
+
+        # Estraggo i campi "Nuova password" e "Conferma nuova password"
+        new_password = form_data.get("nuova password")
+        confirm_new_password = form_data.pop("conferma nuova password")
+
+        # Variabile che indica se proseguire con l'aggiornamento
+        continue_submit: bool = True
+
+        # Controlli sui campi "Nuova password" e "Conferma nuova password"
+        if new_password:
+            if len(new_password) >= 6:
+                if confirm_new_password:
+                    if new_password != confirm_new_password:
                         print("Le password non combaciano")
                         self.newPasswordLayout.error_label.setText(ValidationStrings.PASSWORD_CONFIRM_DIFFERENT)
                         self.newPasswordLayout.error_label.setHidden(False)
-                    else:
-                        newPassword = self.newPasswordLayout.line_edit.text()
+
+                        continue_submit = False
                 else:
                     print("Conferma nuova password richiesta")
                     self.confirmNewPasswordLayout.error_label.setText(ValidationStrings.FIELD_REQUIRED)
+                    self.confirmNewPasswordLayout.error_label.setHidden(False)
+                    continue_submit = False
             else:
-                print("Il campo nuova password deve essere lungo almeno 6 caratteri.")
+                print("Il campo nuova password deve essere lungo almeno 6 caratteri")
                 self.newPasswordLayout.error_label.setText(ValidationStrings.MIN_PASSWORD_ERROR)
+                self.newPasswordLayout.error_label.setHidden(False)
+                continue_submit = False
 
-        try:
-            self.controller.customer_checkLogin(currentEmail, password)
-            data = {
-                "company": self.companyNameLayout.line_edit.text(),
-                "IVA": self.IVANumberLayout.line_edit.text(),
-                "delivery": self.deliveryAddressLayout.line_edit.text(),
-                "phone": utility.format_phone(self.phoneLayout.line_edit.text())
-            }
-            self.controller.customer_setUserData(data, newPassword, firebaseConfig.currentUser['localId'])
-            self.close()
-        except Exception as e:
-            print(e)
-
-    # Chiude la finestra alla pressione di un bottone
-    def delete_edit(self):
-        self.close()
+        # Se i controlli sono passati, prosegue con l'aggiornamento
+        if continue_submit:
+            try:
+                self.controller.update_user(form_data)
+                self.close()
+            except InvalidLoginCredentialsException:
+                self.passwordLayout.error_label.setText("Password non corretta")
+                self.passwordLayout.error_label.setHidden(False)

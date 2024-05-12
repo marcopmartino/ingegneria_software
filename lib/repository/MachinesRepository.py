@@ -15,8 +15,8 @@ class MachinesRepository(Repository, metaclass=RepositoryMeta):
 
     def __init__(self):
         self.__machine_list: list[Machine] = []  # Inizializza la lista dei macchinari
-        self.__machine_network = MachinesNetwork()
-        super().__init__(self.__machine_network.stream)
+        self.__machines_network = MachinesNetwork()
+        super().__init__(self.__machines_network.stream)
 
     def clear(self):
         self.__machine_list = []
@@ -51,8 +51,8 @@ class MachinesRepository(Repository, metaclass=RepositoryMeta):
                             # Crea e aggiunge un ordine alla lista di ordini della repository
                             self.__instantiate_and_append_machine(key, value)
 
-                        # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                        self.notify(Message(MachinesRepository.Event.MACHINES_INITIALIZED, self.__machine_list))
+                    # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                    self.notify(Message(MachinesRepository.Event.MACHINES_INITIALIZED, self.__machine_list))
 
             # Aggiornamento di un macchinario
             case "patch":

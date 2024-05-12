@@ -1,8 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit
-
 from requests import ConnectionError
 
-import lib.firebaseData as firebaseConfig
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.utility.HTTPErrorHelper import HTTPErrorHelper, EmailExistsException
 from lib.validation.FormField import LineEditCompositeFormField
@@ -69,7 +67,6 @@ class SignUpView(AccessView):
 
     # Codice eseguito se la validazione ha successo
     def on_submit(self, form_data: dict[str, any]):
-        print(firebaseConfig.currentUser)
         print(form_data)
         print("Sign up...")
         try:

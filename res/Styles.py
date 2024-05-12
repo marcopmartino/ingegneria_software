@@ -100,6 +100,7 @@ ERROR_LABEL_INPUT = """/* Set style for QLabel */
                     margin-top: 4px;\n
                 }\n"""
 
+# Sezione Titolo e Sottotiolo di SubInterfaceWidget
 LABEL_TITLE = """/* Set style for Qlabel */
                 QLabel {\n
                     font-size: """ + str(FontSize.SUB_INTERFACE_TITLE) + """pt;\n
@@ -287,6 +288,22 @@ STANDARD_TABLE_NO_ITEM = """/* Set style for QTableWidget e QTableWidgetItem */\
                 }\n
                 QTableWidget::item:selected {\n 
                     background-color: #00A2A2;\n
+                }\n
+                QHeaderView {\n
+                    background-color: #dddddd;\n
+                    font-size: """ + str(FontSize.TABLE_HEADER) + """pt;\n
+                    font-weight: bold;\n
+                }\n"""
+
+PROFILE_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
+                QTableWidget {\n
+                    selection-background-color: white;\n
+                }\n
+                QTableWidget::item {\n
+                    ;\n
+                }\n
+                QTableWidget::item:selected {\n 
+                    ;\n
                 }\n
                 QHeaderView {\n
                     background-color: #dddddd;\n

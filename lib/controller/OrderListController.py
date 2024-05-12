@@ -84,7 +84,7 @@ class OrderListController(OrderBaseController):
 
                 # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
                 if search_text:
-                    if search_text not in filter_field(order):
+                    if search_text.lower() not in filter_field(order).lower():
                         continue
 
                 # Se tutti gli stati sono ammessi viene saltato il filtro sullo stato

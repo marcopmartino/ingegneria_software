@@ -152,6 +152,7 @@ class OrderListView(SubInterfaceWidget):
         self.table_adapter.setColumnItemClass(5, PriceTableItem)  # Per un corretto ordinamento dei prezzi
         self.table_adapter.onDoubleClick(self.show_order_details)
 
+        # Callback per l'observer
         def update_order_list_view(message: Message):
             data = message.data()
             match message.event():

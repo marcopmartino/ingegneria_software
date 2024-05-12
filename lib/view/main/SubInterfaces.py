@@ -20,6 +20,7 @@ class SubInterfaceWidget(QWidget):
 
         # Base Widget - il widget Base include il frame Header e il widget Body
         self.setObjectName(name.lower().replace(' ', '_'))  # ObjectName unico
+        self.setContentsMargins(0, 8, 0, 0)
         self.setStyleSheet(Styles.BASE_WIDGET)
 
         # Base Layout

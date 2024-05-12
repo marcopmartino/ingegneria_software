@@ -43,8 +43,8 @@ class FormManager(QObject):
         return validation_successful
 
     # Estrae i dati dai campi sotto forma di dizionario
-    def data(self) -> dict[str, any]:
-        data = {"form_token": self.form_token, "field_count": self.field_count()}
+    def data(self, raw: bool = False) -> dict[str, any]:
+        data = {} if raw else {"form_token": self.form_token, "field_count": self.field_count()}
         for form_field in self.field_list:
             data.update(form_field.data_dict())  # Possibile grazie alle classi adattatrici
         return data
@@ -92,25 +92,25 @@ class FormManager(QObject):
                 self.add_object(item)
 
     # Eseguito al click su un pulsante di submit: esegue la validazione, poi chiama una funzione di callback
-    def on_submit(self, callback_success: callable, callback_failure: callable):
+    def __on_submit(self, callback_success: callable, callback_failure: callable, raw_data: bool):
         print("About to validate")
         if self.validate():
             print("Validation Successful")
-            callback_success(self.data())
+            callback_success(self.data(raw_data))
         else:
             print("Validation Failure")
             if callback_failure:  # False se callback_failure è None
-                callback_failure(self.data())
+                callback_failure(self.data(raw_data))
 
     # Aggiunge un pulsante di submit connettendo il segnale generato dall'evento di click con il metodo\slot
     # "on_submit", a cui vengono passate le funzioni di callback
     def add_submit_button(self, submit_button: QPushButton, callback_success: callable,
-                          callback_failure: callable = None):
-        submit_button.clicked.connect(lambda: self.on_submit(callback_success, callback_failure))
+                          callback_failure: callable = None, raw_data: bool = False):
+        submit_button.clicked.connect(lambda: self.__on_submit(callback_success, callback_failure, raw_data))
 
     # Aggiunge un pulsante per la sola estrazione dei dati, che vengono passati a una funzione di callback
-    def add_data_button(self, submit_button: QPushButton, callback: callable):
-        submit_button.clicked.connect(lambda: callback(self.data()))
+    def add_data_button(self, submit_button: QPushButton, callback: callable, raw_data: bool = False):
+        submit_button.clicked.connect(lambda: callback(self.data(raw_data)))
 
     # Aggiunge un pulsante per la sola estrazione del token, che viene passato a una funzione di callback
     def add_token_button(self, submit_button: QPushButton, callback: callable):
