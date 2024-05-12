@@ -9,12 +9,12 @@ from lib.controller.WorkerListController import WorkerListController
 from lib.layout.CustomDatePicker import CustomDatePicker
 from lib.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
-from lib.utility.HTTPErrorHelper import InvalidLoginCredentialsException
+from lib.utility.HTTPErrorHelper import InvalidLoginCredentialsException, EmailExistsException
 from lib.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from res import Styles, Dimensions
-from res.Dimensions import LineEditDimensions, FontWeight
+from res.Dimensions import LineEditDimensions, FontWeight, FontSize
 from res.Strings import FormStrings, Config, ValidationStrings, WorkerStrings
 
 
@@ -119,11 +119,21 @@ class AddWorkerView(QDialog):
         self.profileForm.addLayout(self.confirmPasswordLayout)
         self.profileForm.setAlignment(self.confirmPasswordLayout, Qt.AlignCenter)
 
+        # Label di errore in caso di email già in uso
+        self.emailExistsLabel = QLabel(ValidationStrings.EMAIL_ALREADY_USED)
+        self.emailExistsLabel.setStyleSheet(Styles.ERROR_LABEL)
+        self.emailExistsLabel.setHidden(True)
+        font = QFont()
+        font.setPointSize(FontSize.FLUENT_DEFAULT)
+        self.emailExistsLabel.setFont(font)
+        self.profileForm.addWidget(self.emailExistsLabel, alignment=Qt.AlignHCenter)
+
         # Sezione finale con i pulsanti
         self.buttonsBox = QHBoxLayout()
         self.buttonsBox.setSpacing(13)
         self.buttonsBox.setObjectName("ButtonsBox")
 
+        # Pulsante per la creazione dell'account
         self.addButton = QPushButton("Crea account")
         self.addButton.setStyleSheet(Styles.EDIT_BUTTON)
         self.addButton.setFixedWidth(Dimensions.GenericDimensions.MAX_BUTTON_WIDTH)
@@ -156,6 +166,9 @@ class AddWorkerView(QDialog):
     def on_submit(self, form_data: dict[str, any]):
         print("Save_edit...")
         print(form_data)
+
+        # Nasconde la Label di errore per email già in uso
+        self.emailExistsLabel.setHidden(True)
 
         # Estraggo i campi "Password" e "Conferma password"
         password = form_data.get("password")
@@ -191,5 +204,8 @@ class AddWorkerView(QDialog):
 
         # Se i controlli sono passati, prosegue con l'aggiornamento
         if continue_submit:
-            self.controller.create_worker(form_data)
-            self.close()
+            try:
+                self.controller.create_worker(form_data)
+                self.close()
+            except EmailExistsException:
+                self.emailExistsLabel.setHidden(False)
