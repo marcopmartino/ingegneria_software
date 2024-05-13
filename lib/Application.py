@@ -1,4 +1,5 @@
 from typing import List
+from typing import List
 
 from PyQt5.QtWidgets import QApplication
 
