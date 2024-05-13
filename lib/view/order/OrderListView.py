@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel
@@ -23,6 +23,7 @@ from res.Dimensions import FontSize
 
 
 class OrderListView(SubInterfaceWidget):
+
     def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = FluentIcon.SHOPPING_CART):
         super().__init__("order_list_view", parent_widget, svg_icon)
 
@@ -172,7 +173,11 @@ class OrderListView(SubInterfaceWidget):
                 case OrdersRepository.Event.ORDER_STATE_UPDATED:
                     self.table_adapter.updateDataColumns(data, [3])
 
-        self.controller.observe_order_list(update_order_list_view)
+        # Imposta l'observer
+        # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
+        # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
+        self.messageReceived.connect(update_order_list_view)
+        self.controller.observe_order_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
 

@@ -128,7 +128,11 @@ class WorkerListView(SubInterfaceWidget):
                 case UsersRepository.Event.USER_UPDATED:
                     self.table_adapter.updateData(data)
 
-        self.controller.observe_worker_list(update_worker_list_view)
+        # Imposta l'observer
+        # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
+        # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
+        self.messageReceived.connect(update_worker_list_view)
+        self.controller.observe_worker_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
 

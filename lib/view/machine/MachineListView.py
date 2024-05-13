@@ -17,6 +17,7 @@ from res.Dimensions import FontSize
 
 
 class MachineListView(SubInterfaceWidget):
+
     def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = CustomIcon.MACHINERY):
         super().__init__("machine_list_view", parent_widget, svg_icon)
         self.controller = MachineListController()
@@ -163,7 +164,11 @@ class MachineListView(SubInterfaceWidget):
                     pass
                     #self.table_adapter.updateDataColumns(message.data(), [3])
 
-        self.controller.observe_machine_list(update_machine_table)
+        # Imposta l'observer
+        # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
+        # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
+        self.messageReceived.connect(update_machine_table)
+        self.controller.observe_machine_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
 

@@ -23,7 +23,6 @@ from res.Strings import FormStrings, ProfileStrings
 
 
 class ProfileView(SubInterfaceWidget):
-    messageReceived = pyqtSignal(Message)
 
     def __init__(self, parent_widget: QWidget,
                  table_adapter_class: type(ProfileTableAdapter),

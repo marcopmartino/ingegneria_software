@@ -1,14 +1,16 @@
-from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtCore import QSize, Qt, pyqtSignal
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QWidget, QFrame, QVBoxLayout, QLabel, QSizePolicy, QHBoxLayout
 from qfluentwidgets import SingleDirectionScrollArea, FluentIconBase, FluentIcon
 
+from lib.utility.ObserverClasses import Message
 from res import Styles
 
 
 # Widget ereditato da tutte le sotto-interfacce della MainWindow
 # noinspection PyPep8Naming
 class SubInterfaceWidget(QWidget):
+    messageReceived = pyqtSignal(Message)
 
     def __init__(self,
                  name: str,

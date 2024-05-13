@@ -118,7 +118,11 @@ class ArticleListView(SubInterfaceWidget):
                 case ArticlesRepository.Event.ARTICLE_PRODUCED_SHOE_LASTS_UPDATED:
                     self.table_adapter.updateDataColumns(data, [2])
 
-        self.controller.observe_article_list(update_article_list_view)
+        # Imposta l'observer
+        # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
+        # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
+        self.messageReceived.connect(update_article_list_view)
+        self.controller.observe_article_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
 

@@ -26,7 +26,6 @@ from res.Strings import OrderStateStrings
 
 
 class OrderView(SubInterfaceChildWidget):
-    messageReceived = pyqtSignal(Message)
 
     # Eseguito alla chiusura della finestra (dopo la chiamata "self.close()")
     def closeEvent(self, event: QCloseEvent):

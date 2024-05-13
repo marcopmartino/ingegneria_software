@@ -117,7 +117,12 @@ class PriceCatalogView(SubInterfaceWidget):
                     self.table.updateNamedItem(next(iter(data.keys())), next(iter(data.values())))
 
         # Aggiorno i dati della tabella ogni volta che cambiano
-        self.controller.observe_price_catalog(update_price_catalog_view)
+
+        # Imposta l'observer
+        # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
+        # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
+        self.messageReceived.connect(update_price_catalog_view)
+        self.controller.observe_price_catalog(self.messageReceived.emit)
 
         if Firebase.auth.currentUserRole() == "manager":
             # Connette il segnale "itemClicked" allo slot "on_item_clicked"

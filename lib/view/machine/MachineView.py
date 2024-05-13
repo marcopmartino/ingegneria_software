@@ -16,7 +16,6 @@ from res.Dimensions import FontSize, FontWeight
 
 
 class MachineView(SubInterfaceChildWidget):
-    messageReceived = pyqtSignal(Message)
 
     # Eseguito alla chiusura della finestra (dopo la chiamata "self.close()")
     def closeEvent(self, event: QCloseEvent):
