@@ -7,7 +7,7 @@ import lib.utility.UtilityClasses as utility
 from lib.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.Customer import Customer
-from lib.utility.HTTPErrorHelper import InvalidLoginCredentialsException
+from lib.utility.ErrorHelpers import InvalidLoginCredentialsException
 from lib.validation.FormField import LineEditCompositeFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule

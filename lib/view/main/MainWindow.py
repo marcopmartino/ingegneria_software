@@ -1,7 +1,7 @@
 # coding:utf-8
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, QWidget
+from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, QWidget, QMessageBox
 from qfluentwidgets import FluentIcon as FIF, InfoBar, InfoBarPosition
 from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter)
 from qframelesswindow import FramelessWindow, TitleBar
@@ -66,6 +66,7 @@ class CustomTitleBar(TitleBar):
 # noinspection PyPep8Naming
 class MainWindow(FramelessWindow):
     logout = pyqtSignal()
+    connection_lost = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -96,6 +97,9 @@ class MainWindow(FramelessWindow):
         # Inizializza la finestra di caricamento
         self.loading_window: MainWindowLoadingView = MainWindowLoadingView(self.controller)
 
+        # Indica se la perdita di connessione è stata già notificata
+        self.connection_lost_notified: bool = False
+
         # Inizializza i segnali
         self.initSignals()
 
@@ -112,6 +116,8 @@ class MainWindow(FramelessWindow):
     def initSignals(self):
         self.loading_window.initialization_completed.connect(self.show)
         self.logout.connect(Firebase.auth.sign_out)
+        self.connection_lost.connect(self.on_connection_lost)
+        Firebase.register_connection_lost_callback(self.connection_lost.emit)
 
     # Inizializza il layout che contiene il menù (NavigationInterface) e la lista dei Widget associati (QStackedWidget)
     def initLayout(self):
@@ -367,10 +373,31 @@ class MainWindow(FramelessWindow):
         self.logout.emit()
         print("Window changed")
 
+    # Mostra un Dialog con cui informa che la connessione è stata persa
+    def on_connection_lost(self):
+        # Procede solo se la finestra non è nascosta e se non è stata già notificata
+        if not (self.isHidden() or self.connection_lost_notified):
+            self.connection_lost_notified = True
+
+            # Imposta e mostra il dialog
+            QMessageBox.question(
+                self,
+                "Connessione Internet assente",
+                ("Connessione di rete persa: controlla la tua connessione a Internet. "
+                 "Verrai reindirizzato alla schermata di accesso."),
+                QMessageBox.Ok
+            )
+
+            # Reindirizza l'utente alla schermata di accesso
+            self.show_access_window()
+
     # Esegue il reset della navigazione
     def reset(self):
         # Esegue il reset delle repository
         self.controller.reset_repositories()
+
+        # Reimposta l'indicatore di connessione persa
+        self.connection_lost_notified = False
 
         # Rimuove ed elimina i widget dello StackedWidget e le corrispondenti voci del menù
         for index in reversed(range(self.stackedWidget.count())):
@@ -412,7 +439,3 @@ class MainWindow(FramelessWindow):
 
         # Indica che il caricamento degli elementi grafici della MainWindow è stata completata
         self.loading_window.gui_widget.stop()
-
-
-
-

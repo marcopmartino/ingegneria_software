@@ -4,6 +4,7 @@ from typing import Callable
 
 from pyrebase.pyrebase import Stream
 
+from lib.utility.ErrorHelpers import ErrorHelper
 from lib.utility.ObserverClasses import Observable
 
 
@@ -25,7 +26,7 @@ class Repository(Observable, ABC):
     # Chiude lo stream di dati
     def close_stream(self):
         if self.__stream is not None:
-            self.__stream.close()
+            ErrorHelper.suppress(self.__stream.close, AttributeError)
             self.__stream = None
 
     # Callback per lo stream

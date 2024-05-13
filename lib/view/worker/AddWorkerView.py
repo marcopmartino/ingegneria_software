@@ -9,7 +9,7 @@ from lib.controller.WorkerListController import WorkerListController
 from lib.layout.CustomDatePicker import CustomDatePicker
 from lib.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
-from lib.utility.HTTPErrorHelper import InvalidLoginCredentialsException, EmailExistsException
+from lib.utility.ErrorHelpers import InvalidLoginCredentialsException, EmailExistsException
 from lib.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule

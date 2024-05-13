@@ -1,5 +1,5 @@
 from lib.firebaseData import Firebase
-from lib.utility.HTTPErrorHelper import HTTPErrorHelper
+from lib.utility.ErrorHelpers import HTTPErrorHelper
 from lib.repository.UsersRepository import UsersRepository
 from lib.utility.UtilityClasses import PhoneFormatter
 

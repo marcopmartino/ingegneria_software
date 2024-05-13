@@ -10,7 +10,7 @@ from lib.firebaseData import Firebase
 from lib.layout.CustomDatePicker import CustomDatePicker
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.Employee import Employee
-from lib.utility.HTTPErrorHelper import InvalidLoginCredentialsException
+from lib.utility.ErrorHelpers import InvalidLoginCredentialsException
 from lib.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule

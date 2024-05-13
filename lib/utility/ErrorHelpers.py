@@ -1,41 +1,35 @@
 import json
 import traceback
+from abc import ABC, abstractmethod
 
 from requests import HTTPError, RequestException
 
 
-class HTTPErrorHelper(object):
+class ErrorHelper:
+    @staticmethod
+    def debug(request: callable, exception_type: type(Exception) = Exception):
+        try:
+            return request()
+        except exception_type as e:
+            traceback.print_exc()
+            raise e
+
+    @staticmethod
+    def suppress(request: callable, exception_type: type(Exception) = Exception, debug: bool = False):
+        try:
+            return request()
+        except exception_type:
+            if debug:
+                traceback.print_exc()
+
+
+class HTTPErrorHelper(ErrorHelper):
 
     @staticmethod
     def extract_message(e: HTTPError) -> str:
         error_json: json = e.args[1]
         error_dict: dict = json.loads(error_json)
         return error_dict['error']['message']
-
-    @staticmethod
-    def debug(request: callable):
-        try:
-            return request()
-        except RequestException as e:
-            traceback.print_exc()
-            raise e
-
-    @staticmethod
-    def suppress(request: callable, debug: bool = False):
-        try:
-            return request()
-        except RequestException:
-            if debug:
-                traceback.print_exc()
-
-    @staticmethod
-    def handle(request: callable, handlers: dict[type(RequestException), callable], debug: bool = False):
-        try:
-            return HTTPErrorHelper.differentiate(request, debug)
-        except RequestException as e:
-            for exception, handler in handlers.items():
-                if isinstance(e, exception):
-                    return handler()
 
     @staticmethod
     def differentiate(request: callable, debug: bool = False):
