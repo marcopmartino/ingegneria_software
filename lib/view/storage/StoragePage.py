@@ -2,20 +2,22 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QStackedWidget
 )
-from qfluentwidgets import SegmentedWidget
+from qfluentwidgets import SegmentedWidget, FluentIconBase, FluentIcon
 
 from lib.controller.MaterialsListController import MaterialsListController
 from lib.controller.ProductListController import ProductListController
 from lib.controller.WastesListController import WastesListController
-from lib.view.main.BaseWidget import BaseWidget
+
+from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.MaterialsTab import MaterialsTab
 from lib.view.storage.ProductsTab import ProductsTab
 from lib.view.storage.WastesTab import WastesTab
 
 
-class StoragePage(BaseWidget):
-    def __init__(self, parent_widget: QWidget):
-        super().__init__("storage_page_view", parent_widget)
+# noinspection PyPep8Naming
+class StoragePage(SubInterfaceWidget):
+    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = FluentIcon.LIBRARY):
+        super().__init__("storage_page_view", parent_widget, svg_icon)
         # self.central_frame.setMinimumWidth(800)
         self.hideSidebar()
 
@@ -47,7 +49,7 @@ class StoragePage(BaseWidget):
         self.central_layout.addLayout(self.vBoxLayout)
         self.central_layout.setAlignment(self.vBoxLayout, Qt.AlignCenter)
 
-    def addSubInterface(self, widget: BaseWidget, objectName, text):
+    def addSubInterface(self, widget: SubInterfaceWidget, objectName, text):
         self.stackedWidget.addWidget(widget)
         self.navigation.addItem(
             routeKey=objectName,

@@ -1,4 +1,3 @@
-from lib.firebaseData import firebase
 from lib.model.Product import Product
 from lib.repository.StorageRepository import StorageRepository
 
@@ -8,7 +7,6 @@ class WastesListController:
     def __init__(self):
         super().__init__()
         self.__wastes_repository = StorageRepository()
-        self.__database = firebase.database()
 
     def open_stream(self):
         self.__wastes_repository.open_wastes_stream()

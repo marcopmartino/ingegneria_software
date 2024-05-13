@@ -124,6 +124,8 @@ class Firebase(metaclass=Singleton):
         cls.auth = Auth(firebase.api_key, firebase.requests, firebase.credentials)
         cls.database = Database(firebase.credentials, firebase.api_key, firebase.database_url, firebase.requests)
 
+        print("Inizializzato")
+
     @classmethod
     def register_connection_lost_callback(cls, callback: callable):
         if cls.database is not None:

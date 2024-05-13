@@ -7,14 +7,14 @@ from lib.controller.WastesListController import WastesListController
 from lib.model.Product import Product
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
-from lib.view.main.BaseWidget import BaseWidget
+from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
 from res.Dimensions import FontSize
 
 
-class WastesTab(BaseWidget):
-    def __init__(self, parent_widget: QWidget):
+class WastesTab(SubInterfaceChildWidget):
+    def __init__(self, parent_widget: SubInterfaceWidget):
         super().__init__("wastes_list_view", parent_widget)
         self.hideHeader()
 
@@ -127,7 +127,7 @@ class WastesTab(BaseWidget):
         self.checkgroup2_layout.addWidget(self.semifinished_check_box)
 
         # self.sort_combo_box.currentIndexChanged.connect(on_sorter_combo_index_changed)
-        self.sort_combo_box.setCurrentIndex(0)
+        #self.sort_combo_box.setCurrentIndex(0)
 
         # Button "Aggiorna lista"
         self.refresh_button = PushButton(self.sidebar_frame)
@@ -167,7 +167,7 @@ class WastesTab(BaseWidget):
             else:
                 self.table_adapter.removeRowByKey(message)
 
-            if self.table_adapter.isTableEmpty():
+            if self.table.isEmpty():
                 self.empty_storage.setVisible(True)
                 self.table.setVisible(False)
             else:
@@ -179,7 +179,7 @@ class WastesTab(BaseWidget):
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
 
-        if self.table_adapter.isTableEmpty():
+        if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
         else:

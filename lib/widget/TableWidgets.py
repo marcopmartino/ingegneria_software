@@ -159,6 +159,10 @@ class ExtendedTableWidget(QTableWidget):
         for column in range(self.columnCount()):
             self.item(row, column).setBackground(color)
 
+    # Ritorna True se la tabella è vuota
+    def isEmpty(self) -> bool:
+        return self.rowCount() == 0 or self.columnCount() == 0
+
 
 # Tabella standard usata nell'applicazione
 # noinspection PyPep8Naming
@@ -188,6 +192,10 @@ class StandardTable(ExtendedTableWidget):
     # Imposta il testo per gli Header orizzontali
     def setHeaders(self, headers: list[str]):
         self.setHorizontalHeaders(headers)
+
+    # Ritorna True se la tabella è vuota
+    def isEmpty(self) -> bool:
+        return self.rowCount() == 0
 
 
 # Tabella standard usata nell'applicazione, con una sola riga

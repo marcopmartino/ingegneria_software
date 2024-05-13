@@ -3,19 +3,19 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from qfluentwidgets import SearchLineEdit, ComboBox, CheckBox, PushButton
 
-from lib.view.main.BaseWidget import BaseWidget
 from lib.controller.ProductListController import ProductListController
 from lib.model.Product import Product
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
+from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
 from res.Dimensions import FontSize
 
 
-class ProductsTab(BaseWidget):
+class ProductsTab(SubInterfaceChildWidget):
 
-    def __init__(self, parent_widget: QWidget):
+    def __init__(self, parent_widget: SubInterfaceWidget):
         super().__init__("products_list_view", parent_widget)
         self.hideHeader()
 
@@ -152,7 +152,7 @@ class ProductsTab(BaseWidget):
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
 
-        if self.table_adapter.isTableEmpty():
+        if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
         else:
@@ -167,7 +167,7 @@ class ProductsTab(BaseWidget):
     def refresh_products_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_product_list())
-        if self.table_adapter.isTableEmpty():
+        if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
         else:

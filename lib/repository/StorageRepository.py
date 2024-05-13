@@ -12,9 +12,9 @@ class StorageRepository(Observable, metaclass=ObservableSingleton):
         self.__materials_list: list[Product] = []
         self.__wastes_list: list[Product] = []
         self.__storage_network: StorageNetwork = StorageNetwork()
-        self.__storage_network.products_stream(self.__products_stream_handler)
-        self.__storage_network.materials_stream(self.__materials_stream_handler)
-        self.__storage_network.wastes_stream(self.__wastes_stream_handler)
+        #self.__storage_network.products_stream(self.__products_stream_handler)
+        #self.__storage_network.materials_stream(self.__materials_stream_handler)
+        #self.__storage_network.wastes_stream(self.__wastes_stream_handler)
 
     # Usato per aprire lo stream sui prodotti
     def open_products_stream(self):

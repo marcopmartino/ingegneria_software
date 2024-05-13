@@ -4,17 +4,17 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from qfluentwidgets import SearchLineEdit, ComboBox, CheckBox, PushButton
 
 from lib.controller.MaterialsListController import MaterialsListController
-from lib.view.main.BaseWidget import BaseWidget
 from lib.model.Product import Product
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
+from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
 from res.Dimensions import FontSize
 
 
-class MaterialsTab(BaseWidget):
-    def __init__(self, parent_widget: QWidget):
+class MaterialsTab(SubInterfaceChildWidget):
+    def __init__(self, parent_widget: SubInterfaceWidget):
         super().__init__("materials_list_view", parent_widget)
         self.hideHeader()
 
@@ -141,7 +141,7 @@ class MaterialsTab(BaseWidget):
             else:
                 self.table_adapter.removeRowByKey(message)
 
-            if self.table_adapter.isTableEmpty():
+            if self.table.isEmpty():
                 self.empty_storage.setVisible(True)
             else:
                 self.empty_storage.setVisible(False)
@@ -151,7 +151,7 @@ class MaterialsTab(BaseWidget):
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
 
-        if self.table_adapter.isTableEmpty():
+        if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
         else:

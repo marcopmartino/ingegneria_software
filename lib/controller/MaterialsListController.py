@@ -1,4 +1,4 @@
-from lib.firebaseData import firebase
+from lib.firebaseData import Firebase
 from lib.model.Product import Product
 from lib.repository.StorageRepository import StorageRepository
 
@@ -8,7 +8,6 @@ class MaterialsListController:
     def __init__(self):
         super().__init__()
         self.__materials_repository = StorageRepository()
-        self.__database = firebase.database()
 
     def open_stream(self):
         self.__materials_repository.open_materials_stream()

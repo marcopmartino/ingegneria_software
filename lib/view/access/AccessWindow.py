@@ -1,7 +1,7 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QWidget, QSizePolicy
 
-from lib.controller.ProfileController import ProfileController
+from lib.controller.AccessController import AccessController
 from lib.layout.FrameLayouts import FrameLayout
 from lib.view.access.LoginView import LoginView
 from lib.view.access.SignUpView import SignUpView
@@ -16,7 +16,7 @@ class AccessWindow(QMainWindow):
         super(AccessWindow, self).__init__()
 
         # Controller
-        self.controller = ProfileController()
+        self.controller = AccessController()
 
         # Finestra
         self.setWindowTitle(Config.APPLICATION_NAME)

@@ -21,6 +21,7 @@ from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.order.OrderListView import OrderListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.view.profile.ProfileView import ProfileView
+from lib.view.storage.StoragePage import StoragePage
 from lib.view.worker.WorkerListView import WorkerListView
 # from lib.view.storage.StoragePage import StoragePage
 from res.CustomIcon import CustomIcon as CustomFIF
@@ -216,7 +217,7 @@ class MainWindow(FramelessWindow):
         # Sezione Top
         self.insertSubInterface(2, ProfileView.worker(self), 'Profilo')
         self.insertSubInterface(3, OrderListView(self), 'Lista ordini')
-        self.insertSubInterface(4, SubInterfaceWidget('Magazzino', self, FIF.LIBRARY), 'Magazzino')
+        self.insertSubInterface(4, StoragePage(self), 'Magazzino')
         self.insertSubInterface(5, MachineListView(self), 'Macchinari')
         self.insertSubInterface(6, ArticleListView(self), 'Registro articoli')
 
@@ -230,7 +231,7 @@ class MainWindow(FramelessWindow):
         self.insertSubInterface(2, ProfileView.manager(self), 'Profilo')
         self.insertSubInterface(3, OrderListView(self), 'Lista ordini')
         self.insertSubInterface(4, PriceCatalogView(self), 'Listino prezzi')
-        # self.insertSubInterface(5, StoragePage(self), 'Magazzino')
+        self.insertSubInterface(5, StoragePage(self), 'Magazzino')
         self.insertSubInterface(6, MachineListView(self), 'Macchinari')
         self.insertSubInterface(7, ArticleListView(self), 'Registro articoli')
         self.insertSubInterface(8, CashRegisterView(self), 'Registro di cassa')
