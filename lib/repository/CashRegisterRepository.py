@@ -166,7 +166,8 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
                 return transaction
 
     # Salva la nuova transazione nel database
-    def create_transaction(self, description: str, amount: float, payment_date: str) -> str:
+    def create_transaction(self, description: str, amount: float,
+                           payment_date: str = DatetimeUtils.current_date()) -> str:
         # Crea un dizionario con i dati dela nuova transazione
         transaction_data = dict(
             description=description,

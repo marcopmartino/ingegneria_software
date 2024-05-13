@@ -1,6 +1,7 @@
 from lib.controller.OrderBaseController import OrderBaseController
 from lib.model.Order import Order
 from lib.repository.ArticlesRepository import ArticlesRepository
+from lib.repository.CashRegisterRepository import CashRegisterRepository
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.UsersRepository import UsersRepository
 from lib.utility.ObserverClasses import Observer, AnonymousObserver
@@ -15,6 +16,7 @@ class OrderController(OrderBaseController):
         self.__orders_repository: OrdersRepository = OrdersRepository()
         self.__articles_repository: ArticlesRepository = ArticlesRepository()
         self.__users_repository: UsersRepository = UsersRepository()
+        self.__cash_register_repository: CashRegisterRepository = CashRegisterRepository()
 
         # Models
         self.__order: Order = order
@@ -73,8 +75,13 @@ class OrderController(OrderBaseController):
     def deliver_order(self):
         # Aggiorna lo stato dell'ordine
         self.__orders_repository.update_order_state_by_id(self.get_order_serial(), OrderStateStrings.DELIVERED)
-        ''' Rimuovere le form associate all'ordine dal magazzino '''
-        ''' Incassare ordine (genera transazione) '''
+        ''' Rimuovere le forme associate all'ordine dal magazzino '''
+
+        # Genera una transazione con l'incasso dell'ordine
+        self.__cash_register_repository.create_transaction(
+            f"Incasso ordine {self.get_order_serial()} ({self.__order.get_quantity()} paia)",
+            self.__order.get_price()
+        )
 
     def observe_order(self, callback: callable) -> Observer:
         observer = AnonymousObserver(callback)
