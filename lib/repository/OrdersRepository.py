@@ -123,8 +123,16 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
                 if order is not None:
                     print("Found order " + order.__str__())
 
+                    # Caso di aggiornamento del numero del primo prodotto dell'ordine
+                    if data.get("first_product_serial", False):
+                        # Estraggo i dati
+                        first_product_serial: int = data.get("first_product_serial")
+
+                        # Aggiorna l'ordine nella lista
+                        order.set_first_product_serial(first_product_serial)
+
                     # Caso di aggiornamento dello stato dell'ordine
-                    if data.get("state", False):
+                    elif data.get("state", False):
                         # Estraggo i dati
                         new_state: str = data.get("state")
 
@@ -135,6 +143,9 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
                         message = Message(OrdersRepository.Event.ORDER_STATE_UPDATED)
                         order.notify(message)  # Notifica eventuali osservatori del singolo ordine
                         message.setData(order)
+
+                        # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                        self.notify(message)
 
                     # Caso di aggiornamento dell'articolo dell'ordine
                     else:
@@ -156,8 +167,8 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
                         order.notify(message)  # Notifica eventuali osservatori del singolo ordine
                         message.setData(order)
 
-                    # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                    self.notify(message)
+                        # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                        self.notify(message)
 
             # Terminazione imprevista dello stream
             case "cancel":
@@ -215,6 +226,15 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
             state=state
         )
         # Aggiorna lo stato nel database
+        self.__orders_network.update(order_serial, order_data)
+
+    # Aggiorna il numero del primo paio prodotto di un ordine
+    def update_order_first_product_serial_by_id(self, order_serial: str, first_product_serial: int):
+        # Crea un dizionario con i campi dell'ordine da aggiornare
+        order_data = dict(
+            first_product_serial=first_product_serial
+        )
+        # Aggiorna il valore nel database
         self.__orders_network.update(order_serial, order_data)
 
     # Elimina un ordine

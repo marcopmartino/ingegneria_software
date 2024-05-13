@@ -50,3 +50,6 @@ class Order(Observable):
 
     def set_price(self, price: float) -> None:
         self.__price = price
+
+    def set_first_product_serial(self, first_product_serial: int) -> None:
+        self.__first_product_serial = first_product_serial

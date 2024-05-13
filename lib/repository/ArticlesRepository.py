@@ -9,7 +9,6 @@ from lib.utility.UtilityClasses import DatetimeUtils
 
 
 class ArticlesRepository(Repository, metaclass=RepositoryMeta):
-
     class Event(Enum):
         ARTICLES_INITIALIZED = 0
         ARTICLE_CREATED = 1
@@ -93,6 +92,12 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
         for article in self.__article_list:
             if article.get_article_serial() == article_serial:
                 return article
+
+    # Aggiorna il numero di paia di forme prodotte
+    def update_article_production_counter_by_id(self, article_serial: str, total_produced_shoe_lasts: int):
+        self.__articles_network.update_production_counter(
+            article_serial, total_produced_shoe_lasts
+        )
 
     # Se l'articolo esiste già, ne ritorna il seriale. Altrimenti lo crea e ritorna il nuovo seriale
     def create_article(self, new_article_data: dict[str, any]) -> str:

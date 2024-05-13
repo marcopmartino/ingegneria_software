@@ -24,5 +24,5 @@ class ArticlesNetwork:
         return serial_number
 
     @staticmethod
-    def update(article_id: str, data: dict):
-        Firebase.database.child("articles").child(article_id).update(data)
+    def update_production_counter(article_id: str, new_value: int):
+        Firebase.database.child("articles").child(article_id).update({"produced_article_shoe_lasts": new_value})
