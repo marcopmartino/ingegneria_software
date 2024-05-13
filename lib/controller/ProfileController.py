@@ -2,6 +2,7 @@ from lib.firebaseData import Firebase
 from lib.model.Customer import Customer
 from lib.model.Employee import Employee
 from lib.model.User import User
+from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.UsersRepository import UsersRepository
 from lib.utility.ObserverClasses import Observer
 
@@ -12,6 +13,7 @@ class ProfileController:
 
         # Respository
         self.__users_repository = UsersRepository()
+        self.__orders_repository = OrdersRepository()
 
         # Model
         self.__user: Customer | Employee | None = None
@@ -47,8 +49,22 @@ class ProfileController:
 
     # Elimina l'utente
     def delete_user(self):
+        # Elimina tutti gli ordini non consegnati dell'utente (ordini non iniziati)
+        for order in self.__orders_repository.get_order_list():
+            if order.get_state() != "Consegnato":
+                self.__orders_repository.delete_order_by_id(order.get_order_serial())
+
+        # Elimina i dati dell'utente
         self.__users_repository.delete_user_by_id(self.__user.get_uid())
 
     # Autentica nuovamente l'utente corrente
     def reauthenticate_current_user(self, password: str):
         return self.__users_repository.reauthenticate_current_user(password)
+
+    # Determina se l'account può essere eliminato
+    def can_delete_user(self):
+        # L'account può essere eliminato se nessun ordine dell'utente è in lavorazione o completato
+        for order in self.__orders_repository.get_order_list():
+            if order.get_state() in ("In lavorazione", "Completato"):
+                return False
+        return True

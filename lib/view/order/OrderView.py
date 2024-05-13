@@ -9,6 +9,7 @@ from qfluentwidgets import PrimaryPushButton, StrongBodyLabel, BodyLabel
 
 from lib.controller.OrderController import OrderController
 from lib.firebaseData import Firebase
+from lib.model.Customer import Customer
 from lib.model.Order import Order
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Observer, Message
@@ -38,7 +39,7 @@ class OrderView(SubInterfaceChildWidget):
         self.controller: OrderController = OrderController(order)
 
         # Inizializzo il widget di base
-        super().__init__(f"order_{self.controller.get_order_serial()}_view", parent_widget)
+        super().__init__(f"order_{self.controller.get_order_serial()}_view", parent_widget, True)
 
         # Titolo e sottotitolo
         self.setTitleText(f"Ordine {self.controller.get_order_serial()}")
@@ -84,22 +85,66 @@ class OrderView(SubInterfaceChildWidget):
         self.article_table_accessories.setColumnWidth(0, 150)
         self.article_table_accessories.setColumnWidth(1, 150)
 
-        # Titolo tabella dettagli cliente
-        self.customer_details_title = QLabel(f"Dettagli cliente {self.controller.get_order().get_customer_id()}")
-        self.customer_details_title.setFont(font)
-        self.customer_details_title.setContentsMargins(16, 16, 16, 8)
-
-        # Dettagli cliente
-        ''' Aggiungere titolo e tabella dettagli cliente'''
-
         # Popola il layout centrale in modo da allineare i Widget in alto
         # Usare "setAlignment" non funziona poiché va in conflitto con la SizePolicy del "central_layout"
+
+        # Aggiunge i widget comuni a tutti gli utenti
         self.inner_central_layout = QVBoxLayout(self.central_frame)
         self.inner_central_layout.addWidget(self.order_details_title)
         self.inner_central_layout.addWidget(self.order_table)
         self.inner_central_layout.addWidget(self.article_details_title)
         self.inner_central_layout.addWidget(self.article_table_main)
         self.inner_central_layout.addWidget(self.article_table_accessories)
+
+        # I dettagli del cliente sono visibili ai soli dipendenti
+        if Firebase.auth.currentUserRole() != "customer":
+
+            # Dettagli cliente
+            customer = self.controller.get_order_creator()
+
+            # Se il cliente non ha cancellato il proprio account
+            if customer is not None:
+                # Titolo tabella dettagli cliente
+                self.customer_details_title = QLabel(f"Dettagli cliente {customer.get_company_name()}")
+                self.customer_details_title.setFont(font)
+                self.customer_details_title.setContentsMargins(16, 16, 16, 8)
+
+                # Prima tabella creatore ordine
+                self.customer_details_table = SingleRowStandardTable(self.central_frame)
+                self.customer_details_adapter = CustomerDetailsAdapter(self.customer_details_table)
+                headers = ["Email", "Telefono"]
+                self.customer_details_table.setHeaders(headers)
+                self.customer_details_adapter.setData(customer)
+
+                # Seconda tabella creatore ordine
+                self.second_customer_details_table = SingleRowStandardTable(self.central_frame)
+                self.second_customer_details_adapter = SecondCustomerDetailsAdapter(self.second_customer_details_table)
+                headers = ["Indirizzo di recapito", "Partita IVA"]
+                self.second_customer_details_table.setHeaders(headers)
+                self.second_customer_details_adapter.setData(customer)
+
+                # Aggiunge i widget al layout centrale
+                self.inner_central_layout.addWidget(self.customer_details_title)
+                self.inner_central_layout.addWidget(self.customer_details_table)
+                self.inner_central_layout.addWidget(self.second_customer_details_table)
+
+            # Altrimenti, se l'utente ha eliminato il proprio account
+            else:
+                # Titolo dettabli cliente
+                self.customer_details_title = QLabel("Dettagli cliente")
+                self.customer_details_title.setFont(font)
+                self.customer_details_title.setContentsMargins(16, 16, 16, 8)
+
+                # Label per informare che l'account cercato non esiste più
+                self.deleted_account_info_label = QLabel(
+                    "Il cliente che ha creato quest'ordine ha eliminato il proprio account")
+                self.deleted_account_info_label.setContentsMargins(16, 0, 16, 8)
+
+                # Aggiunge le Label al layout centrale
+                self.inner_central_layout.addWidget(self.customer_details_title)
+                self.inner_central_layout.addWidget(self.deleted_account_info_label)
+
+        # Finalizza il layout centrale
         self.inner_central_layout.setContentsMargins(0, 0, 0, 0)
         self.inner_central_layout.setSpacing(0)
         self.central_layout.addLayout(self.inner_central_layout)
@@ -528,6 +573,9 @@ class OrderStateCompleted(OrderState):
 
         match Firebase.auth.currentUserRole():
             case "manager":
+                # Aggiunge il pulsante per il passaggio al prossimo stato
+                self._view.sidebar_layout.addWidget(self._view.state_transition_button)
+
                 # Aggiorna il testo del pulsante per il passaggio al prossimo stato
                 self._view.state_transition_button.setText("Conferma consegna ordine")
 
@@ -609,4 +657,20 @@ class OrderDetailsAdapter(SingleRowTableAdapter):
             order.get_state(),
             str(order.get_quantity()),
             PriceFormatter.format(order.get_price())
+        ]
+
+
+class CustomerDetailsAdapter(SingleRowTableAdapter):
+    def adaptData(self, customer: Customer) -> list[str]:
+        return [
+            customer.get_email(),
+            customer.get_phone(),
+        ]
+
+
+class SecondCustomerDetailsAdapter(SingleRowTableAdapter):
+    def adaptData(self, customer: Customer) -> list[str]:
+        return [
+            customer.get_delivery_address(),
+            customer.get_IVA(),
         ]

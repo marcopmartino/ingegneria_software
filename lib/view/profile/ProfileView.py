@@ -91,7 +91,7 @@ class ProfileView(SubInterfaceWidget):
 
         # Pulsante di eliminazione
         self.deleteButton = QPushButton(ProfileStrings.DELETE_BUTTON)
-        self.deleteButton.clicked.connect(self.show_confirm_deletion_dialog)
+        self.deleteButton.clicked.connect(self.on_delete_button_clicked)
         self.deleteButton.setStyleSheet(Styles.DELETE_BUTTON)
         self.deleteButton.setObjectName("DeleteButton")
 
@@ -131,6 +131,11 @@ class ProfileView(SubInterfaceWidget):
         self.messageReceived.connect(update_profile_view)
         self.observer = self.controller.observe_users_repository(self.messageReceived.emit)
 
+    # Callback eseguita al click sul pulsante di eliminazione dell'account
+    def on_delete_button_clicked(self):
+        self.show_confirm_deletion_dialog() if self.controller.can_delete_user() \
+            else self.show_unable_to_delete_account_dialog()
+
     # Mostra un Dialog di conferma dell'eliminazione dell'utente
     def show_confirm_deletion_dialog(self):
         # Imposta e mostra una richiesta di conferma dell'eliminazione
@@ -146,9 +151,20 @@ class ProfileView(SubInterfaceWidget):
         if clicked_button == QMessageBox.Yes:
             self.controller.delete_user()
 
+    # Mostra un Dialog per informare che l'account non può essere eliminato
+    def show_unable_to_delete_account_dialog(self):
+        # Imposta e mostra il dialog
+        QMessageBox.question(
+            self,
+            "Impossibile eliminare account",
+            (f"L'account non può essere eliminato poiché alcuni dei tuoi ordini "
+             f"sono in lavorazione o in attesa di essere ritirati."),
+            QMessageBox.Ok
+        )
+
     # Mostra un Dialog che informa dell'eliminazione dell'utente
     def show_deletion_info_dialog(self):
-        # Imposta e mostra una richiesta di conferma dell'eliminazione
+        # Imposta e mostra il dialog
         QMessageBox.question(
             self,
             "Informazione eliminazione account",

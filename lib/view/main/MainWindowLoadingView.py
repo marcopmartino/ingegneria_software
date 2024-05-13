@@ -71,7 +71,7 @@ class MainWindowLoadingView(QMainWindow):
         # Contatore dei Widget che stanno ancora caricando
         self.loading_widgets_counter: int = 0
 
-        def decrement_loading_widgets_counter(loading_widget: LoadingWidget):
+        def on_repository_initialized(loading_widget: LoadingWidget):
             # Ferma l'animazione di caricamento
             loading_widget.stop()
 
@@ -84,7 +84,7 @@ class MainWindowLoadingView(QMainWindow):
                 self.initialization_completed.emit()
 
         # Imposta uno slot per il segnale
-        self.repository_initialized.connect(decrement_loading_widgets_counter)
+        self.repository_initialized.connect(on_repository_initialized)
 
         # Widget centrale
         widget = QWidget(self)

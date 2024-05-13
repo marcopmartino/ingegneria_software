@@ -69,3 +69,5 @@ class AccessWindow(QMainWindow):
         self.show_login_form()
         self.loginWidget.form_manager.clear_fields()
         self.signUpWidget.form_manager.clear_fields()
+        self.loginWidget.validation_error_label.setHidden(True)
+        self.signUpWidget.validation_error_label.setHidden(True)

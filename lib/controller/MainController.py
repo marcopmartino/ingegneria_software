@@ -60,3 +60,8 @@ class MainController:
         for repository in self.__repositories:
             if isinstance(repository, CashRegisterRepository):
                 repository.observe(callback)
+
+    # Apre gli stream
+    def open_streams(self):
+        for repository in self.__repositories:
+            repository.open_stream()
