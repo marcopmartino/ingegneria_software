@@ -59,7 +59,6 @@ class UsersRepository(Repository, metaclass=RepositoryMeta):
                         if Firebase.auth.currentUserRole() == "customer":
                             self.__instantiate_and_append_customer(Firebase.auth.currentUserId(), data)
 
-
                         # Se l'utente attuale è un dipendente, bisogna caricare i dati di tutti gli utenti
                         else:
                             for key, value in data.items():

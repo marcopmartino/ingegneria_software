@@ -68,21 +68,14 @@ class WorkerListController:
 
         # Filtra la lista degli utenti
         for user in users:
-
-            print(user)
-
             # Scarta gli utenti che non sono operai (i clienti e il manager)
             if isinstance(user, Customer) or user.is_manager():
                 continue
-
-            print("Primo controllo passato")
 
             # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
             if search_text:
                 if search_text.lower() not in filter_field(user).lower():
                     continue
-
-            print("Secondo controllo passato")
 
             filtered_worker_list.append(user)
             print(filtered_worker_list)

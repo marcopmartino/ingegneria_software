@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+from threading import Thread
 from typing import Callable
 
 from pyrebase.pyrebase import Stream
@@ -18,8 +19,8 @@ class Repository(Observable, ABC):
 
     # Apre uno stream di dati (lo Stream creato viene salvato nella proprietà "__stream")
     def open_stream(self):
-        self.close_stream()  # Per assicurarci che ci sia un solo stream aperto
-        self.__stream = self.__stream_source(self._stream_handler)  # Apro e salvo un nuovo stream
+        if self.__stream is None:
+            self.__stream = self.__stream_source(self._stream_handler)  # Apro e salvo un nuovo stream
 
     # Chiude lo stream di dati
     def close_stream(self):

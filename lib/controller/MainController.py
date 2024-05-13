@@ -12,60 +12,51 @@ class MainController:
     def __init__(self):
 
         # Inizializzo la mappa delle repository
-        self.__repositories: dict[type(Repository), Repository] = dict()
+        self.__repositories: list[Repository] = list()
 
-        # Inizializzo la mappa degli osservatori delle repository
-        self.__repository_observers: dict[type(Repository), Observer] = dict()
+    # Ritorna una repository
+    def get_repository(self, repository_class: type(Repository)) -> Repository:
+        if repository_class() in self.__repositories:
+            return repository_class()
 
-        # Lista delle repository presenti nell'applicazione
-        repository_classes = (
-            ArticlesRepository,
-            CashRegisterRepository,
-            MachinesRepository,
-            OrdersRepository,
-            PriceCatalogRepository,
-            UsersRepository
-        )
+    # Inizializza le repository usate in caso di cliente autenticato
+    def init_customer_repositories(self):
+        self.__repositories = [
+            ArticlesRepository(),
+            OrdersRepository(),
+            PriceCatalogRepository(),
+            UsersRepository()
+        ]
 
-        # Popolo la mappa delle repository
-        for repository_class in repository_classes:
-            self.__repositories[repository_class] = repository_class()
+    # Inizializza le repository usate in caso di operaio autenticato
+    def init_worker_repositories(self):
+        self.__repositories = [
+            ArticlesRepository(),
+            MachinesRepository(),
+            OrdersRepository(),
+            UsersRepository()
+        ]
 
-    def __open_repository_streams(self, repository_classes: list[type(Repository)]):
-        for repository_class in repository_classes:
-            self.__repositories[repository_class].open_stream()
-
-    # Apro gli stream nel caso di app in uno da un cliente
-    def open_customer_streams(self):
-        self.__open_repository_streams([
-            ArticlesRepository,
-            OrdersRepository,
-            PriceCatalogRepository,
-            UsersRepository
-        ])
-
-    # Apro gli stream nel caso di app in uno da un operaio
-    def open_worker_streams(self):
-        self.__open_repository_streams([
-            ArticlesRepository,
-            MachinesRepository,
-            OrdersRepository,
-            PriceCatalogRepository,
-            UsersRepository
-        ])
-
-    # Apro gli stream nel caso di app in uno da un manager
-    def open_manager_streams(self):
-        for repository in self.__repositories.values():
-            repository.open_stream()
+    # Inizializza le repository usate in caso di manager autenticato
+    def init_manager_repositories(self):
+        self.__repositories = [
+            ArticlesRepository(),
+            CashRegisterRepository(),
+            MachinesRepository(),
+            OrdersRepository(),
+            PriceCatalogRepository(),
+            UsersRepository()
+        ]
 
     # Chiudo gli stream, rimuovo gli osservatori e svuoto le repository
     def reset_repositories(self):
-        for repository in self.__repositories.values():
+        for repository in self.__repositories:
             repository.close_stream()
             repository.detachAll()
             repository.clear()
 
-    # Imposta un osservatore per la repository del registro di cassa
+    # Imposta un osservatore per CashRegisterRepository
     def observe_cash_register(self, callback: callable):
-        self.__repositories[CashRegisterRepository].observe(callback)
+        for repository in self.__repositories:
+            if isinstance(repository, CashRegisterRepository):
+                repository.observe(callback)

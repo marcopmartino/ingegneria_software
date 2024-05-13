@@ -9,11 +9,13 @@ from qframelesswindow import FramelessWindow, TitleBar
 from lib.controller.MainController import MainController
 from lib.firebaseData import Firebase
 from lib.repository.CashRegisterRepository import CashRegisterRepository
+from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.article.ArticleListView import ArticleListView
 from lib.view.cashregister.CashRegisterView import CashRegisterView
 from lib.view.machine.MachineListView import MachineListView
+from lib.view.main.MainWindowLoadingView import MainWindowLoadingView
 from lib.view.main.NavigationWidgets import CashRegisterAvailabilityNavigationWidget, RemovableNavigationWidget
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.order.OrderListView import OrderListView
@@ -32,6 +34,7 @@ class CustomTitleBar(TitleBar):
     def __init__(self, parent):
         super().__init__(parent)
 
+        # Stile
         self.setStyleSheet("background-color: white")
 
         # Inizializza e aggiunge l'icona
@@ -63,7 +66,6 @@ class CustomTitleBar(TitleBar):
 # noinspection PyPep8Naming
 class MainWindow(FramelessWindow):
     logout = pyqtSignal()
-    initialized = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -88,8 +90,11 @@ class MainWindow(FramelessWindow):
             collapsible=True
         )
 
-        # Widget
+        # StackedWidget
         self.stackedWidget = QStackedWidget(self)
+
+        # Inizializza la finestra di caricamento
+        self.loading_window: MainWindowLoadingView = MainWindowLoadingView(self.controller)
 
         # Inizializza i segnali
         self.initSignals()
@@ -105,7 +110,7 @@ class MainWindow(FramelessWindow):
 
     # Inizializza i segnali
     def initSignals(self):
-        self.initialized.connect(self.show)
+        self.loading_window.initialization_completed.connect(self.show)
         self.logout.connect(Firebase.auth.sign_out)
 
     # Inizializza il layout che contiene il menù (NavigationInterface) e la lista dei Widget associati (QStackedWidget)
@@ -388,16 +393,26 @@ class MainWindow(FramelessWindow):
         # Popolo il menù laterale, imposta le interfacce di navigazione, inizializza le repository
         match user_role:
             case "customer":
+                self.controller.init_customer_repositories()
                 self.setup_customer_navigation()
-                self.finalizeNavigation()
-                self.controller.open_customer_streams()
             case "worker":
+                self.controller.init_worker_repositories()
                 self.setup_worker_navigation()
-                self.finalizeNavigation()
-                self.controller.open_worker_streams()
             case "manager":
+                self.controller.init_manager_repositories()
                 self.setup_manager_navigation()
-                self.finalizeNavigation()
-                self.controller.open_manager_streams()
             case "unauthenticated":
                 return
+
+        # Imposta la schermata di caricamento e apre gli stream delle repository
+        self.loading_window.setup()
+
+        # Finalizza la navigazione
+        self.finalizeNavigation()
+
+        # Indica che il caricamento degli elementi grafici della MainWindow è stata completata
+        self.loading_window.gui_widget.stop()
+
+
+
+
