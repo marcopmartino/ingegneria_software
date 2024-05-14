@@ -2,6 +2,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QSizePolicy, QLabel, QVBoxLayout, QPushButton
 
+from lib.controller.AccessController import AccessController
 from lib.validation.FormManager import FormManager
 from lib.widget.StylisableWidget import StylisableWidget
 from lib.layout.FrameLayouts import FrameLayout
@@ -19,8 +20,11 @@ class AccessViewMeta(type(StylisableWidget), type(ABC)):
 
 class AccessView(StylisableWidget, ABC, metaclass=AccessViewMeta):
 
-    def __init__(self, parent_widget: QWidget = None):
+    def __init__(self, parent_widget: QWidget, controller: AccessController):
         super(AccessView, self).__init__(parent_widget)
+
+        # Controller
+        self.controller: AccessController = controller
 
         # Widget più interno
         self.setMaximumSize(QSize(500, 16777215))
@@ -105,10 +109,6 @@ class AccessView(StylisableWidget, ABC, metaclass=AccessViewMeta):
         self.validation_error_label.setText(UtilityStrings.ERROR_SOMETHING_WENT_WRONG)
         self.validation_error_label.setHidden(False)
         print("HTTPError")
-
-    # Ritorna il controller associato alla finestra in cui la mvc è inserita
-    def controller(self):
-        return self.window().controller
 
     # Mostra la finestra principale dell'applicazione
     def show_main_window(self):

@@ -16,7 +16,7 @@ class AccessWindow(QMainWindow):
         super(AccessWindow, self).__init__()
 
         # Controller
-        self.controller = AccessController()
+        self.controller: AccessController = AccessController()
 
         # Finestra
         self.setWindowTitle(Config.APPLICATION_NAME)
@@ -37,8 +37,8 @@ class AccessWindow(QMainWindow):
         self.setCentralWidget(self.outerWidget)
 
         # Crea le due possibili viste del Widget interno con la form
-        self.loginWidget = LoginView(self.outerWidget)
-        self.signUpWidget = SignUpView(self.outerWidget)
+        self.loginWidget = LoginView(self.outerWidget, self.controller)
+        self.signUpWidget = SignUpView(self.outerWidget, self.controller)
 
         # Mostra la form di login
         self.show_login_form()

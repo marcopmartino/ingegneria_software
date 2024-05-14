@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget, QLineEdit
 from requests import HTTPError
 from requests import ConnectionError
 
+from lib.controller.AccessController import AccessController
 from lib.layout.LineEditLayouts import LineEditLayout
 from lib.utility.ErrorHelpers import InvalidEmailException, MissingPasswordException, \
     InvalidLoginCredentialsException
@@ -13,8 +14,8 @@ from res.Strings import FormStrings, AccessStrings, ValidationStrings
 
 class LoginView(AccessView):
 
-    def __init__(self, parent_widget: QWidget = None):
-        super(LoginView, self).__init__(parent_widget)
+    def __init__(self, parent_widget: QWidget, controller: AccessController):
+        super(LoginView, self).__init__(parent_widget, controller)
 
         # Campo di input Email
         self.emailLayout = LineEditLayout(FormStrings.EMAIL, parent_widget=self, text="admin@mail.com")
@@ -45,7 +46,7 @@ class LoginView(AccessView):
         print(form_data)
         print("Log in...")
         try:
-            self.controller().login(form_data)
+            self.controller.login(form_data)
 
             print("Connesso!")
             self.window().show_main_window()

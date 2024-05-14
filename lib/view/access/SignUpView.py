@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit
 from requests import ConnectionError
 
+from lib.controller.AccessController import AccessController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.utility.ErrorHelpers import HTTPErrorHelper, EmailExistsException
 from lib.validation.FormField import LineEditCompositeFormField
@@ -11,8 +12,8 @@ from res.Strings import FormStrings, AccessStrings, ValidationStrings
 
 class SignUpView(AccessView):
 
-    def __init__(self, parent_widget: QWidget = None):
-        super(SignUpView, self).__init__(parent_widget)
+    def __init__(self, parent_widget: QWidget, controller: AccessController):
+        super(SignUpView, self).__init__(parent_widget, controller)
 
         # Campo di input Nome azienda
         self.companyNameLayout = LineEditCompositeLayout(FormStrings.COMPANY_NAME, parent_widget=self)
@@ -72,7 +73,7 @@ class SignUpView(AccessView):
         try:
             if form_data["password"] == form_data["conferma password"]:
                 print("Password combaciano")
-                self.controller().register(form_data)
+                self.controller.register(form_data)
                 self.window().show_main_window()
             else:
                 print("Password non combaciano")
