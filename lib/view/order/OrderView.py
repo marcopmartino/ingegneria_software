@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QCloseEvent
 from PyQt5.QtWidgets import QWidget, QLabel, QSizePolicy, QVBoxLayout, QHeaderView, QGridLayout, QMessageBox
-from qfluentwidgets import PrimaryPushButton, StrongBodyLabel, BodyLabel
+from qfluentwidgets import StrongBodyLabel, BodyLabel
 
 from lib.controller.OrderController import OrderController
 from lib.firebaseData import Firebase
@@ -19,6 +19,7 @@ from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.article.ArticleView import ArticleMainDetailsAdapter, ArticleAccessoriesAdapter
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.view.order.EditOrderView import EditOrderView
+from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import VerticalSpacer
 from lib.widget.TableWidgets import SingleRowStandardTable
 from res import Colors
@@ -172,15 +173,15 @@ class OrderView(SubInterfaceChildWidget):
         state_labels_layout.addWidget(self.state_description_label)
 
         # Pulsante per il passaggio di stato
-        self.state_transition_button = PrimaryPushButton()
+        self.state_transition_button = CustomPushButton.cyan()
         self.state_transition_button.clicked.connect(self.transition_to_next_state)
 
         # Pulsante di modifica dell'ordine
-        self.modify_order_button = PrimaryPushButton(text="Modifica ordine")
+        self.modify_order_button = CustomPushButton.cyan(text="Modifica ordine")
         self.modify_order_button.clicked.connect(self.show_order_form)
 
         # Pulsante di eliminazione dell'ordine
-        self.delete_order_button = PrimaryPushButton(text="Annulla ordine")
+        self.delete_order_button = CustomPushButton.orange(text="Annulla ordine")
         self.delete_order_button.clicked.connect(self.show_confirm_deletion_dialog)
 
         # Label sul completamento dell'ordine

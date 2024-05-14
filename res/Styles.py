@@ -65,26 +65,25 @@ DIALOG_WINDOW = """/* Set style for QPushButton */\n
                 }\n"""
 
 DIALOG_PUSH_BUTTON = """/* Set style for QPushButton */\n
-                QPushButton {\n
-                    background-color: white;\n
-                    border: 1px solid black;\n
-                    color: black;\n
-                    border-radius: 5px;\n
-                    padding: 8px;\n
-                    margin: 5px;\n
-                    width: 80px;\n
-                }\n
-                QPushButton:hover {\n
-                    background-color: #FFF;\n
-                    color: white;\n
-                    color: #0B5ED7;\n
-                    border: 2px solid #9AC3FE;\n
-                }\n
-                QPushButton:pressed {\n
-                    background-color: #0B5ED7;\n
-                    color: white;\n
-                    border: 2px solid #9AC3FE;\n
-                }\n"""
+                QPushButton {
+                    background-color: """ + Colors.WHITE + """;
+                    border: 1px solid """ + Colors.GREY + """;
+                    color: """ + Colors.BLACK + """;
+                    border-radius: 5px;
+                    padding: 5px;
+                    margin-top: 4px;
+                    width: 100px;
+                    height: 30px;
+                }
+                QPushButton:hover {
+                    background-color: """ + Colors.EXTRA_LIGHT_GREY + """;
+                    border: 1px solid """ + Colors.GREY + """;
+                }
+                QPushButton:pressed {
+                    background-color: """ + Colors.LIGHT_GREY + """;
+                    border: 1px solid """ + Colors.GREY + """;
+                    color: """ + Colors.GREY + """;
+                }"""
 
 DIALOG = DIALOG_PUSH_BUTTON
 
@@ -226,7 +225,7 @@ DELETE_BUTTON = """/* Set style for QPushButton */\n
                     border: 2px solid #ff8566;\n
                 }\n"""
 
-
+# BaseWidget
 BASE_WIDGET = """/* Set style for sub interface */\n
                 #header_frame {\n
                     background-color: #FFF;\n
@@ -266,6 +265,7 @@ BASE_WIDGET_2 = """/* Set style for sub interface */\n
                     border-right: none;\n
                 }\n"""
 
+# Standard Table
 STANDARD_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
                 QTableWidget {\n
                     selection-background-color: white;\n
@@ -311,6 +311,7 @@ PROFILE_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
                     font-weight: bold;\n
                 }\n"""
 
+# PriceCatalogTable
 PRICE_CATALOG_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
                 QTableWidget {\n
                     selection-background-color: white;\n
@@ -320,6 +321,7 @@ PRICE_CATALOG_TABLE = """/* Set style for QTableWidget e QTableWidgetItem */\n
                     background-color: #72aa53;\n
                 }\n"""
 
+# ProgressBar
 PROGRESS_BAR = """/* Set style for QProgressBar */
                 QProgressBar {
                     border: 1px solid black;
@@ -329,4 +331,84 @@ PROGRESS_BAR = """/* Set style for QProgressBar */
                 QProgressBar::chunk {
                     background-color: """ + Colors.LIGHT_GREEN + """;
                 }"""
+
+# Custom Button Styles
+DISABLED_BUTTON = """/* Set style for PushButton */
+                PushButton:disabled {
+                    background-color: """ + Colors.GREY + """;
+                    color: """ + Colors.EXTRA_LIGHT_GREY + """;
+                    border: 1px solid """ + Colors.GREY + """;
+                }"""
+
+WHITE_BUTTON = """/* Set style for PushButton */
+                PushButton {
+                    background-color: """ + Colors.WHITE + """;
+                    border: 1px solid """ + Colors.GREY + """;
+                    color: """ + Colors.BLACK + """;
+                    border-radius: 5px;
+                    padding: 6px;
+                }
+                PushButton:hover {
+                    background-color: """ + Colors.EXTRA_LIGHT_GREY + """;
+                    border: 1px solid """ + Colors.GREY + """;
+                }
+                PushButton:pressed {
+                    background-color: """ + Colors.LIGHT_GREY + """;
+                    border: 1px solid """ + Colors.GREY + """;
+                    color: """ + Colors.GREY + """;
+                }""" + DISABLED_BUTTON
+
+CYAN_BUTTON = """/* Set style for PushButton */
+                PushButton {
+                    background-color: """ + Colors.CYAN + """;
+                    border: 1px solid """ + Colors.CYAN + """;
+                    color: """ + Colors.WHITE + """;
+                    border-radius: 5px;
+                    padding: 6px;
+                }
+                PushButton:hover {
+                    background-color: """ + Colors.LIGHT_CYAN + """;
+                    border: 1px solid """ + Colors.LIGHT_CYAN + """;
+                }
+                PushButton:pressed {
+                    background-color: """ + Colors.GRAYISH_CYAN + """;
+                    border: 1px solid """ + Colors.GRAYISH_CYAN + """;
+                    color: """ + Colors.VERY_LIGHT_GRAYISH_CYAN + """;
+                }""" + DISABLED_BUTTON
+
+ORANGE_BUTTON = """/* Set style for PushButton */
+                PushButton {
+                    background-color: """ + Colors.ORANGE + """;
+                    border: 1px solid """ + Colors.ORANGE + """;
+                    color: """ + Colors.WHITE + """;
+                    border-radius: 5px;
+                    padding: 6px;
+                }
+                PushButton:hover {
+                    background-color: """ + Colors.LIGHT_ORANGE + """;
+                    border: 1px solid """ + Colors.LIGHT_ORANGE + """;
+                }
+                PushButton:pressed {
+                    background-color: """ + Colors.GRAYISH_ORANGE + """;
+                    border: 1px solid """ + Colors.GRAYISH_ORANGE + """;
+                    color: """ + Colors.VERY_LIGHT_GRAYISH_ORANGE + """;
+                }""" + DISABLED_BUTTON
+
+RED_BUTTON = """/* Set style for PushButton */
+                PushButton {
+                    background-color: """ + Colors.DARK_RED + """;
+                    border: 1px solid """ + Colors.DARK_RED + """;
+                    color: """ + Colors.WHITE + """;
+                    border-radius: 5px;
+                    padding: 7px;
+                }
+                PushButton:hover {
+                    background-color: """ + Colors.RED + """;
+                    border: 1px solid """ + Colors.RED + """;
+                }
+                PushButton:pressed {
+                    background-color: """ + Colors.GRAYISH_DARK_RED + """;
+                    border: 1px solid """ + Colors.GRAYISH_DARK_RED + """;
+                    color: """ + Colors.VERY_LIGHT_GRAYISH_DARK_RED + """;
+                }""" + DISABLED_BUTTON
 

@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QVBoxLayout
 )
-from qfluentwidgets import FluentIconBase, SearchLineEdit, ComboBox, PushButton, PrimaryPushButton
+from qfluentwidgets import FluentIconBase, SearchLineEdit, ComboBox
 
 from lib.controller.WorkerListController import WorkerListController
 from lib.model.Employee import Employee
@@ -14,6 +14,7 @@ from lib.validation.ValidationRule import ValidationRule
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.worker.AddWorkerView import AddWorkerView
 from lib.view.worker.EditWorkerView import EditWorkerView
+from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
 from res.CustomIcon import CustomIcon
@@ -88,7 +89,7 @@ class WorkerListView(SubInterfaceWidget):
         self.search_box_layout.addWidget(self.search_box)
 
         # Button "Aggiorna lista"
-        self.refresh_button = PushButton(self.sidebar_frame)
+        self.refresh_button = CustomPushButton.white(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_worker_list)
 
@@ -96,7 +97,7 @@ class WorkerListView(SubInterfaceWidget):
         self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
 
         # Button "Registra transazione"
-        self.create_button = PrimaryPushButton(self.sidebar_frame)
+        self.create_button = CustomPushButton.cyan(self.sidebar_frame)
         self.create_button.setObjectName("new_worker_button")
         self.create_button.setText("Aggiungi operaio")
         self.create_button.clicked.connect(self.show_add_worker_form)

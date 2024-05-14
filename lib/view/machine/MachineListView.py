@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
-from qfluentwidgets import CheckBox, PushButton, SearchLineEdit, FluentIconBase
+from qfluentwidgets import CheckBox, SearchLineEdit, FluentIconBase
 
 from lib.controller.MachineListController import MachineListController
 from lib.model.Machine import Machine
@@ -11,6 +11,7 @@ from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.machine.MachineView import MachineView
 from lib.view.main.SubInterfaces import SubInterfaceWidget
+from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.TableWidgets import StandardTable
 from res.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
@@ -98,7 +99,7 @@ class MachineListView(SubInterfaceWidget):
         self.type_checkgroup_layout.addWidget(self.numeratore_check_box)
 
         # Button "Aggiorna lista"
-        self.refresh_button = PushButton(self.sidebar_frame)
+        self.refresh_button = CustomPushButton.white(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_order_list)
 

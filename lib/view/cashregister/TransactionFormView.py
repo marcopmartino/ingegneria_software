@@ -12,8 +12,9 @@ from lib.utility.UtilityClasses import DatetimeUtils
 from lib.validation.FormField import LineEditCompositeFormField, SpinBoxFormField, DatePickerFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
+from lib.widget.CustomPushButton import CustomPushButton
 from res import Styles
-from res.Dimensions import FontWeight, LineEditDimensions, FontSize
+from res.Dimensions import FontWeight, LineEditDimensions, FontSize, GenericDimensions
 from res.Strings import FormStrings
 
 
@@ -166,23 +167,23 @@ class TransactionFormView(QDialog):
         self.layout.addLayout(self.buttons_layout)
 
         # Pulsante di creazione
-        self.create_button = PushButton(text="Crea transazione")
-        self.create_button.setStyleSheet(Styles.EDIT_BUTTON)
+        self.create_button = CustomPushButton.cyan(text="Crea transazione", point_size=FontSize.FLUENT_DEFAULT)
+        self.create_button.setFixedHeight(GenericDimensions.FORM_BUTTON_HEIGHT)
         self.create_button.setObjectName("create_button")
         self.create_button.setHidden(True)
         self.buttons_layout.addWidget(self.create_button)
 
         # Pulsante di modifica
-        self.edit_button = PushButton(text="Salva modifiche")
-        self.edit_button.setStyleSheet(Styles.EDIT_BUTTON)
+        self.edit_button = CustomPushButton.cyan(text="Salva modifiche", point_size=FontSize.FLUENT_DEFAULT)
+        self.edit_button.setFixedHeight(GenericDimensions.FORM_BUTTON_HEIGHT)
         self.edit_button.setObjectName("edit_button")
         self.edit_button.setHidden(True)
         self.edit_button.setFixedWidth(150)
         self.buttons_layout.addWidget(self.edit_button)
 
         # Pulsante di eliminazione
-        self.delete_button = PushButton(text="Elimina transazione")
-        self.delete_button.setStyleSheet(Styles.DELETE_BUTTON)
+        self.delete_button = CustomPushButton.orange(text="Elimina transazione", point_size=FontSize.FLUENT_DEFAULT)
+        self.delete_button.setFixedHeight(GenericDimensions.FORM_BUTTON_HEIGHT)
         self.delete_button.setObjectName("back_button")
         self.delete_button.setHidden(True)
         self.delete_button.setFixedWidth(150)

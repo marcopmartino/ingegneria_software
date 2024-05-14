@@ -1,7 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QCloseEvent, QFont
 from PyQt5.QtWidgets import QLabel, QHeaderView, QVBoxLayout, QSizePolicy, QTreeWidgetItem
-from qfluentwidgets import PushButton
 
 from lib.controller.ArticleController import ArticleController
 from lib.model.Article import Article
@@ -10,6 +9,7 @@ from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter
 from lib.utility.UtilityClasses import SerialNumberFormatter
 from lib.view.main.SubInterfaces import SubInterfaceChildWidget, SubInterfaceWidget
+from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import VerticalSpacer
 from lib.widget.TableWidgets import SingleRowStandardTable
 from lib.widget.TreeWidgets import AutoResizableTreeWidget, DefaultFontTreeItemDelegate
@@ -156,22 +156,23 @@ class ArticleView(SubInterfaceChildWidget):
         self.article_sidebar_label = QLabel("Comandi visibilità albero")
 
         # Primo pulsante
-        self.default_visibility_button = PushButton(text="Imposta visibilità predefinita")
+        self.default_visibility_button = CustomPushButton.white(text="Imposta visibilità predefinita")
         self.default_visibility_button.clicked.connect(lambda: [
             self.tree_widget.collapseAll(),
             total_produced_shoe_lasts_item.setExpanded(True)
         ])
 
         # Secondo pulsante
-        self.expand_all_button = PushButton(text="Espandi tutto")
+        self.expand_all_button = CustomPushButton.white(text="Espandi tutto")
         self.expand_all_button.clicked.connect(self.tree_widget.expandAll)
 
         # Terzo pulsante
-        self.collapse_all_button = PushButton(text="Comprimi tutto")
+        self.collapse_all_button = CustomPushButton.white(text="Comprimi tutto")
         self.collapse_all_button.clicked.connect(self.tree_widget.collapseAll)
 
         # Aggiungo i Widget al Layout
         self.sidebar_layout.setAlignment(Qt.AlignTop)
+        self.sidebar_layout.setSpacing(8)
         self.sidebar_layout.addWidget(self.article_sidebar_label, alignment=Qt.AlignHCenter)
         self.sidebar_layout.addWidget(self.default_visibility_button)
         self.sidebar_layout.addWidget(self.expand_all_button)

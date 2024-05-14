@@ -63,3 +63,4 @@ class WindowDimensions:
 # Generico
 class GenericDimensions:
     MAX_BUTTON_WIDTH = 150
+    FORM_BUTTON_HEIGHT = 40

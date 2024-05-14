@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout
-from qfluentwidgets import FluentIconBase, SearchLineEdit, PushButton, CheckBox
+from qfluentwidgets import FluentIconBase, SearchLineEdit, CheckBox
 
 from lib.controller.ArticleListController import ArticleListController
 from lib.model.Article import Article
@@ -12,6 +12,7 @@ from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.article.ArticleView import ArticleView
 from lib.view.main.SubInterfaces import SubInterfaceWidget
+from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.TableWidgets import StandardTable, IntegerTableItem, DateTableItem
 from res.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
@@ -80,7 +81,7 @@ class ArticleListView(SubInterfaceWidget):
         self.checkgroup_layout.addWidget(self.spending_check_box)
 
         # Button "Aggiorna lista"
-        self.refresh_button = PushButton(self.sidebar_frame)
+        self.refresh_button = CustomPushButton.white(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_article_list)
 

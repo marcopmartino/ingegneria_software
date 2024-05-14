@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHeaderView
-from qfluentwidgets import SearchLineEdit, ComboBox, CheckBox, PushButton, PrimaryPushButton, FluentIconBase
+from qfluentwidgets import SearchLineEdit, ComboBox, CheckBox, FluentIconBase
 
 from lib.controller.CashRegisterController import CashRegisterController
 from lib.model.CashRegisterTransaction import CashRegisterTransaction
@@ -13,6 +13,7 @@ from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.cashregister.TransactionFormView import TransactionFormView
 from lib.view.main.SubInterfaces import SubInterfaceWidget
+from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
 from res import Styles
@@ -102,7 +103,7 @@ class CashRegisterView(SubInterfaceWidget):
         self.checkgroup_layout.addWidget(self.spending_check_box)
 
         # Button "Aggiorna lista"
-        self.refresh_button = PushButton(self.sidebar_frame)
+        self.refresh_button = CustomPushButton.white(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_transaction_list)
 
@@ -110,7 +111,7 @@ class CashRegisterView(SubInterfaceWidget):
         self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
 
         # Button "Registra transazione"
-        self.create_button = PrimaryPushButton(self.sidebar_frame)
+        self.create_button = CustomPushButton.cyan(self.sidebar_frame)
         self.create_button.setText("Registra transazione")
         self.create_button.clicked.connect(self.show_new_transaction_form)
 

@@ -1,7 +1,6 @@
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QInputDialog, QDialog
 
-from lib.firebaseData import getUserRole
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.widget.TableWidgets import PriceCatalogTableBuilder, SixColumnsHeaderSection, SixColumnsDataSection, \
@@ -84,7 +83,7 @@ class BlockCenterPriceCatalogView(SubInterfaceWidget):
         self.table.updateAllNamedItems(self.controller.get_price_catalog())
 
         # Connetto il segnale "itemClicked" allo slot "on_item_clicked"
-        if getUserRole() != "customer":
+        if Firebase.auth.currentUserRole() != "customer":
             self.table.itemClicked.connect(self.on_item_clicked)
 
         # Imposta la tabella nel layout centrale

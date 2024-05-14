@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit
-from requests import HTTPError
 from requests import ConnectionError
+from requests import HTTPError
 
 from lib.controller.AccessController import AccessController
 from lib.layout.LineEditLayouts import LineEditLayout

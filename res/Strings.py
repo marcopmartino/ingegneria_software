@@ -71,6 +71,7 @@ class ProfileStrings:
 # Worker
 class WorkerStrings:
     ADD_WORKER = "Aggiungi operaio"
+    EDIT_WORKER = "Modifica operaio"
 
 
 # Utility

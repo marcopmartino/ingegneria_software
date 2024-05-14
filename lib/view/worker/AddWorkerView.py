@@ -1,20 +1,18 @@
 from PyQt5.QtCore import Qt, QDate
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow, \
-    QRadioButton, QDialog
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QLineEdit, QDialog
 from qfluentwidgets import LineEdit
 
-import lib.utility.UtilityClasses as utility
 from lib.controller.WorkerListController import WorkerListController
 from lib.layout.CustomDatePicker import CustomDatePicker
-from lib.controller.ProfileController import ProfileController
 from lib.layout.LineEditLayouts import LineEditCompositeLayout
-from lib.utility.ErrorHelpers import InvalidLoginCredentialsException, EmailExistsException
+from lib.utility.ErrorHelpers import EmailExistsException
 from lib.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
+from lib.widget.CustomPushButton import CustomPushButton
 from res import Styles, Dimensions
-from res.Dimensions import LineEditDimensions, FontWeight, FontSize
+from res.Dimensions import LineEditDimensions, FontWeight, FontSize, GenericDimensions
 from res.Strings import FormStrings, Config, ValidationStrings, WorkerStrings
 
 
@@ -131,11 +129,13 @@ class AddWorkerView(QDialog):
         # Sezione finale con i pulsanti
         self.buttonsBox = QHBoxLayout()
         self.buttonsBox.setSpacing(13)
+        self.buttonsBox.setContentsMargins(0, 0, 0, 8)
         self.buttonsBox.setObjectName("ButtonsBox")
 
         # Pulsante per la creazione dell'account
-        self.addButton = QPushButton("Crea account")
-        self.addButton.setStyleSheet(Styles.EDIT_BUTTON)
+        self.addButton = CustomPushButton.cyan(text="Crea account", point_size=FontSize.DEFAULT)
+        #self.addButton.setStyleSheet(Styles.EDIT_BUTTON)
+        self.addButton.setFixedHeight(GenericDimensions.FORM_BUTTON_HEIGHT)
         self.addButton.setFixedWidth(Dimensions.GenericDimensions.MAX_BUTTON_WIDTH)
         self.addButton.setObjectName("SaveEditButton")
 

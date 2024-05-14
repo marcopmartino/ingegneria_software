@@ -1,8 +1,8 @@
 from PyQt5.QtCore import Qt, QDate
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog, \
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QLineEdit, QDialog, \
     QMessageBox
-from qfluentwidgets import LineEdit, PushButton
+from qfluentwidgets import LineEdit
 
 from lib.controller.WorkerListController import WorkerListController
 from lib.layout.CustomDatePicker import CustomDatePicker
@@ -12,8 +12,9 @@ from lib.utility.UtilityClasses import DatetimeUtils
 from lib.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
+from lib.widget.CustomPushButton import CustomPushButton
 from res import Styles, Dimensions
-from res.Dimensions import LineEditDimensions, FontWeight
+from res.Dimensions import LineEditDimensions, FontWeight, FontSize, GenericDimensions
 from res.Strings import FormStrings, Config, ValidationStrings, WorkerStrings
 
 
@@ -47,7 +48,7 @@ class EditWorkerView(QDialog):
         self.title.setSpacing(3)
         self.title.setObjectName("TitleVerticalBox")
 
-        self.displayTitle = QLabel(WorkerStrings.ADD_WORKER, self)
+        self.displayTitle = QLabel(WorkerStrings.EDIT_WORKER, self)
         self.displayTitle.setStyleSheet(Styles.LABEL_TITLE)
 
         self.title.addWidget(self.displayTitle)
@@ -137,7 +138,7 @@ class EditWorkerView(QDialog):
             self.passwordWidget.setHidden(False)
             self.confirmPasswordWidget.setHidden(False)
 
-        self.showNewPasswordFieldsButton = PushButton(text="Imposta nuova password")
+        self.showNewPasswordFieldsButton = CustomPushButton.white(text="Imposta nuova password")
         self.showNewPasswordFieldsButton.clicked.connect(show_new_password_fields)
         self.passwordWidget.setHidden(True)
         self.confirmPasswordWidget.setHidden(True)
@@ -146,19 +147,22 @@ class EditWorkerView(QDialog):
         # Sezione finale con i pulsanti
         self.buttonsBox = QHBoxLayout()
         self.buttonsBox.setSpacing(13)
+        self.buttonsBox.setContentsMargins(0, 0, 0, 8)
         self.buttonsBox.setObjectName("ButtonsBox")
 
-        self.deleteButton = QPushButton("Elimina account")
-        self.deleteButton.setStyleSheet(Styles.DELETE_BUTTON)
+        self.deleteButton = CustomPushButton.orange(text="Elimina account", point_size=FontSize.DEFAULT)
+        #self.deleteButton.setStyleSheet(Styles.DELETE_BUTTON)
+        self.deleteButton.setFixedHeight(GenericDimensions.FORM_BUTTON_HEIGHT)
         self.deleteButton.setFixedWidth(Dimensions.GenericDimensions.MAX_BUTTON_WIDTH)
         self.deleteButton.setObjectName("DeleteEditButton")
-        self.editButton = QPushButton(FormStrings.SAVE_EDIT)
-        self.editButton.setStyleSheet(Styles.EDIT_BUTTON)
+        self.editButton = CustomPushButton.cyan(text=FormStrings.SAVE_EDIT, point_size=FontSize.DEFAULT)
+        #self.editButton.setStyleSheet(Styles.EDIT_BUTTON)
+        self.editButton.setFixedHeight(GenericDimensions.FORM_BUTTON_HEIGHT)
         self.editButton.setFixedWidth(Dimensions.GenericDimensions.MAX_BUTTON_WIDTH)
         self.editButton.setObjectName("SaveEditButton")
 
-        self.buttonsBox.addWidget(self.deleteButton, alignment=Qt.AlignLeft)
         self.buttonsBox.addWidget(self.editButton, alignment=Qt.AlignLeft)
+        self.buttonsBox.addWidget(self.deleteButton, alignment=Qt.AlignRight)
 
         self.profileForm.addLayout(self.buttonsBox)
 
@@ -227,7 +231,7 @@ class EditWorkerView(QDialog):
             self,
             "Conferma eliminazione dipendente",
             (f"Sei sicuro di voler eliminare il dipendente?\n"
-             f"L'operazione non è reversibile"),
+             f"L'operazione non è reversibile."),
             QMessageBox.Yes | QMessageBox.No
         )
 

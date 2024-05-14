@@ -1,7 +1,7 @@
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QCloseEvent, QFont, QPalette
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QHeaderView, QScrollArea, QProgressBar
-from qfluentwidgets import PrimaryPushButton, ProgressBar, BodyLabel
+from qfluentwidgets import ProgressBar, BodyLabel
 
 from lib.controller.MachineController import MachineController
 from lib.model.Machine import Machine
@@ -9,6 +9,7 @@ from lib.repository.MachinesRepository import MachinesRepository
 from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter, TableAdapter
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
+from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import VerticalSpacer, HorizontalLine
 from lib.widget.TableWidgets import SingleRowStandardTable, StandardTable
 from res import Colors, Styles
@@ -158,6 +159,8 @@ class MachineView(SubInterfaceChildWidget):
         self.required_for_start_label.setFont(big_bold_font)
         self.required_for_start_label.setContentsMargins(0, 6, 0, 2)
 
+        self.start_machine_button = CustomPushButton.cyan(text="Avvia macchinario", point_size=FontSize.FLUENT_DEFAULT)
+
         self.operation_progress_label = QLabel("Progresso operazione")
         # self.operation_progress_label.setAlignment(Qt.AlignCenter)
         self.operation_progress_label.setFont(big_font)
@@ -177,7 +180,7 @@ class MachineView(SubInterfaceChildWidget):
         self.remaining_time_label.setAlignment(Qt.AlignCenter)
         self.remaining_time_label.setContentsMargins(0, 2, 0, 16)
 
-        self.emergency_stop_button = PrimaryPushButton(text="Ferma macchinario")
+        self.emergency_stop_button = CustomPushButton.red(text="Ferma macchinario")
 
         self.emergency_stop_label = BodyLabel(
             text="Fermare il macchinario solo in caso di emergenza. I materiali in lavorazione finiranno negli scarti.")
@@ -206,6 +209,7 @@ class MachineView(SubInterfaceChildWidget):
         self.sidebar_layout.addWidget(self.progress_bar)
         self.sidebar_layout.addWidget(self.percentage_progress_label)
         self.sidebar_layout.addWidget(self.remaining_time_label)
+        self.sidebar_layout.addWidget(self.start_machine_button)
         self.sidebar_layout.addWidget(self.emergency_stop_button)
         self.sidebar_layout.addWidget(self.emergency_stop_label)
 

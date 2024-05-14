@@ -1,22 +1,23 @@
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel
 )
-from qfluentwidgets import SearchLineEdit, CheckBox, PushButton, ComboBox, PrimaryPushButton, FluentIconBase, FluentIcon
+from qfluentwidgets import SearchLineEdit, CheckBox, ComboBox, FluentIconBase, FluentIcon
 
+from lib.controller.OrderListController import OrderListController
 from lib.firebaseData import Firebase
+from lib.model.Order import Order
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Message
-from lib.utility.UtilityClasses import PriceFormatter
-from lib.view.main.SubInterfaces import SubInterfaceWidget
-from lib.controller.OrderListController import OrderListController
-from lib.model.Order import Order
-from lib.view.order.CreateOrderView import CreateOrderView
-from lib.view.order.OrderView import OrderView
 from lib.utility.TableAdapters import TableAdapter
+from lib.utility.UtilityClasses import PriceFormatter
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
+from lib.view.main.SubInterfaces import SubInterfaceWidget
+from lib.view.order.CreateOrderView import CreateOrderView
+from lib.view.order.OrderView import OrderView
+from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
 from res.Dimensions import FontSize
@@ -111,7 +112,7 @@ class OrderListView(SubInterfaceWidget):
         self.checkgroup_layout.addWidget(self.delivered_check_box)
 
         # Button "Aggiorna lista"
-        self.refresh_button = PushButton(self.sidebar_frame)
+        self.refresh_button = CustomPushButton.white(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_order_list)
 
@@ -119,7 +120,7 @@ class OrderListView(SubInterfaceWidget):
         self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
 
         # Button "Crea nuovo ordine"
-        self.create_button = PrimaryPushButton(self.sidebar_frame)
+        self.create_button = CustomPushButton.cyan(self.sidebar_frame)
         self.create_button.setText("Crea nuovo ordine")
         self.create_button.clicked.connect(self.show_order_form)
 

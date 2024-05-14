@@ -1,7 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QMainWindow, \
-    QDialog
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QPushButton, QLineEdit, QDialog
 from qfluentwidgets import LineEdit, PushButton
 
 import lib.utility.UtilityClasses as utility
@@ -14,8 +13,9 @@ from lib.utility.ErrorHelpers import InvalidLoginCredentialsException
 from lib.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
+from lib.widget.CustomPushButton import CustomPushButton
 from res import Styles, Dimensions
-from res.Dimensions import FontWeight, LineEditDimensions
+from res.Dimensions import FontWeight, LineEditDimensions, FontSize, GenericDimensions
 from res.Strings import FormStrings, Config, ProfileStrings, ValidationStrings
 
 
@@ -139,7 +139,7 @@ class EditManagerView(QDialog):
             self.newPasswordWidget.setHidden(False)
             self.confirmNewPasswordWidget.setHidden(False)
 
-        self.showNewPasswordFieldsButton = PushButton(text="Imposta nuova password")
+        self.showNewPasswordFieldsButton = CustomPushButton.white(text="Imposta nuova password")
         self.showNewPasswordFieldsButton.clicked.connect(show_new_password_fields)
         self.newPasswordWidget.setHidden(True)
         self.confirmNewPasswordWidget.setHidden(True)
@@ -148,20 +148,23 @@ class EditManagerView(QDialog):
         # Sezione finale con i pulsanti
         self.buttonsBox = QHBoxLayout()
         self.buttonsBox.setSpacing(13)
+        self.buttonsBox.setContentsMargins(0, 8, 0, 0)
         self.buttonsBox.setObjectName("ButtonsBox")
 
-        self.deleteEditButton = QPushButton(FormStrings.DELETE_EDIT)
+        self.deleteEditButton = CustomPushButton.white(text=FormStrings.DELETE_EDIT, point_size=FontSize.DEFAULT)
         self.deleteEditButton.clicked.connect(self.close)
-        self.deleteEditButton.setStyleSheet(Styles.DELETE_BUTTON)
+        #self.deleteEditButton.setStyleSheet(Styles.DELETE_BUTTON)
+        self.deleteEditButton.setFixedHeight(GenericDimensions.FORM_BUTTON_HEIGHT)
         self.deleteEditButton.setFixedWidth(Dimensions.GenericDimensions.MAX_BUTTON_WIDTH)
         self.deleteEditButton.setObjectName("DeleteEditButton")
-        self.saveEditButton = QPushButton(FormStrings.SAVE_EDIT)
-        self.saveEditButton.setStyleSheet(Styles.EDIT_BUTTON)
+        self.saveEditButton = CustomPushButton.cyan(text=FormStrings.SAVE_EDIT, point_size=FontSize.DEFAULT)
+        #self.saveEditButton.setStyleSheet(Styles.EDIT_BUTTON)
+        self.saveEditButton.setFixedHeight(GenericDimensions.FORM_BUTTON_HEIGHT)
         self.saveEditButton.setFixedWidth(Dimensions.GenericDimensions.MAX_BUTTON_WIDTH)
         self.saveEditButton.setObjectName("SaveEditButton")
 
-        self.buttonsBox.addWidget(self.deleteEditButton, alignment=Qt.AlignLeft)
-        self.buttonsBox.addWidget(self.saveEditButton, alignment=Qt.AlignRight)
+        self.buttonsBox.addWidget(self.saveEditButton, alignment=Qt.AlignLeft)
+        self.buttonsBox.addWidget(self.deleteEditButton, alignment=Qt.AlignRight)
 
         self.profileForm.addLayout(self.buttonsBox)
 

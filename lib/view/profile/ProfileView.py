@@ -1,10 +1,10 @@
 from __future__ import annotations
+
 from abc import ABC
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame, QPushButton, QMessageBox, QApplication, QHeaderView, \
-    QSizePolicy
-from qfluentwidgets import FluentIconBase, PushButton
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame, QMessageBox, QApplication, QSizePolicy
+from qfluentwidgets import FluentIconBase
 
 from lib.controller.ProfileController import ProfileController
 from lib.model.Customer import Customer
@@ -15,6 +15,7 @@ from lib.utility.TableAdapters import SingleColumnTableAdapter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.profile.EditCustomerView import EditCustomerView
 from lib.view.profile.EditManagerView import EditManagerView
+from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import VerticalSpacer
 from lib.widget.TableWidgets import SingleColumnStandardTable
 from res import Styles
@@ -80,24 +81,22 @@ class ProfileView(SubInterfaceWidget):
 
         # Layout con i pulsanti di modifica ed eliminazione
         self.buttonsLayout = QVBoxLayout()
-        self.buttonsLayout.setContentsMargins(0, 8, 0, 8)
-        self.buttonsLayout.setSpacing(4)
+        self.buttonsLayout.setContentsMargins(0, 4, 0, 8)
+        self.buttonsLayout.setSpacing(8)
         self.buttonsLayout.setObjectName("ButtonsBox")
 
         # Pulsante di modifica
-        self.editButton = QPushButton(ProfileStrings.EDIT_BUTTON)
-        self.editButton.setStyleSheet(Styles.EDIT_BUTTON)
+        self.editButton = CustomPushButton.cyan(text=ProfileStrings.EDIT_BUTTON)
         self.editButton.setObjectName("EditButton")
 
         # Pulsante di eliminazione
-        self.deleteButton = QPushButton(ProfileStrings.DELETE_BUTTON)
+        self.deleteButton = CustomPushButton.orange(text=ProfileStrings.DELETE_BUTTON)
         self.deleteButton.clicked.connect(self.on_delete_button_clicked)
-        self.deleteButton.setStyleSheet(Styles.DELETE_BUTTON)
         self.deleteButton.setObjectName("DeleteButton")
 
         # Aggiunge i pulsanti al layout dei pulsanti
         self.buttonsLayout.addWidget(self.editButton)
-        self.buttonsLayout.addWidget(self.deleteButton, alignment=Qt.AlignCenter)
+        self.buttonsLayout.addWidget(self.deleteButton)
 
         # Aggiunge la Label e il layout del pulsanti al layout della sidebar
         self.sidebar_layout.addWidget(self.sidebarLabel)

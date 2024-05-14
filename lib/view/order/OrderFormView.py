@@ -4,12 +4,13 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSpacerItem, QSizePolicy, QVBoxLayout, QLabel, QGridLayout, \
     QDialog
-from qfluentwidgets import ComboBox, SpinBox, CheckBox, PushButton, PrimaryPushButton
+from qfluentwidgets import ComboBox, SpinBox, CheckBox
 
 from lib.controller.OrderBaseController import OrderBaseController
 from lib.layout.FrameLayouts import HFrameLayout, VFrameLayout
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.validation.FormManager import FormManager
+from lib.widget.CustomPushButton import CustomPushButton
 from res.Dimensions import FontWeight, FontSize
 
 
@@ -276,13 +277,13 @@ class OrderFormView(QDialog, ABC, metaclass=OrderFormViewMeta):
         self.button_layout.insertItem(3, bottom_spacer)
 
         # Pulsante per aggiornare il prezzo dell'ordine
-        self.refresh_button = PushButton(self.central_widget)
+        self.refresh_button = CustomPushButton.white(self.central_widget, point_size=FontSize.FLUENT_DEFAULT)
         self.refresh_button.setObjectName("refresh_button")
         self.refresh_button.setFixedSize(200, 40)
         self.button_layout.insertWidget(1, self.refresh_button)
 
         # Pulsante per creare e inviare l'ordine
-        self.create_button = PrimaryPushButton(self.central_widget)
+        self.create_button = CustomPushButton.cyan(self.central_widget, point_size=FontSize.FLUENT_DEFAULT)
         self.create_button.setObjectName("create_button")
         self.create_button.setFixedSize(200, 40)
         self.button_layout.insertWidget(2, self.create_button)
