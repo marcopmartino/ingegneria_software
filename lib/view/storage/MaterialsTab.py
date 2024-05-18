@@ -166,7 +166,7 @@ class MaterialsTab(SubInterfaceChildWidget):
     def refresh_materials_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_materials_list())
-        if self.table_adapter.isTableEmpty():
+        if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
         else:
@@ -189,7 +189,7 @@ class MaterialsTab(SubInterfaceChildWidget):
 class StorageListAdapter(TableAdapter):
     def adaptData(self, product: Product) -> list[str]:
         return [product.get_serial(),
-                product.get_type(),
+                product.get_product_type(),
                 product.get_details(),
                 str(product.get_amount())
                 ]

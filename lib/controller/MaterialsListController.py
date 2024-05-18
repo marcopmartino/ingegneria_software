@@ -71,7 +71,7 @@ class MaterialsListController:
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 3:
-                    if material.get_type() not in allowed_types:
+                    if material.get_product_type() not in allowed_types:
                         continue
 
                 filtered_materials_list.append(material)

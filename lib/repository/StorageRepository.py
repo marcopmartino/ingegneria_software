@@ -1,4 +1,9 @@
+from typing import Any
+
+from lib.model.Finished import Finished
 from lib.model.Product import Product
+from lib.model.SemiFinished import SemiFinished
+from lib.model.Sketch import Sketch
 from lib.network.StorageNetwork import StorageNetwork
 from lib.utility.ObserverClasses import Observable
 from lib.utility.Singleton import ObservableSingleton
@@ -30,9 +35,26 @@ class StorageRepository(Observable, metaclass=ObservableSingleton):
 
     # Usato internamente per istanziare e aggiungere un prodotto alla lista
     def __instantiate_and_append_product(self, serial: str, data: any):
-        self.__products_list.append(Product(
-            serial, data["type"], data["details"], data["amount"]
-        ))
+        if "numbering" in data:
+            self.__products_list.append(Finished(
+                serial, data['type'], data['gender'], data['plastic'],
+                data['sketch_type'], data['numbering'], data['size'],
+                data['main_process'], data['shoeing'], data['first_compass'],
+                data['second_compass'], data['pivot_under_heel'], data['iron_tip'],
+                data['details'], data['amount']
+            ))
+        elif "main_process" in data:
+            self.__products_list.append(SemiFinished(
+                serial, data['type'], data['gender'], data['plastic'],
+                data['sketch_type'], data['size'], data['main_process'],
+                data['shoeing'], data['first_compass'], data['second_compass'],
+                data['pivot_under_heel'], data['iron_tip'], data['details'], data['amount']
+            ))
+        else:
+            self.__products_list.append(Sketch(
+                serial, data['type'], data['gender'], data['plastic'],
+                data['sketch_type'], data['details'], data['amount']
+            ))
 
     # Usato internamente per istanziare e aggiungere un materiale alla lista
     def __instantiate_and_append_materials(self, serial: str, data: any):
@@ -89,7 +111,6 @@ class StorageRepository(Observable, metaclass=ObservableSingleton):
                     if path == "/":
                         for key, value in data.items():
                             self.__instantiate_and_append_materials(key, value)
-
                     # Quando viene creato un nuovo materiale
                     else:
                         self.__instantiate_and_append_materials(path.split("/")[1], data)
@@ -165,7 +186,7 @@ class StorageRepository(Observable, metaclass=ObservableSingleton):
         # Controlla se il prodotto esiste
         for product in self.__products_list:
             print(f"Prodotto:{vars(product)}")
-            if (product.get_type() == new_product_data.get("type")
+            if (product.get_product_type() == new_product_data.get("type")
                     and product.get_details() == new_product_data.get("details")
                     and product.get_amount() == new_product_data.get("amount")):
                 # Se il prodotto esiste, ne viene ritornato il seriale
@@ -188,7 +209,7 @@ class StorageRepository(Observable, metaclass=ObservableSingleton):
         # Controlla se il materiale esiste
         for material in self.__materials_list:
             print(f"Materiale:{vars(material)}")
-            if (material.get_type() == new_material_data.get("type")
+            if (material.get_product_type() == new_material_data.get("type")
                     and material.get_details() == new_material_data.get("details")
                     and material.get_amount() == new_material_data.get("amount")):
                 # Se il materiale esiste, ne viene ritornato il seriale
@@ -211,7 +232,7 @@ class StorageRepository(Observable, metaclass=ObservableSingleton):
         # Controlla se lo scarto esiste
         for waste in self.__wastes_list:
             print(f"Scarto:{vars(waste)}")
-            if (waste.get_type() == new_waste_data.get("type")
+            if (waste.get_product_type() == new_waste_data.get("type")
                     and waste.get_details() == new_waste_data.get("details")
                     and waste.get_amount() == new_waste_data.get("amount")):
                 # Se lo scarto esiste, ne viene ritornato il seriale

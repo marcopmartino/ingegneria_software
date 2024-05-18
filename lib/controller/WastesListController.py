@@ -34,13 +34,7 @@ class WastesListController:
 
         # Parametri di filtro scelti dall'utente
         # search_text: str = filters["searchbox"]  # Valore del campo del prodotto sulla base di cui filtrare
-        allowed_types: list[str] = []  # Tipi di scarti da mostrare
         allowed_plastic: list[str] = []  # Tipi di plastica da mostrare
-
-        # In base ai parametri di filtro, determina se un tipo è ammesso a meno
-        def append_types_if_allowed(filter_key: str, type_name: str):
-            if filters[filter_key]:
-                allowed_types.append(type_name)
 
         # In base ai parametri di filtro, determina se un tipo di plastica è ammesso a meno
         def append_plastic_if_allowed(filter_key: str, plastic_name: str):
@@ -51,26 +45,16 @@ class WastesListController:
         append_plastic_if_allowed("plastic1", "Plastica tipo 1")
         append_plastic_if_allowed("plastic2", "Plastica tipo 2")
         append_plastic_if_allowed("plastic3", "Plastica tipo 3")
-        append_types_if_allowed("sketches", "Abbozzo")
-        append_types_if_allowed("semifinished", "Semi-lavorato")
 
-        # Numero di campi ammessi
-        allowed_types_count: int = len(allowed_types)
         allowed_plastic_count: int = len(allowed_plastic)
 
         filtered_wastes_list: list[Product] = []
 
         # Se nessuno stato è ammesso, la lista degli scarti da mostrare è quella vuota
-        if allowed_types_count or allowed_plastic_count:
+        if allowed_plastic_count:
 
             # Filtra la lista degli scarti
             for waste in wastes_list:
-
-                # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
-                if allowed_types_count != 2:
-                    if waste.get_type() not in allowed_types:
-                        if waste in wastes_list:
-                            continue
 
                 # Se tutti i tipi di plastica sono ammessi viene saltato il filtro sul tipo di plastica
                 if allowed_plastic_count != 3:

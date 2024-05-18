@@ -26,7 +26,7 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
     def __instantiate_and_append_article(self, serial: str, data: any) -> Article:
         article = Article(
             serial, data["gender"], data["size"], data["shoe_last_type"], data["plastic_type"],
-            data["reinforced_compass"], data["second_compass_type"], data["processing"], data["shoeing"],
+            data["first_compass_type"], data["second_compass_type"], data["processing"], data["shoeing"],
             data["numbering_antineck"], data["numbering_lateral"], data["numbering_heel"], data["iron_tip"],
             data["pivot_under_heel"], data["creation_date"], data["produced_article_shoe_lasts"]
         )

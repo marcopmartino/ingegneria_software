@@ -70,7 +70,7 @@ class ProductListController:
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 3:
-                    if product.get_type() not in allowed_types:
+                    if product.get_product_type() not in allowed_types:
                         continue
 
                 filtered_products_list.append(product)
