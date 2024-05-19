@@ -11,6 +11,7 @@ from lib.model.Sketch import Sketch
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
+from lib.view.storage.ProductView import ProductView
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
 from res.Dimensions import FontSize
@@ -176,8 +177,11 @@ class ProductsTab(SubInterfaceChildWidget):
         self.table_finished_adapter = StorageListAdapter(self.table_finished)
         product_list = self.controller.get_products_list()
         self.table_sketches_adapter.setData(product_list)
+        self.table_sketches_adapter.onDoubleClick(self.show_product_details)
         self.table_semifinished_adapter.setData(product_list)
+        self.table_semifinished_adapter.onDoubleClick(self.show_product_details)
         self.table_finished_adapter.setData(product_list)
+        self.table_finished_adapter.onDoubleClick(self.show_product_details)
 
         # self.table_adapter.onSelection(self.show_product_details)
 
@@ -285,13 +289,13 @@ class ProductsTab(SubInterfaceChildWidget):
     '''def show_order_form(self):
         pass
         product_form = CreateProductView(self)
-        product_form.exec()
+        product_form.exec()'''
 
     # Mostra la schermata con i dettagli del prodotto
     def show_product_details(self, serial: str):
         print(f"Prodotto selezionato: {serial}")
-        product_details = ProductDetailsView(self, serial)
-        self.window().addRemovableSubInterface(product_details, text=f"Prodotto {serial}")'''
+        product_details = ProductView(self, self.controller.get_product_by_id(serial))
+        self.window().addRemovableSubInterface(product_details, text=f"Prodotto {serial}")
 
 
 class StorageListAdapter(TableAdapter):

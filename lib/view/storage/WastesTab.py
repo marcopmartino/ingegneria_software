@@ -201,6 +201,7 @@ class WastesTab(SubInterfaceChildWidget):
 
 class StorageListAdapter(TableAdapter):
     def adaptData(self, waste: Product) -> list[str]:
-        return [waste.get_details(),
-                str(waste.get_amount())
-                ]
+        return [
+            f"Plastica {waste.get_details()}",
+            str(waste.get_amount())
+        ]

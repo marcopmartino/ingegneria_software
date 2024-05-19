@@ -285,3 +285,18 @@ class StorageRepository(Observable, metaclass=ObservableSingleton):
             case "waste":
                 return self.__wastes_list.sort(key=lambda k: k.get_amount(), reverse=reverse)
 
+    def delete_product_by_id(self, product_id: str):
+        self.__storage_network.delete_product_by_id(product_id)
+
+    def delete_material_by_id(self, material_id: str):
+        self.__storage_network.delete_material_by_id(material_id)
+
+    def delete_waste_by_id(self, waste_id: str):
+        self.__storage_network.delete_waste_by_id(waste_id)
+
+    def update_waste(self, plastic_type: str):
+        for waste in self.__wastes_list:
+            if waste.get_details() == plastic_type:
+                waste.update_amount(waste.get_amount() + 1)
+                self.__storage_network.update_waste_amount(waste.get_serial(), waste.get_amount())
+
