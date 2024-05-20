@@ -1,4 +1,5 @@
 from lib.firebaseData import Firebase
+from lib.model.Product import Product
 
 
 class StorageNetwork:
@@ -16,8 +17,20 @@ class StorageNetwork:
         Firebase.database.child("storage").child("materials").child(serial_id).update(data)
 
     @staticmethod
-    def update_waste(serial_id: str, data: dict):
-        Firebase.database.child("storage").child("wastes").child(serial_id).update(data)
+    def update_waste_amount(waste_id: str, waste_amount: str):
+        Firebase.database.child("storage").child("wastes").child(waste_id).update({"amount": str(waste_amount)})
+
+    @staticmethod
+    def delete_product_by_id(product_id: str):
+        Firebase.database.child("storage").child("products").child(product_id).remove()
+
+    @staticmethod
+    def delete_material_by_id(material_id: str):
+        Firebase.database.child("storage").child("materials").child(material_id).remove()
+
+    @staticmethod
+    def delete_waste_by_id(waste_id: str):
+        Firebase.database.child("storage").child("wastes").child(waste_id).remove()
 
     @staticmethod
     def get_next_product_id():

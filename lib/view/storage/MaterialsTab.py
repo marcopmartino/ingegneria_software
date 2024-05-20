@@ -189,7 +189,7 @@ class MaterialsTab(SubInterfaceChildWidget):
 class StorageListAdapter(TableAdapter):
     def adaptData(self, product: Product) -> list[str]:
         return [product.get_serial(),
-                product.get_type(),
+                product.get_product_type(),
                 product.get_details(),
                 str(product.get_amount())
                 ]

@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
-from qfluentwidgets import ComboBox, CheckBox, PushButton
+from PyQt5.QtWidgets import QVBoxLayout, QLabel
+from qfluentwidgets import CheckBox, PushButton
 
 from lib.controller.WasteListController import WasteListController
 from lib.model.Product import Product
@@ -103,29 +103,6 @@ class WastesTab(SubInterfaceChildWidget):
         self.checkgroup2_layout.setSpacing(8)
         self.checkgroup2_layout.setObjectName("first_checkgroup_layout")
 
-        # Checkgroup Label
-        font = QFont()
-        font.setPointSize(FontSize.FLUENT_DEFAULT)
-        self.checkgroup2_label = QLabel(self.sidebar_frame)
-        self.checkgroup2_label.setObjectName("marking_group_label")
-        self.checkgroup2_label.setText("Filtra per tipo:")
-        self.checkgroup2_label.setFont(font)
-        self.checkgroup2_layout.addWidget(self.checkgroup2_label)
-
-        # CheckBox "Abbozzi"
-        self.sketches_checkbox = CheckBox(self.sidebar_frame)
-        self.sketches_checkbox.setObjectName("sketches_check_box")
-        self.sketches_checkbox.setText("Abbozzi")
-        self.sketches_checkbox.setChecked(True)
-        self.checkgroup2_layout.addWidget(self.sketches_checkbox)
-
-        # CheckBox "Semi-lavorati"
-        self.semifinished_check_box = CheckBox(self.sidebar_frame)
-        self.semifinished_check_box.setObjectName("semifinished_check_box")
-        self.semifinished_check_box.setText("Semi-lavorati")
-        self.semifinished_check_box.setChecked(True)
-        self.checkgroup2_layout.addWidget(self.semifinished_check_box)
-
         # self.sort_combo_box.currentIndexChanged.connect(on_sorter_combo_index_changed)
         #self.sort_combo_box.setCurrentIndex(0)
 
@@ -134,16 +111,20 @@ class WastesTab(SubInterfaceChildWidget):
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_wastes_list)
 
+        # Button "Vendi scarti"
+        self.sell_button = PushButton(self.sidebar_frame)
+        self.sell_button.setText("Vendi scarti")
+        self.refresh_button.clicked.connect(self.sell_wastes)
+
         # Spacer tra i due pulsanti
         self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
 
         # Aggiungo i campi della form al layout della sidebar
         self.sidebar_layout.addItem(self.storage_details_layout)
         self.sidebar_layout.addWidget(self.sidebar_spacer)
-        # self.sidebar_layout.addWidget(self.search_box)
         self.sidebar_layout.addItem(self.checkgroup1_layout)
-        self.sidebar_layout.addItem(self.checkgroup2_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
+        self.sidebar_layout.addWidget(self.sell_button)
         self.sidebar_layout.addWidget(self.sidebar_spacer)
 
         # Form Manager
@@ -152,7 +133,7 @@ class WastesTab(SubInterfaceChildWidget):
 
         # Tabella
         self.table = StandardTable(self.central_frame)
-        headers = ["Seriale", "Tipo", "Dettagli", "Quantità"]
+        headers = ["Dettagli", "Quantità"]
         self.table.setHeaders(headers)
 
         # Table Adapter
@@ -194,12 +175,16 @@ class WastesTab(SubInterfaceChildWidget):
     def refresh_wastes_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_wastes_list())
-        if self.table_adapter.isTableEmpty():
+        if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
         else:
             self.empty_storage.setVisible(False)
             self.table.setVisible(True)
+
+    # Aggiorna la lista degli scarti in base ai filtri
+    def sell_wastes(self):
+        pass
 
     # Mostra la form per l'aggiunta degli scarti
     '''def show_order_form(self):
@@ -215,9 +200,8 @@ class WastesTab(SubInterfaceChildWidget):
 
 
 class StorageListAdapter(TableAdapter):
-    def adaptData(self, product: Product) -> list[str]:
-        return [product.get_serial(),
-                product.get_type(),
-                product.get_details(),
-                str(product.get_amount())
-                ]
+    def adaptData(self, waste: Product) -> list[str]:
+        return [
+            f"Plastica {waste.get_details()}",
+            str(waste.get_amount())
+        ]

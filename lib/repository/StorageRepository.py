@@ -1,40 +1,60 @@
-from enum import Enum
+from typing import Any
 
+from lib.model.Finished import Finished
 from lib.model.Product import Product
-from lib.model.StoredItems import StoredShoeLastVariety, StoredMaterial, StoredWaste
+from lib.model.SemiFinished import SemiFinished
+from lib.model.Sketch import Sketch
 from lib.network.StorageNetwork import StorageNetwork
-from lib.repository.Repository import Repository
-from lib.utility.Singleton import RepositoryMeta
+from lib.utility.ObserverClasses import Observable
+from lib.utility.Singleton import ObservableSingleton
 
 
-class StorageRepository(Repository, metaclass=RepositoryMeta):
-
-    class Event(Enum):
-        SHOE_LASTS_INITIALIZED = 0
-        SHOE_LAST_CREATED = 1
-        SHOE_LAST_UPDATED = 2
-        MATERIALS_INITIALIZED = 3
-        MATERIAL_UPDATED = 4
-        WASTE_INITIALIZED = 5
-        WASTE_UPDATED = 6
+class StorageRepository(Observable, metaclass=ObservableSingleton):
 
     def __init__(self):
-        self.__products_list: list[StoredShoeLastVariety] = []
-        self.__materials_list: list[StoredMaterial] = []
-        self.__waste_list: list[StoredWaste] = []
+        super().__init__()
+        self.__products_list: list[Product] = []
+        self.__materials_list: list[Product] = []
+        self.__wastes_list: list[Product] = []
         self.__storage_network: StorageNetwork = StorageNetwork()
-        super().__init__(self.__storage_network.stream)
+        #self.__storage_network.products_stream(self.__products_stream_handler)
+        #self.__storage_network.materials_stream(self.__materials_stream_handler)
+        #self.__storage_network.wastes_stream(self.__wastes_stream_handler)
 
-    def clear(self):
-        self.__products_list = []
-        self.__materials_list = []
-        self.__waste_list = []
+    # Usato per aprire lo stream sui prodotti
+    def open_products_stream(self):
+        self.__storage_network.products_stream(self.__products_stream_handler)
+
+    # Usato per aprire lo stream sui materiali
+    def open_materials_stream(self):
+        self.__storage_network.materials_stream(self.__materials_stream_handler)
+
+    # Usato per aprire lo stream sugli scarti
+    def open_wastes_stream(self):
+        self.__storage_network.wastes_stream(self.__wastes_stream_handler)
 
     # Usato internamente per istanziare e aggiungere un prodotto alla lista
     def __instantiate_and_append_product(self, serial: str, data: any):
-        self.__products_list.append(StoredShoeLastVariety(
-            serial, data["type"], data["details"], data["amount"]
-        ))
+        if "numbering" in data:
+            self.__products_list.append(Finished(
+                serial, data['type'], data['gender'], data['plastic'],
+                data['sketch_type'], data['numbering'], data['size'],
+                data['main_process'], data['shoeing'], data['first_compass'],
+                data['second_compass'], data['pivot_under_heel'], data['iron_tip'],
+                data['details'], data['amount']
+            ))
+        elif "main_process" in data:
+            self.__products_list.append(SemiFinished(
+                serial, data['type'], data['gender'], data['plastic'],
+                data['sketch_type'], data['size'], data['main_process'],
+                data['shoeing'], data['first_compass'], data['second_compass'],
+                data['pivot_under_heel'], data['iron_tip'], data['details'], data['amount']
+            ))
+        else:
+            self.__products_list.append(Sketch(
+                serial, data['type'], data['gender'], data['plastic'],
+                data['sketch_type'], data['details'], data['amount']
+            ))
 
     # Usato internamente per istanziare e aggiungere un materiale alla lista
     def __instantiate_and_append_materials(self, serial: str, data: any):
@@ -43,13 +63,13 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         ))
 
     # Usato internamente per istanziare e aggiungere un scarti alla lista
-    def __instantiate_and_append_waste(self, serial: str, data: any):
-        self.__waste_list.append(Product(
+    def __instantiate_and_append_wastes(self, serial: str, data: any):
+        self.__wastes_list.append(Product(
             serial, data["type"], data["details"], data["amount"]
         ))
 
-    # Stream handler che aggiorna automaticamente le liste degli oggetti immagazzinati
-    def _stream_handler(self, message):
+    # Stream handler che aggiorna automaticamente la lista dei prodotti
+    def __products_stream_handler(self, message):
         for key in message.keys():
             print(f"{key}: {message[key]}")
 
@@ -75,6 +95,61 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         # Notifico gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
         self.notify(message)
 
+    # Stream handler che aggiorna automaticamente la lista dei materiali
+    def __materials_stream_handler(self, message):
+        for key in message.keys():
+            print(f"{key}: {message[key]}")
+
+        # Aggiorno la lista dei materiali così che client diversi possano accedere alla stessa versione aggiornata dei
+        # dati (grazie al pattern Singleton)
+        data = message["data"]
+        if data is not None:
+            path = message["path"]
+            match message["event"]:
+                case "put":
+                    # All'avvio del programma, quando viene caricata l'intera lista dei materiali
+                    if path == "/":
+                        for key, value in data.items():
+                            self.__instantiate_and_append_materials(key, value)
+                    # Quando viene creato un nuovo materiale
+                    else:
+                        self.__instantiate_and_append_materials(path.split("/")[1], data)
+                case "patch":
+                    pass
+                case "cancel":
+                    pass
+
+        # Notifico gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+        self.notify(message)
+
+    # Stream handler che aggiorna automaticamente la lista degli scarti
+    def __wastes_stream_handler(self, message):
+        for key in message.keys():
+            print(f"{key}: {message[key]}")
+
+        # Aggiorno la lista degli scarti così che client diversi possano accedere alla stessa versione aggiornata dei
+        # dati (grazie al pattern Singleton)
+        data = message["data"]
+        if data is not None:
+            path = message["path"]
+            match message["event"]:
+                case "put":
+                    # All'avvio del programma, quando viene caricata l'intera lista degli scarti
+                    if path == "/":
+                        for key, value in data.items():
+                            self.__instantiate_and_append_wastes(key, value)
+
+                        # Quando viene creato un nuovo scarto
+                    else:
+                        self.__instantiate_and_append_wastes(path.split("/")[1], data)
+                case "patch":
+                    pass
+                case "cancel":
+                    pass
+
+        # Notifico gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+        self.notify(message)
+
     # Ritorna la lista dei prodotti
     def get_products_list(self) -> list[Product]:
         return self.__products_list.copy()
@@ -85,7 +160,7 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
 
     # Ritorna la lista degli scarti
     def get_wastes_list(self) -> list[Product]:
-        return self.__waste_list.copy()
+        return self.__wastes_list.copy()
 
     # Ritorna un prodotto in base al suo numero
     def get_product_by_id(self, product_serial: str) -> Product:
@@ -101,7 +176,7 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
 
     # Ritorna un materiale in base al suo numero
     def get_waste_by_id(self, waste_serial: str) -> Product:
-        for waste in self.__waste_list:
+        for waste in self.__wastes_list:
             if waste.get_serial() == waste_serial:
                 return waste
 
@@ -111,7 +186,7 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         # Controlla se il prodotto esiste
         for product in self.__products_list:
             print(f"Prodotto:{vars(product)}")
-            if (product.get_type() == new_product_data.get("type")
+            if (product.get_product_type() == new_product_data.get("type")
                     and product.get_details() == new_product_data.get("details")
                     and product.get_amount() == new_product_data.get("amount")):
                 # Se il prodotto esiste, ne viene ritornato il seriale
@@ -134,7 +209,7 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         # Controlla se il materiale esiste
         for material in self.__materials_list:
             print(f"Materiale:{vars(material)}")
-            if (material.get_type() == new_material_data.get("type")
+            if (material.get_product_type() == new_material_data.get("type")
                     and material.get_details() == new_material_data.get("details")
                     and material.get_amount() == new_material_data.get("amount")):
                 # Se il materiale esiste, ne viene ritornato il seriale
@@ -155,9 +230,9 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
     def create_waste(self, new_waste_data: dict[str, any]) -> str:
         print(f"Nuovo scarto:{new_waste_data}")
         # Controlla se lo scarto esiste
-        for waste in self.__waste_list:
+        for waste in self.__wastes_list:
             print(f"Scarto:{vars(waste)}")
-            if (waste.get_type() == new_waste_data.get("type")
+            if (waste.get_product_type() == new_waste_data.get("type")
                     and waste.get_details() == new_waste_data.get("details")
                     and waste.get_amount() == new_waste_data.get("amount")):
                 # Se lo scarto esiste, ne viene ritornato il seriale
@@ -208,5 +283,20 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
             case "material":
                 return self.__materials_list.sort(key=lambda k: k.get_amount(), reverse=reverse)
             case "waste":
-                return self.__waste_list.sort(key=lambda k: k.get_amount(), reverse=reverse)
+                return self.__wastes_list.sort(key=lambda k: k.get_amount(), reverse=reverse)
+
+    def delete_product_by_id(self, product_id: str):
+        self.__storage_network.delete_product_by_id(product_id)
+
+    def delete_material_by_id(self, material_id: str):
+        self.__storage_network.delete_material_by_id(material_id)
+
+    def delete_waste_by_id(self, waste_id: str):
+        self.__storage_network.delete_waste_by_id(waste_id)
+
+    def update_waste(self, plastic_type: str):
+        for waste in self.__wastes_list:
+            if waste.get_details() == plastic_type:
+                waste.update_amount(waste.get_amount() + 1)
+                self.__storage_network.update_waste_amount(waste.get_serial(), waste.get_amount())
 

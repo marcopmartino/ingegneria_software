@@ -6,7 +6,7 @@ from qfluentwidgets import SegmentedWidget, FluentIconBase, FluentIcon
 
 from lib.controller.MaterialsListController import MaterialsListController
 from lib.controller.ProductListController import ProductListController
-from lib.controller.WasteListController import WasteListController
+from lib.controller.WastesListController import WastesListController
 
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.MaterialsTab import MaterialsTab
@@ -20,6 +20,7 @@ class StoragePage(SubInterfaceWidget):
         super().__init__("storage_page_view", parent_widget, svg_icon)
         # self.central_frame.setMinimumWidth(800)
         self.hideSidebar()
+        self.open_stream()
 
         # Titolo e sottotitolo
         self.setTitleText("Magazzino")
@@ -65,6 +66,4 @@ class StoragePage(SubInterfaceWidget):
     def open_stream():
         ProductListController().open_stream()
         MaterialsListController().open_stream()
-        WasteListController().open_stream()
-
-
+        WastesListController().open_stream()
