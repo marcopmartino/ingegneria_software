@@ -3,6 +3,8 @@ from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMessageBox
 
 from lib.controller import OrderController
+from lib.model.Article import Article
+from lib.model.ShoeLastVariety import Gender, ShoeLastType, CompassType, Processing, Shoeing
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.UtilityClasses import PriceFormatter
@@ -65,58 +67,60 @@ class EditOrderView(OrderFormView):
     # Prepara la form con i dati dell'ordine
     def prepare_form(self):
         article = self.controller.get_order_article()
+        shoe_last_variety = article.get_shoe_last_variety()
 
         # Prepara il ComboBox con il genere
-        match article.get_gender():
-            case "uomo":
+        match shoe_last_variety.get_gender():
+            case Gender.UOMO:
                 self.gender_combo_box.setCurrentIndex(0)
-            case "donna":
+            case Gender.DONNA:
                 self.gender_combo_box.setCurrentIndex(1)
             case _:
                 self.gender_combo_box.setCurrentIndex(2)
 
         # Prepara il ComboBox con la taglia
         for index in range(self.size_combo_box.count()):
-            if self.size_combo_box.itemText(index) == article.get_size():
+            if self.size_combo_box.itemText(index) == shoe_last_variety.get_size():
                 self.size_combo_box.setCurrentIndex(index)
                 break
 
         # Prepara il ComboBox con il tipo di forma
-        self.type_combo_box.setCurrentIndex(0 if article.get_shoe_last_type() == "bassa" else 1)
+        self.type_combo_box.setCurrentIndex(0 if shoe_last_variety.get_shoe_last_type() == ShoeLastType.BASSA else 1)
 
         # Prepara il ComboBox con il tipo di plastica
-        self.plastic_combo_box.setCurrentIndex(article.get_plastic_type() - 1)
+        self.plastic_combo_box.setCurrentIndex(shoe_last_variety.get_plastic_type().value - 1)
 
         # Prepara il ComboBox con il tipo di bussola
-        self.first_compass_combo_box.setCurrentIndex(1 if article.get_reinforced_compass() else 0)
+        self.first_compass_combo_box.setCurrentIndex(
+            0 if shoe_last_variety.get_first_compass_type() == CompassType.STANDARD else 1)
 
         # Prepara il ComboBox con la seconda bussola
-        match article.get_second_compass_type():
-            case "nessuna":
+        match shoe_last_variety.get_second_compass_type():
+            case CompassType.NESSUNA:
                 self.second_compass_combo_box.setCurrentIndex(0)
-            case "standard":
+            case CompassType.STANDARD:
                 self.second_compass_combo_box.setCurrentIndex(1)
             case _:
                 self.second_compass_combo_box.setCurrentIndex(2)
 
         # Prepara il ComboBox con la lavorazione principale
-        match article.get_processing():
-            case "nessuna":
+        match shoe_last_variety.get_processing():
+            case Processing.NESSUNA:
                 self.processing_combo_box.setCurrentIndex(0)
-            case "cuneo":
+            case Processing.CUNEO:
                 self.processing_combo_box.setCurrentIndex(1)
-            case "alfa":
+            case Processing.SNODO_ALFA:
                 self.processing_combo_box.setCurrentIndex(2)
             case _:
                 self.processing_combo_box.setCurrentIndex(3)
 
         # Prepara il ComboBox con la ferratura
-        match article.get_shoeing():
-            case "nessuna":
+        match shoe_last_variety.get_shoeing():
+            case Shoeing.NESSUNA:
                 self.shoeing_combo_box.setCurrentIndex(0)
-            case "tacco":
+            case Shoeing.TACCO_FERRATO:
                 self.shoeing_combo_box.setCurrentIndex(1)
-            case "mezza":
+            case Shoeing.MEZZA_FERRATA:
                 self.shoeing_combo_box.setCurrentIndex(2)
             case _:
                 self.shoeing_combo_box.setCurrentIndex(3)
@@ -125,13 +129,13 @@ class EditOrderView(OrderFormView):
         self.quantity_spin_box.setProperty("value", self.controller.get_order().get_quantity())
 
         # Prepara il Checkgroup con la numeratura
-        self.antineck_check_box.setChecked(article.get_numbering_antineck())
-        self.heel_check_box.setChecked(article.get_numbering_heel())
-        self.lateral_check_box.setChecked(article.get_numbering_lateral())
+        self.antineck_check_box.setChecked(shoe_last_variety.get_numbering_antineck())
+        self.heel_check_box.setChecked(shoe_last_variety.get_numbering_heel())
+        self.lateral_check_box.setChecked(shoe_last_variety.get_numbering_lateral())
 
         # Prepara il Checkgroup con gli accessori
-        self.shoetip_check_box.setChecked(article.get_iron_tip())
-        self.pivot_check_box.setChecked(article.get_pivot_under_heel())
+        self.shoetip_check_box.setChecked(shoe_last_variety.get_iron_tip())
+        self.pivot_check_box.setChecked(shoe_last_variety.get_pivot_under_heel())
 
     # Eseguito al click sul pulsante di submit della form
     def on_submit(self, form_data: dict[str, any]):

@@ -209,7 +209,7 @@ class SingleRowStandardTable(ExtendedTableWidget):
         self.setStyleSheet(Styles.STANDARD_TABLE)  # Stile
         self.setFrameStyle(QFrame.NoFrame)  # Nasconde la linea di contorno esterna
         self.setShowGrid(False)  # Nasconde la griglia interna
-        self.setSelectionMode(QAbstractItemView.NoSelection)  # Imposta la seleziona singola anziché multipla
+        self.setSelectionMode(QAbstractItemView.NoSelection)  # Disabilita la selezione
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Impedisce di modificare da tastiera le celle
         self.setSortingEnabled(False)  # Disabilita il sorting automatico delle righe in base ai valori di una colonna
         self.setRowCount(1)  # Imposta una sola riga per la tabella
@@ -239,7 +239,7 @@ class SingleColumnStandardTable(ExtendedTableWidget):
         self.setStyleSheet(Styles.STANDARD_TABLE)  # Stile
         self.setFrameStyle(QFrame.NoFrame)  # Nasconde la linea di contorno esterna
         self.setShowGrid(True)  # Mostra la griglia interna
-        self.setSelectionMode(QAbstractItemView.NoSelection)  # Imposta la seleziona singola anziché multipla
+        self.setSelectionMode(QAbstractItemView.NoSelection)  # Disabilita la selezione
         self.setEditTriggers(QAbstractItemView.NoEditTriggers)  # Impedisce di modificare da tastiera le celle
         self.setSortingEnabled(False)  # Disabilita il sorting automatico delle righe in base ai valori di una colonna
         self.setColumnCount(1)  # Imposta una sola colonna per la tabella

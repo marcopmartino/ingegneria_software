@@ -207,7 +207,7 @@ class OrderListAdapter(TableAdapter):
         return [order.get_order_serial(),
                 order.get_article_serial(),
                 order.get_creation_date(),
-                order.get_state(),
+                order.get_state().value,
                 str(order.get_quantity()),
                 PriceFormatter.format(order.get_price())
                 ]

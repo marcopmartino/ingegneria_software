@@ -9,9 +9,6 @@ class MaterialsListController:
         super().__init__()
         self.__materials_repository = StorageRepository()
 
-    def open_stream(self):
-        self.__materials_repository.open_materials_stream()
-
     def observe_materials_list(self, callback: callable):
         self.__materials_repository.observe(callback)
 

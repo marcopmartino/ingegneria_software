@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 
 from lib.firebaseData import Firebase
-from lib.model.Order import Order
+from lib.model.Order import Order, OrderState
 from lib.network.OrdersNetwork import OrdersNetwork
 from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
@@ -31,7 +31,7 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
     # Usato internamente per istanziare e aggiungere un nuovo ordine alla lista
     def __instantiate_and_append_order(self, serial: str, data: any) -> Order:
         order = Order(
-            serial, data["article_serial"], data["state"], data["customer_id"], data["quantity"],
+            serial, data["article_serial"], OrderState(data["state"]), data["customer_id"], data["quantity"],
             data["price"], data.get("first_product_serial", -1), data["creation_date"]
         )
         self.__order_list.append(order)
@@ -137,7 +137,7 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
                         new_state: str = data.get("state")
 
                         # Aggiorna l'ordine nella lista
-                        order.set_state(new_state)
+                        order.set_state(OrderState(new_state))
 
                         # Prepara il messaggio per notificare gli osservatori della lista degli ordini
                         message = Message(OrdersRepository.Event.ORDER_STATE_UPDATED)

@@ -1,9 +1,19 @@
+from enum import Enum
+
 from lib.utility.ObserverClasses import Observable
+from res.Strings import OrderStateStrings
+
+
+class OrderState(Enum):
+    NOT_STARTED = OrderStateStrings.NOT_STARTED
+    PROCESSING = OrderStateStrings.PROCESSING
+    COMPLETED = OrderStateStrings.COMPLETED
+    DELIVERED = OrderStateStrings.DELIVERED
 
 
 class Order(Observable):
 
-    def __init__(self, order_serial: str, article_serial: str, state: str, customer_id: str, quantity: int,
+    def __init__(self, order_serial: str, article_serial: str, state: OrderState, customer_id: str, quantity: int,
                  price: float, first_product_serial: int, creation_date: str):
         super(Order, self).__init__()
         self.__order_serial = order_serial
@@ -21,7 +31,7 @@ class Order(Observable):
     def get_article_serial(self) -> str:
         return self.__article_serial
 
-    def get_state(self) -> str:
+    def get_state(self) -> OrderState:
         return self.__state
 
     def get_customer_id(self) -> str:
@@ -42,7 +52,7 @@ class Order(Observable):
     def set_article_serial(self, article_serial: str) -> None:
         self.__article_serial = article_serial
 
-    def set_state(self, state: str) -> None:
+    def set_state(self, state: OrderState) -> None:
         self.__state = state
 
     def set_quantity(self, quantity: int) -> None:

@@ -51,7 +51,7 @@ class OrderStateStrings:
     STARTED = "Iniziato"
     PROCESSING = "In lavorazione"
     COMPLETED = "Completato"
-    WAITING_COLLECTION = "Da ritirare"
+    AWAITING_COLLECTION = "Da ritirare"
     DELIVERED = "Consegnato"
 
 

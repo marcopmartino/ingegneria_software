@@ -2,6 +2,7 @@ from enum import Enum
 
 from pyrebase.pyrebase import Stream
 
+from lib.model.ShoeLastVariety import Gender, ShoeLastType, PlasticType, CompassType, Processing, Shoeing
 from lib.network.PriceCatalogNetwork import PriceCatalogNetwork
 from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
@@ -64,32 +65,32 @@ class PriceCatalogRepository(Repository, metaclass=RepositoryMeta):
 
     # Calcola il prezzo di un certo numero di paia con determinate caratteristiche in base agli attuali prezzi di
     # listino
-    def calculate_price(self, gender: str, shoe_last_type: str, plastic_type: int,
-                        reinforced_compass: bool, second_compass_type: str, processing: str,
-                        shoeing: str, numbering_antineck: bool, numbering_lateral: bool, numbering_heel: bool,
+    def calculate_price(self, gender: Gender, shoe_last_type: ShoeLastType, plastic_type: PlasticType,
+                        first_compass_type: CompassType, second_compass_type: CompassType, processing: Processing,
+                        shoeing: Shoeing, numbering_antineck: bool, numbering_lateral: bool, numbering_heel: bool,
                         iron_tip: bool, pivot_under_heel: bool, quantity: int = 1):
 
         price_list = self.__price_catalog
         article_price: float = 0.00
 
         # Prezzo base
-        article_price += price_list[f"standard_tipo{str(plastic_type)}_{gender}_{shoe_last_type}"]
+        article_price += price_list[f"standard_tipo{str(plastic_type.value)}_{gender.value}_{shoe_last_type.value}"]
 
         # Lavorazione
-        if processing != "nessuna":
-            article_price += price_list[f"lavorazione_{processing}_{gender}_{shoe_last_type}"]
+        if processing != Processing.NESSUNA:
+            article_price += price_list[f"lavorazione_{processing.value}_{gender.value}_{shoe_last_type.value}"]
 
         # Ferratura
-        if shoeing != "nessuna":
-            article_price += price_list[f"ferratura_{shoeing}_{gender}_{shoe_last_type}"]
+        if shoeing != Shoeing.NESSUNA:
+            article_price += price_list[f"ferratura_{shoeing.value}_{gender.value}_{shoe_last_type.value}"]
 
         # Prima bussola rinforzata
-        if reinforced_compass:
+        if first_compass_type == CompassType.RINFORZATA:
             article_price += price_list["bussola_prima_rinforzata"]
 
         # Seconda bussola
-        if second_compass_type != "nessuna":
-            article_price += price_list[f"bussola_seconda_{second_compass_type}"]
+        if second_compass_type != CompassType.NESSUNA:
+            article_price += price_list[f"bussola_seconda_{second_compass_type.value}"]
 
         # Segni e linee
         if numbering_antineck:

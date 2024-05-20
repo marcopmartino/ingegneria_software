@@ -2,33 +2,30 @@ from lib.model.Product import Product
 from lib.repository.StorageRepository import StorageRepository
 
 
-class WastesListController:
+class WasteListController:
 
     def __init__(self):
         super().__init__()
-        self.__wastes_repository = StorageRepository()
-
-    def open_stream(self):
-        self.__wastes_repository.open_wastes_stream()
+        self.__storage_repository = StorageRepository()
 
     def observe_wastes_list(self, callback: callable):
-        self.__wastes_repository.observe(callback)
+        self.__storage_repository.observe(callback)
 
     # Ritorna uno scarto in base all'id
     def get_waste_by_id(self, waste_id: str) -> Product:
-        return self.__wastes_repository.get_waste_by_id(waste_id)
+        return self.__storage_repository.get_waste_by_id(waste_id)
 
     # Ritorna la lista di scarti
     def get_wastes_list(self) -> list[Product]:
-        return self.__wastes_repository.get_wastes_list()
+        return self.__storage_repository.get_wastes_list()
 
     # Ritorna la lista di scarti filtrata
     def get_filtered_wastes_list(self, filters: dict[str, any]) -> list[Product]:
-        return self.filter_wastes_list(self.__wastes_repository.get_wastes_list().copy(), filters)
+        return self.filter_waste_list(self.__storage_repository.get_wastes_list().copy(), filters)
 
     # Filtra una lista degli scarti
     @staticmethod
-    def filter_wastes_list(wastes_list: list[Product], filters: dict[str, any]) -> list[Product]:
+    def filter_waste_list(waste_list: list[Product], filters: dict[str, any]) -> list[Product]:
 
         # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio degli scarti
 
@@ -64,18 +61,18 @@ class WastesListController:
         if allowed_types_count or allowed_plastic_count:
 
             # Filtra la lista degli scarti
-            for waste in wastes_list:
+            for waste in waste_list:
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
                 if allowed_types_count != 2:
                     if waste.get_type() not in allowed_types:
-                        if waste in wastes_list:
+                        if waste in waste_list:
                             continue
 
                 # Se tutti i tipi di plastica sono ammessi viene saltato il filtro sul tipo di plastica
                 if allowed_plastic_count != 3:
                     if waste.get_details() not in allowed_plastic:
-                        if waste in wastes_list:
+                        if waste in waste_list:
                             continue
 
                 filtered_wastes_list.append(waste)
@@ -85,16 +82,16 @@ class WastesListController:
     # Crea uno scarto a partire dai dati della form
     def create_waste(self, data: dict[str, any]):
         # Controlla se uno scarto esiste e in caso affermativo ne ritorna anche il seriale
-        waste_serial = self.__wastes_repository.create_waste(data)
+        waste_serial = self.__storage_repository.create_waste(data)
 
     def get_max_storge(self):
-        return self.__wastes_repository.get_max_storage("waste")
+        return self.__storage_repository.get_max_storage("waste")
 
     def get_available_storage(self):
-        return self.__wastes_repository.get_available_storage("waste")
+        return self.__storage_repository.get_available_storage("waste")
 
     def get_used_storage(self):
-        return self.__wastes_repository.get_used_storage("waste")
+        return self.__storage_repository.get_used_storage("waste")
 
     def sort_wastes(self, reverse: bool):
-        self.__wastes_repository.sort_list("waste", reverse)
+        self.__storage_repository.sort_list("waste", reverse)

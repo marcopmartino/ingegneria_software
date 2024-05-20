@@ -3,7 +3,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 from qfluentwidgets import ComboBox, CheckBox, PushButton
 
-from lib.controller.WastesListController import WastesListController
+from lib.controller.WasteListController import WasteListController
 from lib.model.Product import Product
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
@@ -18,7 +18,7 @@ class WastesTab(SubInterfaceChildWidget):
         super().__init__("wastes_list_view", parent_widget)
         self.hideHeader()
 
-        self.controller = WastesListController()
+        self.controller = WasteListController()
 
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(12)

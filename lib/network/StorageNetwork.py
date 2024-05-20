@@ -4,28 +4,8 @@ from lib.firebaseData import Firebase
 class StorageNetwork:
 
     @staticmethod
-    def get_products():
-        return Firebase.database.child("storage").child("products").get().val()
-
-    @staticmethod
-    def get_materials():
-        return Firebase.database.child("storage").child("materials").get().val()
-
-    @staticmethod
-    def get_wastes():
-        return Firebase.database.child("storage").child("wastes").get().val()
-
-    @staticmethod
-    def products_stream(stream_handler: callable):
-        Firebase.database.child("storage").child("products").stream(stream_handler)
-
-    @staticmethod
-    def materials_stream(stream_handler: callable):
-        Firebase.database.child("storage").child("materials").stream(stream_handler)
-
-    @staticmethod
-    def wastes_stream(stream_handler: callable):
-        Firebase.database.child("storage").child("wastes").stream(stream_handler)
+    def stream(stream_handler: callable):
+        Firebase.database.child("storage").stream(stream_handler)
 
     @staticmethod
     def update_product(serial_id: str, data: dict):
@@ -50,42 +30,6 @@ class StorageNetwork:
     @staticmethod
     def get_next_waste_id():
         return Firebase.database.child("next_ids").get().val()["waste"]
-
-    @staticmethod
-    def get_product_by_id(product_id: int):
-        return Firebase.database.child("storage").child("products").child(product_id).get().val()
-
-    @staticmethod
-    def get_material_by_id(material_id: int):
-        return Firebase.database.child("storage").child("materials").child(material_id).get().val()
-
-    @staticmethod
-    def get_waste_by_id(waste_id: int):
-        return Firebase.database.child("storage").child("wastes").child(waste_id).get().val()
-
-    @staticmethod
-    def stream_product_by_id(product_id: int, stream_handler: callable):
-        return Firebase.database.child("storage").child("products").child(product_id).stream(stream_handler)
-
-    @staticmethod
-    def stream_material_by_id(material_id: int, stream_handler: callable):
-        return Firebase.database.child("storage").child("materials").child(material_id).stream(stream_handler)
-
-    @staticmethod
-    def stream_waste_by_id(waste_id: int, stream_handler: callable):
-        return Firebase.database.child("storage").child("wastes").child(waste_id).stream(stream_handler)
-
-    @staticmethod
-    def update_product_by_id(product_id: int, data: dict):
-        Firebase.database.child("storage").child("products").child(product_id).update(data)
-
-    @staticmethod
-    def update_material_by_id(material_id: int, data: dict):
-        Firebase.database.child("storage").child("materials").child(material_id).update(data)
-
-    @staticmethod
-    def update_waste_by_id(waste_id: int, data: dict):
-        Firebase.database.child("storage").child("wastes").child(waste_id).update(data)
 
     @staticmethod
     def delete_product_by_id(product_id: int):

@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QLabel, QHeaderView, QVBoxLayout, QSizePolicy, QTree
 
 from lib.controller.ArticleController import ArticleController
 from lib.model.Article import Article
+from lib.model.Order import OrderState
+from lib.model.ShoeLastVariety import ShoeLastVariety, Processing, Shoeing
 from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter
@@ -47,14 +49,14 @@ class ArticleView(SubInterfaceChildWidget):
         self.article_table_adapter_main = ArticleMainDetailsAdapter(self.article_table_main)
         headers = ["Genere", "Taglia", "Tipo di forma", "Tipo di plastica", "Lavorazione", "Ferratura"]
         self.article_table_main.setHeaders(headers)
-        self.article_table_adapter_main.setData(article)
+        self.article_table_adapter_main.setData(article.get_shoe_last_variety())
 
         # Seconda tabella articolo
         self.article_table_accessories = SingleRowStandardTable(self.central_frame)
         self.article_table_adapter_accessories = ArticleAccessoriesAdapter(self.article_table_accessories)
         headers = ["Bussola", "Seconda bussola", "Altri accessori"]
         self.article_table_accessories.setHeaders(headers)
-        self.article_table_adapter_accessories.setData(article)
+        self.article_table_adapter_accessories.setData(article.get_shoe_last_variety())
         self.article_table_accessories.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.article_table_accessories.horizontalHeader().setStretchLastSection(True)
         self.article_table_accessories.setColumnWidth(0, 150)
@@ -101,7 +103,7 @@ class ArticleView(SubInterfaceChildWidget):
 
             match order.get_state():
                 # Se le forme sono state già prodotte
-                case OrderStateStrings.DELIVERED | OrderStateStrings.COMPLETED:
+                case OrderState.DELIVERED | OrderState.COMPLETED:
                     order_item.setText(0, f"Ordine {order.get_order_serial()} ({str(quantity)} paia - "
                                           f"da {SerialNumberFormatter.format(first_product_serial)} "
                                           f"a {SerialNumberFormatter.format(last_product_serial)})")
@@ -119,7 +121,7 @@ class ArticleView(SubInterfaceChildWidget):
                     produced_shoe_lasts_item.addChild(order_item)
 
                 # Se le forme sono da produrre o in produzione
-                case OrderStateStrings.PROCESSING | OrderStateStrings.NOT_STARTED:
+                case OrderState.PROCESSING | OrderState.NOT_STARTED:
                     order_item.setText(0, f"Ordine {order.get_order_serial()} ({str(quantity)} paia)")
 
                     # Aggiorna la quantità di paia di forme da produrre
@@ -194,35 +196,35 @@ class ArticleView(SubInterfaceChildWidget):
 
 
 class ArticleMainDetailsAdapter(SingleRowTableAdapter):
-    def adaptData(self, article: Article) -> list[str]:
+    def adaptData(self, shoe_last_variety: ShoeLastVariety) -> list[str]:
         return [
-            article.get_gender().capitalize(),
-            article.get_size(),
-            article.get_shoe_last_type().capitalize(),
-            f"Tipo {str(article.get_plastic_type())}",
-            "Nessuna" if article.get_processing() == "nessuna"
-            else "Cuneo" if article.get_processing() == "cuneo"
-            else f"Snodo {article.get_processing()}",
-            "Nessuna" if article.get_shoeing() == "nessuna"
-            else "Tacco ferrato" if article.get_shoeing() == "tacco"
-            else "Mezza ferrata" if article.get_shoeing() == "mezza"
+            shoe_last_variety.get_gender().value.capitalize(),
+            shoe_last_variety.get_size(),
+            shoe_last_variety.get_shoe_last_type().value.capitalize(),
+            f"Tipo {str(shoe_last_variety.get_plastic_type().value)}",
+            "Nessuna" if shoe_last_variety.get_processing() == Processing.NESSUNA
+            else "Cuneo" if shoe_last_variety.get_processing() == Processing.CUNEO
+            else f"Snodo {shoe_last_variety.get_processing().value}",
+            "Nessuna" if shoe_last_variety.get_shoeing() == Shoeing.NESSUNA
+            else "Tacco ferrato" if shoe_last_variety.get_shoeing() == Shoeing.TACCO_FERRATO
+            else "Mezza ferrata" if shoe_last_variety.get_shoeing() == Shoeing.MEZZA_FERRATA
             else "Tutta ferrata"
         ]
 
 
 class ArticleAccessoriesAdapter(SingleRowTableAdapter):
-    def adaptData(self, article: Article) -> list[str]:
+    def adaptData(self, shoe_last_variety: ShoeLastVariety) -> list[str]:
         accessories: str = ""
 
-        if article.get_numbering_heel():
+        if shoe_last_variety.get_numbering_heel():
             accessories += "Segno sul tallone, "
-        if article.get_numbering_lateral():
+        if shoe_last_variety.get_numbering_lateral():
             accessories += "Segni laterali, "
-        if article.get_numbering_antineck():
+        if shoe_last_variety.get_numbering_antineck():
             accessories += "Segno anticollo, "
-        if article.get_pivot_under_heel():
+        if shoe_last_variety.get_pivot_under_heel():
             accessories += "Perno sotto tallone, "
-        if article.get_iron_tip():
+        if shoe_last_variety.get_iron_tip():
             accessories += "Punta ferrata, "
         if accessories:
             accessories = accessories[:-2]
@@ -230,7 +232,7 @@ class ArticleAccessoriesAdapter(SingleRowTableAdapter):
             accessories = "Nessuno"
 
         return [
-            "Rinforzata" if article.get_reinforced_compass() else "Standard",
-            article.get_second_compass_type().capitalize(),
+            shoe_last_variety.get_first_compass_type().value.capitalize(),
+            shoe_last_variety.get_second_compass_type().value.capitalize(),
             accessories
         ]

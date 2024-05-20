@@ -1,6 +1,8 @@
 from enum import Enum
 
 from lib.model.Article import Article
+from lib.model.ShoeLastVariety import ShoeLastVariety, Gender, ShoeLastType, PlasticType, CompassType, Processing, \
+    Shoeing
 from lib.network.ArticlesNetwork import ArticlesNetwork
 from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
@@ -24,12 +26,14 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
 
     # Usato internamente per istanziare e aggiungere un articolo alla lista
     def __instantiate_and_append_article(self, serial: str, data: any) -> Article:
-        article = Article(
-            serial, data["gender"], data["size"], data["shoe_last_type"], data["plastic_type"],
-            data["reinforced_compass"], data["second_compass_type"], data["processing"], data["shoeing"],
-            data["numbering_antineck"], data["numbering_lateral"], data["numbering_heel"], data["iron_tip"],
-            data["pivot_under_heel"], data["creation_date"], data["produced_article_shoe_lasts"]
+        shoe_last_variety = ShoeLastVariety(
+            Gender(data["gender"]), ShoeLastType(data["shoe_last_type"]), PlasticType(data["plastic_type"]),
+            data["size"], Processing(data["processing"]), CompassType(data["first_compass_type"]),
+            CompassType(data["second_compass_type"]), data["pivot_under_heel"], Shoeing(data["shoeing"]),
+            data["iron_tip"], data["numbering_antineck"], data["numbering_lateral"], data["numbering_heel"],
         )
+
+        article = Article(serial, shoe_last_variety, data["creation_date"], data["produced_article_shoe_lasts"])
         self.__article_list.append(article)
         return article
 
@@ -104,34 +108,35 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
         print(f"Nuovo articolo:{new_article_data}")
         # Controlla se l'articolo esiste
         for article in self.__article_list:
+            shoe_last_variety = article.get_shoe_last_variety()
             print(f"Articolo:{vars(article)}")
-            if (article.get_gender() == new_article_data.get("gender")
-                    and article.get_size() == new_article_data.get("size")
-                    and article.get_plastic_type() == new_article_data.get("plastic")
-                    and article.get_shoe_last_type() == new_article_data.get("type")
-                    and article.get_reinforced_compass() == new_article_data.get("first")
-                    and article.get_second_compass_type() == new_article_data.get("second")
-                    and article.get_processing() == new_article_data.get("processing")
-                    and article.get_shoeing() == new_article_data.get("shoeing")
-                    and article.get_numbering_antineck() == new_article_data.get("antineck")
-                    and article.get_numbering_lateral() == new_article_data.get("lateral")
-                    and article.get_numbering_heel() == new_article_data.get("heel")
-                    and article.get_iron_tip() == new_article_data.get("shoetip")
-                    and article.get_pivot_under_heel() == new_article_data.get("pivot")):
+            if (shoe_last_variety.get_gender() == new_article_data.get("gender")
+                    and shoe_last_variety.get_size() == new_article_data.get("size")
+                    and shoe_last_variety.get_plastic_type() == new_article_data.get("plastic")
+                    and shoe_last_variety.get_shoe_last_type() == new_article_data.get("type")
+                    and shoe_last_variety.get_first_compass_type() == new_article_data.get("first")
+                    and shoe_last_variety.get_second_compass_type() == new_article_data.get("second")
+                    and shoe_last_variety.get_processing() == new_article_data.get("processing")
+                    and shoe_last_variety.get_shoeing() == new_article_data.get("shoeing")
+                    and shoe_last_variety.get_numbering_antineck() == new_article_data.get("antineck")
+                    and shoe_last_variety.get_numbering_lateral() == new_article_data.get("lateral")
+                    and shoe_last_variety.get_numbering_heel() == new_article_data.get("heel")
+                    and shoe_last_variety.get_iron_tip() == new_article_data.get("shoetip")
+                    and shoe_last_variety.get_pivot_under_heel() == new_article_data.get("pivot")):
                 # Se l'articolo esiste, ne viene ritornato il seriale
                 print("Trovato")
                 return article.get_article_serial()
 
         # Se l'articolo non esiste, ne crea uno nuovo
         article_data = dict(
-            gender=new_article_data.get("gender"),
+            gender=new_article_data.get("gender").value,
             size=new_article_data.get("size"),
-            shoe_last_type=new_article_data.get("type"),
-            plastic_type=new_article_data.get("plastic"),
-            reinforced_compass=new_article_data.get("first"),
-            second_compass_type=new_article_data.get("second"),
-            processing=new_article_data.get("processing"),
-            shoeing=new_article_data.get("shoeing"),
+            shoe_last_type=new_article_data.get("type").value,
+            plastic_type=new_article_data.get("plastic").value,
+            first_compass_type=new_article_data.get("first").value,
+            second_compass_type=new_article_data.get("second").value,
+            processing=new_article_data.get("processing").value,
+            shoeing=new_article_data.get("shoeing").value,
             numbering_antineck=new_article_data.get("antineck"),
             numbering_lateral=new_article_data.get("lateral"),
             numbering_heel=new_article_data.get("heel"),

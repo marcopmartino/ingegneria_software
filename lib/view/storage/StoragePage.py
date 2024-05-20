@@ -6,7 +6,7 @@ from qfluentwidgets import SegmentedWidget, FluentIconBase, FluentIcon
 
 from lib.controller.MaterialsListController import MaterialsListController
 from lib.controller.ProductListController import ProductListController
-from lib.controller.WastesListController import WastesListController
+from lib.controller.WasteListController import WasteListController
 
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.MaterialsTab import MaterialsTab
@@ -65,6 +65,6 @@ class StoragePage(SubInterfaceWidget):
     def open_stream():
         ProductListController().open_stream()
         MaterialsListController().open_stream()
-        WastesListController().open_stream()
+        WasteListController().open_stream()
 
 

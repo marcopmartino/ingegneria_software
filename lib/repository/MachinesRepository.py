@@ -1,6 +1,6 @@
 from enum import Enum
 
-from lib.model.Machine import Machine
+from lib.model.Machine import Machine, Sgrossatore, Tornio, Finitore, Ferratore, Timbratrice
 from lib.network.MachinesNetwork import MachinesNetwork
 from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
@@ -23,11 +23,12 @@ class MachinesRepository(Repository, metaclass=RepositoryMeta):
 
     # Usato internamente per istanziare e aggiungere un nuovo macchinario alla lista
     def __instantiate_and_append_machine(self, serial: str, data: any) -> Machine:
-        order = Machine(
-            serial, data["machine_type"], data["is_running"], data["capacity"]
-        )
-        self.__machine_list.append(order)
-        return order
+        for machine_class in [Sgrossatore, Tornio, Finitore, Ferratore, Timbratrice]:
+            if data["machine_type"] == machine_class.__name__:
+                machine = machine_class(serial, data["capacity"], data.get("is_running", False),
+                                        data.get("cycle_counter", 0), data.get("active_process"))
+                self.__machine_list.append(machine)
+                return machine
 
     # Stream handler che aggiorna automaticamente la lista dei macchinari
     def _stream_handler(self, message):

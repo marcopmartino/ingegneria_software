@@ -192,7 +192,7 @@ class MachineListView(SubInterfaceWidget):
 class MachineListAdapter(TableAdapter):
     def adaptData(self, machine: Machine) -> list[str]:
         return [machine.get_machine_serial(),
-                machine.get_machine_type(),
+                type(machine).__name__,
                 "In funzione" if machine.is_running() else "Disponibile",
                 "-",
                 f"0/{str(machine.get_capacity())}",

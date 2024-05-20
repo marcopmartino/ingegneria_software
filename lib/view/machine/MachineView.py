@@ -1,10 +1,13 @@
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QCloseEvent, QFont, QPalette
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QHeaderView, QScrollArea, QProgressBar
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QHeaderView, QScrollArea, QProgressBar, \
+    QStackedWidget, QAbstractItemView
 from qfluentwidgets import ProgressBar, BodyLabel
 
 from lib.controller.MachineController import MachineController
 from lib.model.Machine import Machine
+from lib.model.Order import Order
+from lib.model.ShoeLastVariety import ShoeLastVariety
 from lib.repository.MachinesRepository import MachinesRepository
 from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter, TableAdapter
@@ -43,43 +46,50 @@ class MachineView(SubInterfaceChildWidget):
         self.machine_details_title.setContentsMargins(16, 16, 16, 0)
         self.machine_details_subtitle.setContentsMargins(16, 0, 16, 8)
 
-        # Dettagli ordine
+        # Tabella dettagli macchinario
         self.machine_table = SingleRowStandardTable(self.central_frame)
         self.machine_table_adapter = MachineDetailsAdapter(self.machine_table)
-        headers = ["Capienza massima", "Durata di un ciclo"]
+        headers = ["Capienza massima", "Cicli eseguiti"]
         self.machine_table.setFixedWidth(400)
         self.machine_table.setHeaders(headers)
         self.machine_table.setColumnWidth(0, 200)
         self.machine_table.setColumnWidth(1, 200)
         self.machine_table_adapter.setData(self.controller.get_machine())
 
-        # Titolo tabella dettagli operazione
-        self.operation_details_title = QLabel("")
-        self.operation_details_subtitle = QLabel("Informazioni sull'operazione")
-        self.operation_details_title.setFont(font)
-        self.operation_details_title.setContentsMargins(16, 16, 16, 0)
-        self.operation_details_subtitle.setContentsMargins(16, 0, 16, 8)
+        # Titolo tabella informazioni operazione
+        self.operation_info_title = QLabel(self.controller.get_machine().OPERATION_NAME)
+        self.operation_info_subtitle = QLabel("Informazioni sull'operazione")
+        self.operation_info_title.setFont(font)
+        self.operation_info_title.setContentsMargins(16, 16, 16, 0)
+        self.operation_info_subtitle.setContentsMargins(16, 0, 16, 8)
 
-        # Tabella dell'operazione
-        self.operation_details_table = StandardTable(self.central_frame)
-        self.operation_details_table_adapter = MachineOperationAdapter(self.operation_details_table)
+        # Tabella informazioni operazione
+        self.operation_info_table = StandardTable(self.central_frame)
+        self.operation_info_table.setSelectionMode(QAbstractItemView.NoSelection)  # Disabilita la selezione
+        self.operation_info_table_adapter = MachineOperationAdapter(self.operation_info_table)
         headers = ["Input", "Output", "Caratteristiche acquisite"]
-        self.operation_details_table.setHeaders(headers)
-        # self.article_table_adapter_main.setData(article)
+        self.operation_info_table.setHeaders(headers)
+        self.operation_info_table_adapter.setData(self.controller.get_machine().OPERATION_INFO)
 
-        # Titolo tabella lista operazioni
+        # Aggiorno l'altezza della tabella
+        total_height = 40
+        for row in range(self.operation_info_table.rowCount()):
+            total_height += self.operation_info_table.rowHeight(row)
+        self.operation_info_table.setFixedHeight(total_height)
+
+        # Titolo tabella lista operazioni disponibili
         self.operation_list_title = QLabel(f"Lista operazioni")
         self.operation_list_subtitle = QLabel("Lista delle operazioni necessarie al completamento degli ordini")
         self.operation_list_title.setFont(font)
         self.operation_list_title.setContentsMargins(16, 16, 16, 0)
         self.operation_list_subtitle.setContentsMargins(16, 0, 16, 8)
 
-        # Tabella lista operazioni
+        # Tabella lista operazioni disponibili
         self.operation_list_table = StandardTable(self.central_frame)
         self.operation_list_table_adapter = MachineOperationListAdapter(self.operation_list_table)
         headers = ["Input", "Output", "Ordini di interesse"]
         self.operation_list_table.setHeaders(headers)
-        # self.article_table_adapter_main.setData(article)
+        self.operation_list_table_adapter.setData(self.controller.get_operation_list())
 
         # Popola il layout centrale in modo da allineare i Widget in alto
         # Usare "setAlignment" non funziona poiché va in conflitto con la SizePolicy del "central_layout"
@@ -87,9 +97,9 @@ class MachineView(SubInterfaceChildWidget):
         self.inner_central_layout.addWidget(self.machine_details_title)
         self.inner_central_layout.addWidget(self.machine_details_subtitle)
         self.inner_central_layout.addWidget(self.machine_table)
-        self.inner_central_layout.addWidget(self.operation_details_title)
-        self.inner_central_layout.addWidget(self.operation_details_subtitle)
-        self.inner_central_layout.addWidget(self.operation_details_table)
+        self.inner_central_layout.addWidget(self.operation_info_title)
+        self.inner_central_layout.addWidget(self.operation_info_subtitle)
+        self.inner_central_layout.addWidget(self.operation_info_table)
         self.inner_central_layout.addWidget(self.operation_list_title)
         self.inner_central_layout.addWidget(self.operation_list_subtitle)
         self.inner_central_layout.addWidget(self.operation_list_table)
@@ -233,21 +243,26 @@ class MachineDetailsAdapter(SingleRowTableAdapter):
     def adaptData(self, machine: Machine) -> list[str]:
         return [
             f"{machine.get_capacity()} paia",
-            ""
+            f"{str(machine.get_cycle_counter())}"
         ]
 
 
 class MachineOperationAdapter(TableAdapter):
-    def adaptData(self, machine: Machine) -> list[str]:
-        return [
-            "",
-            "",
-            ""
-        ]
+    def adaptData(self, operation_info: list[str]) -> list[str]:
+        return operation_info
+
+    # Adatta l'altezza di cella al numero di righe del testo contenuto
+    def _onRowUpdated(self, row_data: list[str], row: int) -> None:
+        max_extra_lines = 0
+        for string in row_data:
+            extra_lines = string.count("\n")
+            if extra_lines > max_extra_lines:
+                max_extra_lines = extra_lines
+        self.table.setRowHeight(row, 40 + 20 * max_extra_lines)
 
 
 class MachineOperationListAdapter(TableAdapter):
-    def adaptData(self, machine: Machine) -> list[str]:
+    def adaptData(self, operation_data: dict[ShoeLastVariety, list[Order]]) -> list[str]:
         return [
             "",
             "",

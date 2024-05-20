@@ -4,8 +4,8 @@ from lib.repository.MachinesRepository import MachinesRepository
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.repository.Repository import Repository
+from lib.repository.StorageRepository import StorageRepository
 from lib.repository.UsersRepository import UsersRepository
-from lib.utility.ObserverClasses import Observer
 
 
 class MainController:
@@ -34,6 +34,7 @@ class MainController:
             ArticlesRepository(),
             MachinesRepository(),
             OrdersRepository(),
+            StorageRepository(),
             UsersRepository()
         ]
 
@@ -45,6 +46,7 @@ class MainController:
             MachinesRepository(),
             OrdersRepository(),
             PriceCatalogRepository(),
+            StorageRepository(),
             UsersRepository()
         ]
 

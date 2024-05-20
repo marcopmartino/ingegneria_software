@@ -9,6 +9,7 @@ from lib.utility.ObserverClasses import Observable
 
 
 class Repository(Observable, ABC):
+
     def __init__(self, stream_source: callable) -> None:
         super().__init__()
 

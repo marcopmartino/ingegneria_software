@@ -10,7 +10,7 @@ from qfluentwidgets import StrongBodyLabel, BodyLabel
 from lib.controller.OrderController import OrderController
 from lib.firebaseData import Firebase
 from lib.model.Customer import Customer
-from lib.model.Order import Order
+from lib.model.Order import Order, OrderState
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Observer, Message
 from lib.utility.ResourceManager import ResourceManager
@@ -73,14 +73,14 @@ class OrderView(SubInterfaceChildWidget):
         self.article_table_adapter_main = ArticleMainDetailsAdapter(self.article_table_main)
         headers = ["Genere", "Taglia", "Tipo di forma", "Tipo di plastica", "Lavorazione", "Ferratura"]
         self.article_table_main.setHeaders(headers)
-        self.article_table_adapter_main.setData(article)
+        self.article_table_adapter_main.setData(article.get_shoe_last_variety())
 
         # Seconda tabella articolo
         self.article_table_accessories = SingleRowStandardTable(self.central_frame)
         self.article_table_adapter_accessories = ArticleAccessoriesAdapter(self.article_table_accessories)
         headers = ["Bussola", "Seconda bussola", "Altri accessori"]
         self.article_table_accessories.setHeaders(headers)
-        self.article_table_adapter_accessories.setData(article)
+        self.article_table_adapter_accessories.setData(article.get_shoe_last_variety())
         self.article_table_accessories.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
         self.article_table_accessories.horizontalHeader().setStretchLastSection(True)
         self.article_table_accessories.setColumnWidth(0, 150)
@@ -216,14 +216,14 @@ class OrderView(SubInterfaceChildWidget):
 
         # Stato dell'ordine
         match self.controller.get_order_state():
-            case OrderStateStrings.NOT_STARTED:
-                self.state = OrderStateCreated(self)
-            case OrderStateStrings.PROCESSING:
-                self.state = OrderStateProcessing(self)
-            case OrderStateStrings.COMPLETED:
-                self.state = OrderStateCompleted(self)
-            case OrderStateStrings.DELIVERED:
-                self.state = OrderStateDelivered(self)
+            case OrderState.NOT_STARTED:
+                self.state = OrderViewStateCreated(self)
+            case OrderState.PROCESSING:
+                self.state = OrderViewStateProcessing(self)
+            case OrderState.COMPLETED:
+                self.state = OrderViewStateCompleted(self)
+            case OrderState.DELIVERED:
+                self.state = OrderViewStateDelivered(self)
 
         # Imposta la sidebar
         self.setup_sidebar()
@@ -237,12 +237,12 @@ class OrderView(SubInterfaceChildWidget):
                     self.order_table_adapter.updateDataColumns(self.controller.get_order(), [0, 3, 4])
                     # Aggiorna le tabelle dell'articolo
                     new_article = self.controller.get_order_article()
-                    self.article_table_adapter_main.updateData(new_article)
-                    self.article_table_adapter_accessories.updateData(new_article)
+                    self.article_table_adapter_main.updateData(new_article.get_shoe_last_variety())
+                    self.article_table_adapter_accessories.updateData(new_article.get_shoe_last_variety())
 
                 case OrdersRepository.Event.ORDER_STATE_UPDATED:
                     # Aggiorna la tabella dell'ordine
-                    self.order_table.columnItem(2).setText(self.controller.get_order_state())
+                    self.order_table.columnItem(2).setText(self.controller.get_order_state().value)
                     # Aggiorna la sidebar
                     self.on_transition_to_next_state()
                     print("Stato aggiornato")
@@ -306,7 +306,7 @@ class OrderView(SubInterfaceChildWidget):
         self.state.on_transition_to_next_state()
 
     # Rimpiazza lo stato corrente con il nuovo stato "new_state"
-    def change_state(self, new_state: OrderState):
+    def change_state(self, new_state: OrderViewState):
         self.state = new_state
 
     # Mostra la form per la modifica dell'ordine
@@ -316,9 +316,7 @@ class OrderView(SubInterfaceChildWidget):
 
 # Implementazione dello State pattern
 # Classe astratta OrderState
-class OrderState(ABC):
-    STATE_NAME: str
-
+class OrderViewState(ABC):
     def __init__(self, view: OrderView):
         self._view: OrderView = view
         self.__state_name_font: QFont = QFont()
@@ -409,14 +407,12 @@ class OrderState(ABC):
 
     # Ritorna la classe del prossimo stato
     @abstractmethod
-    def _next_state_class(self) -> type(OrderState):
+    def _next_state_class(self) -> type(OrderViewState):
         pass
 
 
 # Classi OrderState
-class OrderStateCreated(OrderState):
-    STATE_NAME: str = OrderStateStrings.NOT_STARTED
-
+class OrderViewStateCreated(OrderViewState):
     def __init__(self, view):
         super().__init__(view)
 
@@ -455,13 +451,11 @@ class OrderStateCreated(OrderState):
     def update_sidebar(self):
         pass
 
-    def _next_state_class(self) -> type(OrderState):
-        return OrderStateProcessing
+    def _next_state_class(self) -> type(OrderViewState):
+        return OrderViewStateProcessing
 
 
-class OrderStateProcessing(OrderState):
-    STATE_NAME: str = OrderStateStrings.PROCESSING
-
+class OrderViewStateProcessing(OrderViewState):
     def __init__(self, view: OrderView):
         super().__init__(view)
 
@@ -547,13 +541,11 @@ class OrderStateProcessing(OrderState):
                 # Mostra le Label di completamento dell'ordine
                 self._view.order_completion_labels_widget.setHidden(False)
 
-    def _next_state_class(self) -> type(OrderState):
-        return OrderStateCompleted
+    def _next_state_class(self) -> type(OrderViewState):
+        return OrderViewStateCompleted
 
 
-class OrderStateCompleted(OrderState):
-    STATE_NAME: str = OrderStateStrings.COMPLETED
-
+class OrderViewStateCompleted(OrderViewState):
     # Passa al prossimo stato dell'ordine
     def transition_to_next_state(self):
         super().transition_to_next_state()
@@ -567,7 +559,7 @@ class OrderStateCompleted(OrderState):
         self._set_state_row(0, self._checkmark_icon, OrderStateStrings.SENT)
         self._set_state_row(1, self._checkmark_icon, OrderStateStrings.STARTED)
         self._set_state_row(2, self._checkmark_icon, OrderStateStrings.COMPLETED)
-        self._set_state_row(3, self._black_three_dots, OrderStateStrings.WAITING_COLLECTION)
+        self._set_state_row(3, self._black_three_dots, OrderStateStrings.AWAITING_COLLECTION)
 
         # Imposta la descrizione dello stato
         self._view.state_description_label.setText("L'ordine è pronto per essere ritirato")
@@ -584,7 +576,7 @@ class OrderStateCompleted(OrderState):
 
         # Aggiorna gli stati
         self._update_state_row(2, self._checkmark_icon, OrderStateStrings.COMPLETED)
-        self._update_state_row(3, self._black_three_dots, OrderStateStrings.WAITING_COLLECTION)
+        self._update_state_row(3, self._black_three_dots, OrderStateStrings.AWAITING_COLLECTION)
 
         # Aggiorna la descrizione dello stato
         self._view.state_description_label.setText("L'ordine è pronto per essere ritirato")
@@ -611,13 +603,11 @@ class OrderStateCompleted(OrderState):
                 # Aggiorna il testo del pulsante per il passaggio al prossimo stato
                 self._view.state_transition_button.setText("Conferma consegna ordine")
 
-    def _next_state_class(self) -> type(OrderState):
-        return OrderStateDelivered
+    def _next_state_class(self) -> type(OrderViewState):
+        return OrderViewStateDelivered
 
 
-class OrderStateDelivered(OrderState):
-    STATE_NAME: str = OrderStateStrings.DELIVERED
-
+class OrderViewStateDelivered(OrderViewState):
     def __init__(self, view: OrderView):
         super().__init__(view)
 
@@ -645,7 +635,7 @@ class OrderStateDelivered(OrderState):
     def transition_to_next_state(self):
         pass
 
-    def _next_state_class(self) -> type(OrderState):
+    def _next_state_class(self) -> type(OrderViewState):
         pass
 
 
@@ -655,7 +645,7 @@ class OrderDetailsAdapter(SingleRowTableAdapter):
         return [
             order.get_article_serial(),
             order.get_creation_date(),
-            order.get_state(),
+            order.get_state().value,
             str(order.get_quantity()),
             PriceFormatter.format(order.get_price())
         ]

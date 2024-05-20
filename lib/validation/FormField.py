@@ -214,7 +214,7 @@ class SpinBoxFormField(IFormField):
         return self.input_field.valueChanged
 
     def clear(self):
-        self.input_field.setValue(int((self.input_field.maximum + self.input_field.minimum) / 2))
+        self.input_field.setValue(self.input_field.minimum())
 
 
 # Classe adattatrice per QButtonGroup
@@ -245,8 +245,6 @@ class DatePickerFormField(IFormField):
 
     def clear(self):
         self.input_field.setDate(QDate.currentDate())
-
-
 
 
 # Classe adattatrice per QLineEdit senza validatore

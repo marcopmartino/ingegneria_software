@@ -16,6 +16,7 @@ from lib.repository.MachinesRepository import MachinesRepository
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.repository.Repository import Repository
+from lib.repository.StorageRepository import StorageRepository
 from lib.repository.UsersRepository import UsersRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.ResourceManager import ResourceManager
@@ -239,3 +240,5 @@ class MainWindowLoadingView(QMainWindow):
 
         # Avvio gli stream
         self.controller.get_repository(last_repository_class).open_stream()
+        """Aggiunto temporaneamente - da integrare con il resto"""
+        StorageRepository().open_stream()

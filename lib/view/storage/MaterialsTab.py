@@ -166,7 +166,7 @@ class MaterialsTab(SubInterfaceChildWidget):
     def refresh_materials_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_materials_list())
-        if self.table_adapter.isTableEmpty():
+        if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
         else:
