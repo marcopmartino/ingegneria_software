@@ -103,9 +103,11 @@ class MachineController:
         """Termina e rimuovi il processo"""
         """Aggiungi l'output al magazzino"""
 
-    def observe_machine(self, callback: callable) -> Observer:
+    def observe_repositories(self, callback: callable) -> Observer:
         observer = AnonymousObserver(callback)
-        self.__machine.attach(observer)
+        self.__machines_repository.attach(observer)
+        self.__orders_repository.attach(observer)
+        self.__storage_repository.attach(observer)
         return observer
 
     def detach_machine_observer(self, observer: Observer):

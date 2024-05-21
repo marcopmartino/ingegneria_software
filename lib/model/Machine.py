@@ -87,8 +87,6 @@ class MachineProcess:
 class Machine(Observable, ABC):
     OPERATION_NAME: str
     OPERATION_INFO: list[list[str]]
-    INPUT_PRODUCT_TYPE: ProductType
-    OUTPUT_PRODUCT_TYPE: ProductType
 
     def __init__(self, machine_serial: str, capacity: int, is_running: bool = False, cycle_counter: int = 0,
                  active_process: MachineProcess = None):

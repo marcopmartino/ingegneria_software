@@ -235,7 +235,7 @@ class MachineView(SubInterfaceChildWidget):
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
         # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
         self.messageReceived.connect(update_machine_view)
-        self.observer: Observer = self.controller.observe_machine(self.messageReceived.emit)
+        self.observer: Observer = self.controller.observe_repositories(self.messageReceived.emit)
 
 
 # TableAdapters
