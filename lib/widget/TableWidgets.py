@@ -315,7 +315,7 @@ class PriceCatalogTableStyle(metaclass=Singleton):
         self.red_brush = QBrush(QColor(207, 0, 0))
         self.green_brush = QBrush(QColor(70, 142, 35))
         self.brown_brush = QBrush(QColor(92, 64, 51))
-        self.grey_brush = QBrush(QColor(210, 210, 210))
+        self.grey_brush = QBrush(QColor(225, 225, 225))
 
 
 # Classe che rappresenta una sezione di una PriceCatalogTable
@@ -481,10 +481,10 @@ class HorizontalTreeSection(PriceCatalogTableSection):
 
         # Brush
         brown_brush = PriceCatalogTableStyle().brown_brush
-        grey_brush = PriceCatalogTableStyle().green_brush
+        grey_brush = PriceCatalogTableStyle().grey_brush
 
         # Header di primo livello
-        table.setSpan(first_data_row, 0, 4, 2)
+        table.setSpan(first_data_row, 0, len(self.leaves_text), 2)
         table.setItem(first_data_row, 0, QTableWidgetItem(self.root_text))
         table.item(first_data_row, 0).setFont(secondary_bold_font)
 
