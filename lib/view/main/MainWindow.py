@@ -11,6 +11,7 @@ from lib.firebaseData import Firebase
 from lib.repository.CashRegisterRepository import CashRegisterRepository
 from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
+from lib.utility.ResourceManager import ResourceManager
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.article.ArticleListView import ArticleListView
 from lib.view.cashregister.CashRegisterView import CashRegisterView
@@ -21,10 +22,13 @@ from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.order.OrderListView import OrderListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.view.profile.ProfileView import ProfileView
+from lib.view.storage.HardwareStorePriceCatalogView import HardwareStorePriceCatalogView
+from lib.view.storage.RawShoeLastCenterPriceCatalogView import RawShoeLastCenterPriceCatalogView
 from lib.view.storage.StoragePage import StoragePage
 from lib.view.worker.WorkerListView import WorkerListView
 # from lib.view.storage.StoragePage import StoragePage
 from res.CustomIcon import CustomIcon as CustomFIF
+from res.Strings import Config
 
 
 # Widget per la Title Bar
@@ -154,8 +158,8 @@ class MainWindow(FramelessWindow):
     # Funzione per inizializzare la finestra (dimensione, titolo, logo e stile[dark/light])
     def initWindow(self):
         self.resize(1280, 720)
-        self.setWindowIcon(QIcon('resource/logo.png'))
-        self.setWindowTitle('Shoe LastFactory Manager')
+        self.setWindowTitle(Config.APPLICATION_NAME)
+        self.setWindowIcon(QIcon(ResourceManager.icon_path(Config.APPLICATION_LOGO_FILENAME)))
         self.titleBar.setAttribute(Qt.WA_StyledBackground)
 
         desktop = QApplication.desktop().availableGeometry()
@@ -236,6 +240,8 @@ class MainWindow(FramelessWindow):
         self.insertSubInterface(7, ArticleListView(self), 'Registro articoli')
         self.insertSubInterface(8, CashRegisterView(self), 'Registro di cassa')
         self.insertSubInterface(9, WorkerListView(self), 'Gestione dipendenti')
+        self.insertSubInterface(10, RawShoeLastCenterPriceCatalogView(self), 'Listino centro abbozzi')
+        self.insertSubInterface(11, HardwareStorePriceCatalogView(self), 'Listino ferramenta')
 
         # Sezione Bottom
         # Informazioni sulla disponibilità di cassa

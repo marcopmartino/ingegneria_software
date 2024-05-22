@@ -5,6 +5,7 @@ class Config:
     APPLICATION_NAME = "ShoeLastFactoryManager"
     APPLICATION_VERSION = "1.0.0"
     APPLICATION_VERSION_NAME = "First version"
+    APPLICATION_LOGO_FILENAME = "app_logo.png"
     IMAGES_PATH = "res/images/"
     ICONS_PATH = "res/images/icons/"
 
