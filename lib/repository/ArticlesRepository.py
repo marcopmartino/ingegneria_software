@@ -2,7 +2,7 @@ from enum import Enum
 
 from lib.model.Article import Article
 from lib.model.ShoeLastVariety import ShoeLastVariety, Gender, ShoeLastType, PlasticType, CompassType, Processing, \
-    Shoeing
+    Shoeing, ProductType
 from lib.network.ArticlesNetwork import ArticlesNetwork
 from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
@@ -27,6 +27,7 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
     # Usato internamente per istanziare e aggiungere un articolo alla lista
     def __instantiate_and_append_article(self, serial: str, data: any) -> Article:
         shoe_last_variety = ShoeLastVariety(
+            ProductType.FORMA_NUMERATA,
             Gender(data["gender"]), ShoeLastType(data["shoe_last_type"]), PlasticType(data["plastic_type"]),
             data["size"], Processing(data["processing"]), CompassType(data["first_compass_type"]),
             CompassType(data["second_compass_type"]), data["pivot_under_heel"], Shoeing(data["shoeing"]),

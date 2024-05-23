@@ -80,15 +80,3 @@ class MaterialsListController:
         # Controlla se il materiale esiste e in caso affermativo ne ritorna anche il seriale
         material_serial = self.__materials_repository.create_material(data)
 
-    def get_max_storge(self):
-        return self.__materials_repository.get_max_storage("material")
-
-    def get_available_storage(self):
-        return self.__materials_repository.get_available_storage("material")
-
-    def get_used_storage(self):
-        return self.__materials_repository.get_used_storage("material")
-
-    def sort_materials(self, reverse: bool):
-        self.__materials_repository.sort_list("material", reverse)
-

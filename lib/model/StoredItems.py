@@ -62,8 +62,8 @@ class MaterialDescription(Enum):
     INCHIOSTRO = "Inchiostro indelebile"
     PERNO = "Perno"
     MOLLA = "Molla per cuneo"
-    GANCIO_ALFA = "Gancio per snodo alfa"
-    GANCIO_TENDO = "Gancio per snodo tendo"
+    GUSCIO_ALFA = "Guscio per snodo alfa"
+    GUSCIO_TENDO = "Guscio per snodo tendo"
 
 
 class StoredMaterial(StoredItem):

@@ -159,6 +159,7 @@ class ShoeLastVariety:
 
     def equals(self, shoe_last_variety: ShoeLastVariety) -> bool:
         return (
+                self.__product_type == shoe_last_variety.get_product_type() and
                 self.__gender == shoe_last_variety.get_gender() and
                 self.__shoe_last_type == shoe_last_variety.get_shoe_last_type() and
                 self.__plastic_type == shoe_last_variety.get_plastic_type() and

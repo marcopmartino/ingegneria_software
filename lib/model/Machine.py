@@ -148,6 +148,7 @@ class Sgrossatore(Machine):
 
     def calculate_input_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.ABBOZZO,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
@@ -155,6 +156,7 @@ class Sgrossatore(Machine):
 
     def calculate_output_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.ABBOZZO_SGROSSATO,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
@@ -186,6 +188,7 @@ class Tornio(Machine):
 
     def calculate_input_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.ABBOZZO_SGROSSATO,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
@@ -197,6 +200,7 @@ class Tornio(Machine):
 
     def calculate_output_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.ABBOZZO_SGROSSATO,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
@@ -246,6 +250,7 @@ class Finitore(Machine):
 
     def calculate_input_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.ABBOZZO_SGROSSATO,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
@@ -257,6 +262,7 @@ class Finitore(Machine):
 
     def calculate_output_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.FORMA_FINITA,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
@@ -326,6 +332,7 @@ class Ferratore(Machine):
 
     def calculate_input_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.FORMA_FINITA,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
@@ -344,6 +351,7 @@ class Ferratore(Machine):
 
     def calculate_output_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.FORMA_FINITA,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
@@ -405,6 +413,7 @@ class Timbratrice(Machine):
 
     def calculate_input_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.FORMA_FINITA,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
@@ -423,6 +432,7 @@ class Timbratrice(Machine):
 
     def calculate_output_shoe_last_variety(self, desired_shoe_last_variety) -> ShoeLastVariety:
         return ShoeLastVariety(
+            ProductType.FORMA_NUMERATA,
             desired_shoe_last_variety.get_gender(),
             desired_shoe_last_variety.get_shoe_last_type(),
             desired_shoe_last_variety.get_plastic_type(),
