@@ -1,18 +1,14 @@
 from __future__ import annotations
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QCloseEvent
-from PyQt5.QtWidgets import QLabel, QSizePolicy, QMessageBox, QVBoxLayout
+from PyQt5.QtWidgets import QLabel, QSizePolicy, QMessageBox, QVBoxLayout, QHBoxLayout
 from qfluentwidgets import PrimaryPushButton
 
 from lib.controller.ProductController import ProductController
-from lib.model.Finished import Finished
-from lib.model.Product import Product
-from lib.model.SemiFinished import SemiFinished
-from lib.model.Sketch import Sketch
-from lib.utility.TableAdapters import SingleRowTableAdapter
+from lib.model.StoredItems import StoredShoeLastVariety
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.widget.Separators import VerticalSpacer
-from lib.widget.TableWidgets import SingleRowStandardTable
 from res.Dimensions import FontSize
 
 
@@ -21,10 +17,8 @@ class ProductView(SubInterfaceChildWidget):
     # Eseguito alla chiusura della finestra (dopo la chiamata "self.close()")
     def closeEvent(self, event: QCloseEvent):
         super().closeEvent(event)
-        #self.controller.detach_order_observer(self.observer)  # Rimuove l'osservatore dal prodotto
 
-    def __init__(self, parent_widget: SubInterfaceWidget, product: Product):
-
+    def __init__(self, parent_widget: SubInterfaceWidget, product: StoredShoeLastVariety):
         # Controller
         self.controller: ProductController = ProductController(product)
 
@@ -35,68 +29,107 @@ class ProductView(SubInterfaceChildWidget):
         self.setTitleText(f"Prodotto {self.controller.get_product_serial()}")
         self.hideSubtitle()
 
-        # Titolo tabella dettagli prodotto
-        font = QFont()
-        font.setPointSize(FontSize.TITLE)
-        self.product_details_title = QLabel(f"Dettagli prodotto {self.controller.get_product_serial()}")
-        self.product_details_title.setFont(font)
-        self.product_details_title.setContentsMargins(16, 16, 16, 8)
+        title_font = QFont()
+        title_font.setPointSize(FontSize.SUBTITLE)
 
-        # Dettagli prodotto
-        self.product_main_table = SingleRowStandardTable(self.central_frame)
-        self.product_second_table = SingleRowStandardTable(self.central_frame)
-        self.product_third_table = SingleRowStandardTable(self.central_frame)
+        # Riempimento dettagli prodotto
+        self.product_type_label = QLabel(f"<b>Tipo di prodotto</b>: {self.controller.get_product_type()}")
+        self.product_type_label.setFont(title_font)
+        self.product_type_label.setContentsMargins(16, 16, 16, 8)
 
-        # Riempimento tabelle dettagli
-        if type(product) is Sketch:
-            # Prima tabella
-            self.product_main_table_adapter = SketchDetailsAdapter(self.product_main_table)
-            headers = ["Tipo", "Genere", "Tipo di plastica", "Tipo di abbozzo", "Dettagli", "Quantità"]
-            self.product_main_table.setHeaders(headers)
-            self.product_main_table_adapter.setData(product)
-            self.product_second_table.setVisible(False)
-            self.product_third_table.setVisible(False)
-        elif type(product) is SemiFinished:
-            # Prima tabella
-            self.product_main_table_adapter = SemiFinishedMainAdapter(self.product_main_table)
-            headers = ["Tipo", "Genere", "Tipo di plastica", "Tipo di abbozzo", "Taglia", "Lavorazione"]
-            self.product_main_table.setHeaders(headers)
-            self.product_main_table_adapter.setData(product)
-            # Seconda tabella
-            self.product_second_table_adapter = SemiFinishedSecondAdapter(self.product_second_table)
-            headers = ["Ferratura", "Prima bussola", "Seconda bussola", "Perno sotto tallone", "Punta ferrata"]
-            self.product_second_table.setHeaders(headers)
-            self.product_second_table_adapter.setData(product)
-            # Terza tabella
-            self.product_third_table_adapter = SemiFinishedThirdAdapter(self.product_third_table)
-            headers = ["Dettagli", "Quantità"]
-            self.product_third_table.setHeaders(headers)
-            self.product_third_table_adapter.setData(product)
-        elif type(product) is Finished:
-            # Prima tabella
-            self.product_main_table_adapter = FinishedMainAdapter(self.product_main_table)
-            headers = ["Tipo", "Genere", "Tipo di plastica", "Tipo di abbozzo", "Taglia", "Numeratura"]
-            self.product_main_table.setHeaders(headers)
-            self.product_main_table_adapter.setData(product)
-            # Seconda tabella
-            self.product_second_table_adapter = FinishedSecondAdapter(self.product_second_table)
-            headers = ["Lavorazione", "Ferratura", "Prima bussola", "Seconda bussola", "Perno sotto tallone"]
-            self.product_second_table.setHeaders(headers)
-            self.product_second_table_adapter.setData(product)
-            # Terza tabella
-            self.product_third_table_adapter = FinishedThirdAdapter(self.product_third_table)
-            headers = ["Punta ferrata", "Dettagli", "Quantità"]
-            self.product_third_table.setHeaders(headers)
-            self.product_third_table_adapter.setData(product)
+        self.shoe_last_type_label = QLabel(f"<b>Tipo di abbozzo</b>: {self.controller.get_sketch_type()}")
+        self.shoe_last_type_label.setFont(title_font)
+        self.shoe_last_type_label.setContentsMargins(16, 16, 16, 8)
+
+        # Primo layout orizzontale
+        self.first_horizontal_layout = QHBoxLayout(self.central_frame)
+        self.first_horizontal_layout.addWidget(self.product_type_label)
+        self.first_horizontal_layout.addWidget(self.shoe_last_type_label)
+
+        self.plastic_type_label = QLabel(f"<b>Tipo di plastica</b>: {self.controller.get_plastic()}")
+        self.plastic_type_label.setFont(title_font)
+        self.plastic_type_label.setContentsMargins(16, 16, 16, 8)
+
+        self.gender_label = QLabel(f"<b>Genere</b>: {self.controller.get_gender()}")
+        self.gender_label.setFont(title_font)
+        self.gender_label.setContentsMargins(16, 16, 16, 8)
+
+        # Secondo layout orizzontale
+        self.second_horizontal_layout = QHBoxLayout(self.central_frame)
+        self.second_horizontal_layout.addWidget(self.plastic_type_label)
+        self.second_horizontal_layout.addWidget(self.gender_label)
+
+        self.size_label = QLabel(f"<b>Taglia</b>: {self.controller.get_size()}")
+        self.size_label.setFont(title_font)
+        self.size_label.setContentsMargins(16, 16, 16, 8)
+
+        self.processing_label = QLabel(f"<b>Tipo di lavorazione</b>: {self.controller.get_main_process()}")
+        self.processing_label.setFont(title_font)
+        self.processing_label.setContentsMargins(16, 16, 16, 8)
+
+        # Terzo layout orizzontale
+        self.third_horizontal_layout = QHBoxLayout(self.central_frame)
+        self.third_horizontal_layout.addWidget(self.size_label)
+        self.third_horizontal_layout.addWidget(self.processing_label)
+
+        self.first_compass_label = QLabel(f"<b>Prima bussola</b>: {self.controller.get_first_compass()}")
+        self.first_compass_label.setFont(title_font)
+        self.first_compass_label.setContentsMargins(16, 16, 16, 8)
+
+        self.second_compass_label = QLabel(f"<b>Seconda bussola</b>: {self.controller.get_second_compass()}")
+        self.second_compass_label.setFont(title_font)
+        self.second_compass_label.setContentsMargins(16, 16, 16, 8)
+
+        # Quarto layout orizzontale
+        self.fourth_horizontal_layout = QHBoxLayout(self.central_frame)
+        self.fourth_horizontal_layout.addWidget(self.first_compass_label)
+        self.fourth_horizontal_layout.addWidget(self.second_compass_label)
+
+        self.pivot_under_heel_label = QLabel(f"<b>Perno sotto tacco</b>: {self.controller.get_pivot_under_heel()}")
+        self.pivot_under_heel_label.setFont(title_font)
+        self.pivot_under_heel_label.setContentsMargins(16, 16, 16, 8)
+
+        self.shoeing_label = QLabel(f"<b>Ferratura</b>: {self.controller.get_shoeing()}")
+        self.shoeing_label.setFont(title_font)
+        self.shoeing_label.setContentsMargins(16, 16, 16, 8)
+
+        self.iron_tip_label = QLabel(f"<b>Punta ferrata</b>: {self.controller.get_iron_tip()}")
+        self.iron_tip_label.setFont(title_font)
+        self.iron_tip_label.setContentsMargins(16, 16, 16, 8)
+
+        # Quinto layout orizzontale
+        self.fifth_horizontal_layout = QHBoxLayout(self.central_frame)
+        self.fifth_horizontal_layout.addWidget(self.pivot_under_heel_label)
+        self.fifth_horizontal_layout.addWidget(self.shoeing_label)
+        self.fifth_horizontal_layout.addWidget(self.iron_tip_label)
+
+        self.numbering_antineck_label = QLabel(f"<b>Numeratura anticollo</b>: {self.controller.get_numbering_antineck()}")
+        self.numbering_antineck_label.setFont(title_font)
+        self.numbering_antineck_label.setContentsMargins(16, 16, 16, 8)
+
+        self.numbering_lateral_label = QLabel(f"<b>Numeratura laterale</b>: {self.controller.get_numbering_lateral()}")
+        self.numbering_lateral_label.setFont(title_font)
+        self.numbering_lateral_label.setContentsMargins(16, 16, 16, 8)
+
+        self.numbering_heel_label = QLabel(f"<b>Numeratura tacco</b>: {self.controller.get_numbering_heel()}")
+        self.numbering_heel_label.setFont(title_font)
+        self.numbering_heel_label.setContentsMargins(16, 16, 16, 8)
+
+        # Sesto layout orizzontale
+        self.sixth_horizontal_layout = QHBoxLayout(self.central_frame)
+        self.sixth_horizontal_layout.addWidget(self.numbering_antineck_label)
+        self.sixth_horizontal_layout.addWidget(self.numbering_lateral_label)
+        self.sixth_horizontal_layout.addWidget(self.numbering_heel_label)
 
         # Popola il layout centrale in modo da allineare i Widget in alto
         # Usare "setAlignment" non funziona poiché va in conflitto con la SizePolicy del "central_layout"
         self.inner_central_layout = QVBoxLayout(self.central_frame)
-        self.inner_central_layout.addWidget(self.product_details_title)
-        self.inner_central_layout.addWidget(self.product_main_table)
-        if product is SemiFinished or Finished:
-            self.inner_central_layout.addWidget(self.product_second_table)
-            self.inner_central_layout.addWidget(self.product_third_table)
+        self.inner_central_layout.addLayout(self.first_horizontal_layout)
+        self.inner_central_layout.addLayout(self.second_horizontal_layout)
+        self.inner_central_layout.addLayout(self.third_horizontal_layout)
+        self.inner_central_layout.addLayout(self.fourth_horizontal_layout)
+        self.inner_central_layout.addLayout(self.fifth_horizontal_layout)
+        self.inner_central_layout.addLayout(self.sixth_horizontal_layout)
 
         # Finalizza il layout centrale
         self.inner_central_layout.setContentsMargins(0, 0, 0, 0)
@@ -112,15 +145,15 @@ class ProductView(SubInterfaceChildWidget):
 
         # Imposta la sidebar
         self.sidebar_layout.addWidget(self.delete_product_button)
+        self.sidebar_layout.setAlignment(Qt.AlignTop)
 
     # Mostra un Dialog di conferma dell'eliminazione del prodotto
     def show_confirm_deletion_dialog(self):
-
         # Imposta e mostra una richiesta di conferma dell'eliminazione
         clicked_button = QMessageBox.question(
             self,
             "Conferma eliminazione prodotto",
-            (f"Il prodotto n° {self.controller.get_product()} verrà eliminato e spostato negli scarti.\n"
+            (f"Il prodotto n° {self.controller.get_product().get_item_id()} verrà eliminato e spostato negli scarti.\n"
              f"Sei sicuro di voler eliminare il prodotto?"),
             QMessageBox.Yes | QMessageBox.No
         )
@@ -131,6 +164,7 @@ class ProductView(SubInterfaceChildWidget):
             self.window().removeSubInterface(self)
 
 
+'''
 class SketchDetailsAdapter(SingleRowTableAdapter):
     def adaptData(self, sketch: Sketch) -> list[str]:
         return [
@@ -203,4 +237,4 @@ class FinishedThirdAdapter(SingleRowTableAdapter):
             "No" if finished.get_iron_tip() else "Si",
             finished.get_details(),
             str(finished.get_amount())
-        ]
+        ]'''

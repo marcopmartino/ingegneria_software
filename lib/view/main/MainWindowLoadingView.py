@@ -4,18 +4,17 @@ from enum import Enum
 
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QSizePolicy, QLabel, QHBoxLayout, QWidget, QVBoxLayout, QMainWindow
+from PyQt5.QtWidgets import QLabel, QHBoxLayout, QWidget, QVBoxLayout, QMainWindow
 from qfluentwidgets import IndeterminateProgressRing
-from qfluentwidgets.components.widgets.frameless_window import FramelessWindow
 
 from lib.controller.MainController import MainController
-from lib.layout.FrameLayouts import HFrameLayout
 from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.repository.CashRegisterRepository import CashRegisterRepository
 from lib.repository.MachinesRepository import MachinesRepository
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.repository.Repository import Repository
+from lib.repository.StorageRepository import StorageRepository
 from lib.repository.UsersRepository import UsersRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.ResourceManager import ResourceManager
@@ -118,6 +117,7 @@ class MainWindowLoadingView(QMainWindow):
         self.users_widget = init_loading_widget("Utenti")
         self.orders_widget = init_loading_widget("Ordini")
         self.price_catalog_widget = init_loading_widget("Listino prezzi")
+        self.storage_widget = init_loading_widget("Magazzino")
         self.machines_widget = init_loading_widget("Macchinari")
         self.articles_widget = init_loading_widget("Registro articoli")
         self.cash_register_widget = init_loading_widget("Registro di cassa")
@@ -201,6 +201,14 @@ class MainWindowLoadingView(QMainWindow):
             last_repository_class
         ):
             last_repository_class = ArticlesRepository
+
+        if setup_loading_widget(
+            self.storage_widget,
+            StorageRepository,
+            StorageRepository.Event.PRODUCTS_INITIALIZED,
+            last_repository_class
+        ):
+            last_repository_class = StorageRepository
 
         if setup_loading_widget(
             self.machines_widget,

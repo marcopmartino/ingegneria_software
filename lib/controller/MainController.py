@@ -4,8 +4,8 @@ from lib.repository.MachinesRepository import MachinesRepository
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.repository.Repository import Repository
+from lib.repository.StorageRepository import StorageRepository
 from lib.repository.UsersRepository import UsersRepository
-from lib.utility.ObserverClasses import Observer
 
 
 class MainController:
@@ -32,6 +32,7 @@ class MainController:
     def init_worker_repositories(self):
         self.__repositories = [
             ArticlesRepository(),
+            StorageRepository(),
             MachinesRepository(),
             OrdersRepository(),
             UsersRepository()
@@ -42,6 +43,7 @@ class MainController:
         self.__repositories = [
             ArticlesRepository(),
             CashRegisterRepository(),
+            StorageRepository(),
             MachinesRepository(),
             OrdersRepository(),
             PriceCatalogRepository(),
