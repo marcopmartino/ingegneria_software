@@ -203,20 +203,20 @@ class MainWindowLoadingView(QMainWindow):
             last_repository_class = ArticlesRepository
 
         if setup_loading_widget(
-            self.storage_widget,
-            StorageRepository,
-            StorageRepository.Event.PRODUCTS_INITIALIZED,
-            last_repository_class
-        ):
-            last_repository_class = StorageRepository
-
-        if setup_loading_widget(
             self.machines_widget,
             MachinesRepository,
             MachinesRepository.Event.MACHINES_INITIALIZED,
             last_repository_class
         ):
             last_repository_class = MachinesRepository
+
+        if setup_loading_widget(
+            self.storage_widget,
+            StorageRepository,
+            StorageRepository.Event.PRODUCTS_INITIALIZED,
+            last_repository_class
+        ):
+            last_repository_class = StorageRepository
 
         if setup_loading_widget(
             self.price_catalog_widget,
@@ -247,5 +247,3 @@ class MainWindowLoadingView(QMainWindow):
 
         # Avvio gli stream
         self.controller.get_repository(last_repository_class).open_stream()
-        """Aggiunto temporaneamente - da integrare con il resto"""
-        StorageRepository().open_stream()
