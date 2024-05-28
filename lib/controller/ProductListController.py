@@ -1,4 +1,4 @@
-from lib.model.Product import Product
+from lib.model.StoredItems import StoredShoeLastVariety
 from lib.repository.StorageRepository import StorageRepository
 
 
@@ -8,27 +8,24 @@ class ProductListController:
         super().__init__()
         self.__products_repository = StorageRepository()
 
-    def open_stream(self):
-        self.__products_repository.open_products_stream()
-
     def observe_product_list(self, callback: callable):
         self.__products_repository.observe(callback)
 
     # Ritorna un ordine in base all'id
-    def get_product_by_id(self, product_id: str) -> Product:
+    def get_product_by_id(self, product_id: str) -> StoredShoeLastVariety:
         return self.__products_repository.get_product_by_id(product_id)
 
     # Ritorna la lista dei prodotti
-    def get_products_list(self) -> list[Product]:
+    def get_products_list(self) -> list[StoredShoeLastVariety]:
         return self.__products_repository.get_products_list()
 
     # Ritorna la lista dei prodotti filtrata
-    def get_filtered_product_list(self, filters: dict[str, any]) -> list[Product]:
-        return self.filter_product_list(self.__products_repository.get_products_list().copy(), filters)
+    def get_filtered_product_list(self, filters: dict[str, any]) -> list[StoredShoeLastVariety]:
+        return self.filter_product_list(filters, *self.__products_repository.get_products_list())
 
     # Filtra una lista dei prodotti
-    @staticmethod
-    def filter_product_list(product_list: list[Product], filters: dict[str, any]) -> list[Product]:
+    def filter_product_list(self, filters: dict[str, any],
+                            *product_list: StoredShoeLastVariety) -> list[StoredShoeLastVariety]:
 
         # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio dei prodotti
 
@@ -42,21 +39,22 @@ class ProductListController:
                 allowed_types.append(type_name)
 
         # Eseguo la funzione per tutti i tipi possibili
-        append_types_if_allowed("sketches", "Abbozzo")
-        append_types_if_allowed("semifinished", "Semi-lavorato")
+        append_types_if_allowed("sketch", "Abbozzo")
+        append_types_if_allowed("worked", "Abbozzo sgrossato")
         append_types_if_allowed("finished", "Forma finita")
+        append_types_if_allowed("numbered", "Forma numerata")
 
         # Numero di campi ammessi
         allowed_types_count: int = len(allowed_types)
 
-        filtered_products_list: list[Product] = []
+        filtered_products_list: list[StoredShoeLastVariety] = []
 
         # Se nessuno stato è ammesso, la lista dei prodotti da mostrare è quella vuota
         if allowed_types_count:
 
             # Dato un prodotto, ne ritorna i dettagli
-            def product_details(product_: Product) -> str:
-                return product_.get_details()
+            def product_details(product_: StoredShoeLastVariety) -> str:
+                return product_.get_description()
 
             filter_field = product_details
 
@@ -69,8 +67,8 @@ class ProductListController:
                         continue
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
-                if allowed_types_count != 3:
-                    if product.get_product_type() not in allowed_types:
+                if allowed_types_count != 4:
+                    if product.get_shoe_last_variety().get_product_type() not in allowed_types:
                         continue
 
                 filtered_products_list.append(product)
@@ -84,13 +82,7 @@ class ProductListController:
         product_serial = self.__products_repository.create_product(data)
 
     def get_max_storge(self):
-        return self.__products_repository.get_max_storage("product")
-
-    def get_available_storage(self):
-        return self.__products_repository.get_available_storage("product")
-
-    def get_used_storage(self):
-        return self.__products_repository.get_used_storage("product")
+        return self.__products_repository.get_max_storage()
 
     def sort_products(self, reverse: bool):
         self.__products_repository.sort_list("product", reverse)

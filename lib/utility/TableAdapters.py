@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 from typing import Callable
 
 from PyQt5.QtCore import Qt
@@ -171,7 +172,10 @@ class TableAdapter(ITableAdapter, ABC):
             adapted_element: list = self.adaptData(element)
 
             for column in range(0, self.table.columnCount()):
-                self.table.setItem(row, column, self.getColumnItemClass(column)(adapted_element[column]))
+                if issubclass(type(adapted_element[column]), Enum):
+                    self.table.setItem(row, column, self.getColumnItemClass(column)(adapted_element[column].value))
+                else:
+                    self.table.setItem(row, column, self.getColumnItemClass(column)(adapted_element[column]))
 
             self._onRowUpdated(adapted_element, row)
 

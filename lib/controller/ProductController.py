@@ -1,73 +1,72 @@
-from lib.controller.OrderBaseController import OrderBaseController
-from lib.model.Order import Order
-from lib.model.Product import Product
-from lib.repository.ArticlesRepository import ArticlesRepository
-from lib.repository.CashRegisterRepository import CashRegisterRepository
-from lib.repository.OrdersRepository import OrdersRepository
+from lib.model.StoredItems import StoredShoeLastVariety
 from lib.repository.StorageRepository import StorageRepository
-from lib.repository.UsersRepository import UsersRepository
-from lib.utility.ObserverClasses import Observer, AnonymousObserver
-from res.Strings import OrderStateStrings
 
 
 class ProductController:
 
-    def __init__(self, product: Product):
+    def __init__(self, product: StoredShoeLastVariety):
         super().__init__()
 
         # Repositories
         self.__products_repository: StorageRepository = StorageRepository()
 
         # Models
-        self.__product: Product = product
+        self.__product: StoredShoeLastVariety = product
 
     def get_product(self):
         return self.__product
 
     def get_product_serial(self):
-        return self.__product.get_serial()
+        return self.__product.get_item_id()
 
     def get_product_type(self):
-        return self.__product.get_product_type()
+        return self.__product.get_shoe_last_variety().get_product_type().value
 
     def get_plastic(self):
-        return self.get_plastic()
+        return self.__product.get_shoe_last_variety().get_plastic_type().value
 
     def get_gender(self):
-        return self.__product.get_gender()
+        return self.__product.get_shoe_last_variety().get_gender().value
 
     def get_sketch_type(self):
-        return self.__product.get_sketch_type()
+        return self.__product.get_shoe_last_variety().get_shoe_last_type().value
 
-    def get_numbering(self):
-        return self.__product.get_numbering()
+    def get_numbering_heel(self):
+        return self.__product.get_shoe_last_variety().get_numbering_heel()
+
+    def get_numbering_lateral(self):
+        return self.__product.get_shoe_last_variety().get_numbering_lateral()
+
+    def get_numbering_antineck(self):
+        return self.__product.get_shoe_last_variety().get_numbering_antineck()
 
     def get_size(self):
-        return self.__product.get_size()
+        size = self.__product.get_shoe_last_variety().get_size()
+        return size if size != "" else "N/A"
 
     def get_main_process(self):
-        return self.__product.get_main_process()
+        return self.__product.get_shoe_last_variety().get_processing().value
 
     def get_shoeing(self):
-        return self.__product.get_shoeing()
+        return self.__product.get_shoe_last_variety().get_shoeing().value
 
     def get_first_compass(self):
-        return self.__product.get_first_compass()
+        return self.__product.get_shoe_last_variety().get_first_compass_type().value
 
     def get_second_compass(self):
-        return self.__product.get_second_compass()
+        return self.__product.get_shoe_last_variety().get_second_compass_type().value
 
     def get_pivot_under_heel(self):
-        return self.__product.get_pivot_under_heel()
+        return self.__product.get_shoe_last_variety().get_pivot_under_heel()
 
     def get_iron_tip(self):
-        return self.__product.get_iron_tip()
+        return self.__product.get_shoe_last_variety().get_iron_tip()
 
-    def get_details(self):
-        return self.__product.get_details()
+    def get_description(self):
+        return self.__product.get_shoe_last_variety().get_description()
 
     def get_amount(self):
-        return self.__product.get_amount()
+        return self.__product.get_quantity()
 
     '''def update_order(self, data: dict[str, any], price: float):
         # Estrae la quantità (numero di paia di forme) dell'ordine
@@ -80,6 +79,6 @@ class ProductController:
         self.__orders_repository.update_order_by_id(self.get_order_serial(), article_serial, quantity, price)'''
 
     def delete_product_by_id(self):
-        self.__products_repository.update_waste(self.get_plastic())
+        self.__products_repository.update_waste(self.get_plastic().value)
         self.__products_repository.delete_product_by_id(self.get_product_serial())
 

@@ -1,5 +1,4 @@
-from lib.firebaseData import Firebase
-from lib.model.Product import Product
+from lib.model.StoredItems import StoredMaterial
 from lib.repository.StorageRepository import StorageRepository
 
 
@@ -13,20 +12,20 @@ class MaterialsListController:
         self.__materials_repository.observe(callback)
 
     # Ritorna un materiale in base all'id
-    def get_material_by_id(self, material_id: str) -> Product:
+    def get_material_by_id(self, material_id: str) -> StoredMaterial:
         return self.__materials_repository.get_material_by_id(material_id)
 
     # Ritorna la lista dei materiali
-    def get_materials_list(self) -> list[Product]:
+    def get_materials_list(self) -> list[StoredMaterial]:
         return self.__materials_repository.get_materials_list()
 
     # Ritorna la lista dei materiali filtrata
-    def get_filtered_materials_list(self, filters: dict[str, any]) -> list[Product]:
-        return self.filter_materials_list(self.__materials_repository.get_materials_list().copy(), filters)
+    def get_filtered_materials_list(self, filters: dict[str, any]) -> list[StoredMaterial]:
+        return self.filter_materials_list(filters, *self.__materials_repository.get_materials_list())
 
     # Filtra una lista dei materiali
     @staticmethod
-    def filter_materials_list(materials_list: list[Product], filters: dict[str, any]) -> list[Product]:
+    def filter_materials_list(filters: dict[str, any], *materials_list: StoredMaterial) -> list[StoredMaterial]:
 
         # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio dei materiali
 
@@ -39,22 +38,23 @@ class MaterialsListController:
             if filters[filter_key]:
                 allowed_types.append(type_name)
 
-        # Eseguo la funzione per tutti i tipi possibili
+        # Eseguo la funzione per tutti i tipi possibilishoeing part
+        append_types_if_allowed("shoeing", "Parte per ferratura")
+        append_types_if_allowed("turning", "Parte per tornitura")
         append_types_if_allowed("compass", "Bussola")
-        append_types_if_allowed("ironparts", "Parti per ferratura")
         append_types_if_allowed("other", "Altro")
 
         # Numero di campi ammessi
         allowed_types_count: int = len(allowed_types)
 
-        filtered_materials_list: list[Product] = []
+        filtered_materials_list: list[StoredMaterial] = []
 
         # Se nessuno stato è ammesso, la lista dei materiali da mostrare è quella vuota
         if allowed_types_count:
 
             # Dato un materiale ne ritorna i dettagli
-            def material_details(product_: Product) -> str:
-                return product_.get_details()
+            def material_details(product_: StoredMaterial) -> str:
+                return product_.get_description
 
             filter_field = material_details
 
@@ -67,8 +67,8 @@ class MaterialsListController:
                         continue
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
-                if allowed_types_count != 3:
-                    if material.get_product_type() not in allowed_types:
+                if allowed_types_count != 4:
+                    if material.get_material_type() not in allowed_types:
                         continue
 
                 filtered_materials_list.append(material)
@@ -79,4 +79,7 @@ class MaterialsListController:
     def create_material(self, data: dict[str, any]):
         # Controlla se il materiale esiste e in caso affermativo ne ritorna anche il seriale
         material_serial = self.__materials_repository.create_material(data)
+
+    def get_max_storge(self):
+        return self.__materials_repository.get_max_storage()
 

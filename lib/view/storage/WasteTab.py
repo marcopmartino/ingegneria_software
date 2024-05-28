@@ -1,19 +1,22 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QInputDialog, QDialog
 from qfluentwidgets import CheckBox, PushButton
 
 from lib.controller.WasteListController import WasteListController
-from lib.model.Product import Product
+from lib.model.StoredItems import StoredWaste
+from lib.repository.StorageRepository import StorageRepository
+from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
+from res import Styles
 from res.Dimensions import FontSize
 
 
-class WastesTab(SubInterfaceChildWidget):
+class WasteTab(SubInterfaceChildWidget):
     def __init__(self, parent_widget: SubInterfaceWidget):
         super().__init__("wastes_list_view", parent_widget)
         self.hideHeader()
@@ -39,28 +42,16 @@ class WastesTab(SubInterfaceChildWidget):
         font.setBold(False)
         self.max_storage = QLabel(self.sidebar_frame)
         self.max_storage.setObjectName("max_storage_label")
-        self.max_storage.setText(f"Massima capienza: {self.controller.get_max_storge()}")
+        self.max_storage.setText(f"Massima: {self.controller.get_max_storge()}")
         self.max_storage.setFont(font)
-
-        self.used_storage = QLabel(self.sidebar_frame)
-        self.used_storage.setObjectName("used_storage_label")
-        self.used_storage.setText(f"Occupati: {self.controller.get_used_storage()}")
-        self.used_storage.setFont(font)
-
-        self.available_storage = QLabel(self.sidebar_frame)
-        self.available_storage.setObjectName("available_storage_label")
-        self.available_storage.setText(f"Disponibile: {self.controller.get_available_storage()}")
-        self.available_storage.setFont(font)
 
         self.storage_details_layout.addWidget(self.details_title, alignment=Qt.AlignCenter)
         self.storage_details_layout.addWidget(self.max_storage, alignment=Qt.AlignLeft)
-        self.storage_details_layout.addWidget(self.used_storage, alignment=Qt.AlignLeft)
-        self.storage_details_layout.addWidget(self.available_storage, alignment=Qt.AlignLeft)
 
         # Label per magazzino vuoto
         self.empty_storage = QLabel(self.central_frame)
         self.empty_storage.setObjectName("empty_label")
-        self.empty_storage.setText("Nessun prodotto presente in magazzino")
+        self.empty_storage.setText("Nessuno scarto presente in magazzino, modificare i filtri.")
         self.empty_storage.setFont(font)
 
         # Layout con il checkgroup
@@ -104,17 +95,17 @@ class WastesTab(SubInterfaceChildWidget):
         self.checkgroup2_layout.setObjectName("first_checkgroup_layout")
 
         # self.sort_combo_box.currentIndexChanged.connect(on_sorter_combo_index_changed)
-        #self.sort_combo_box.setCurrentIndex(0)
 
         # Button "Aggiorna lista"
-        self.refresh_button = PushButton(self.sidebar_frame)
-        self.refresh_button.setText("Aggiorna lista")
-        self.refresh_button.clicked.connect(self.refresh_wastes_list)
+        self.refresh_waste_button = PushButton(self.sidebar_frame)
+        self.refresh_waste_button.setText("Aggiorna lista")
+        self.refresh_waste_button.clicked.connect(self.refresh_waste_list)
 
         # Button "Vendi scarti"
-        self.sell_button = PushButton(self.sidebar_frame)
-        self.sell_button.setText("Vendi scarti")
-        self.refresh_button.clicked.connect(self.sell_wastes)
+        self.sell_info_label = QLabel(self.sidebar_frame)
+        self.sell_info_label.setWordWrap(True)
+        self.sell_info_label.setText("Clicca su una riga della tabella per vendere gli scarti")
+        self.sell_info_label.setAlignment(Qt.AlignCenter)
 
         # Spacer tra i due pulsanti
         self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
@@ -123,9 +114,9 @@ class WastesTab(SubInterfaceChildWidget):
         self.sidebar_layout.addItem(self.storage_details_layout)
         self.sidebar_layout.addWidget(self.sidebar_spacer)
         self.sidebar_layout.addItem(self.checkgroup1_layout)
-        self.sidebar_layout.addWidget(self.refresh_button)
-        self.sidebar_layout.addWidget(self.sell_button)
+        self.sidebar_layout.addWidget(self.refresh_waste_button)
         self.sidebar_layout.addWidget(self.sidebar_spacer)
+        self.sidebar_layout.addWidget(self.sell_info_label)
 
         # Form Manager
         self.form_manager = FormManager()
@@ -133,33 +124,39 @@ class WastesTab(SubInterfaceChildWidget):
 
         # Tabella
         self.table = StandardTable(self.central_frame)
-        headers = ["Dettagli", "Quantità"]
+        headers = ["Serial", "Dettagli", "Quantità"]
         self.table.setHeaders(headers)
+        self.table.hideColumn(0)
 
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
-        self.table_adapter.setData(self.controller.get_wastes_list())
+        self.table_adapter.setData(self.controller.get_waste_list())
+        self.table_adapter.onDoubleClick(self.show_sell_dialog)
 
         # self.table_adapter.onSelection(self.show_product_details)
 
-        def update_table(message: Product | str):
-            if type(message) is Product:
-                self.table_adapter.addData([message])
-            else:
-                self.table_adapter.removeRowByKey(message)
+        def update_table(message: Message):
+            data = message.data()
+            match message.event():
+                case StorageRepository.Event.WASTE_INITIALIZED:
+                    self.table_adapter.setData(
+                        self.controller.filter_waste_list(self.form_manager.data(), *data)
+                    )
+                case StorageRepository.Event.WASTE_CREATED:
+                    if len(self.controller.filter_waste_list(self.form_manager.data(), *data)) != 0:
+                        self.table_adapter.addData(data)
+                case StorageRepository.Event.WASTE_UPDATED:
+                    self.table_adapter.updateDataColumns(data, [2])
+            self.check_empty_table()
 
-            if self.table.isEmpty():
-                self.empty_storage.setVisible(True)
-                self.table.setVisible(False)
-            else:
-                self.empty_storage.setVisible(False)
-                self.table.setVisible(True)
-
-        self.controller.observe_wastes_list(update_table)
+        self.controller.observe_waste_list(update_table)
 
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
 
+        self.check_empty_table()
+
+    def check_empty_table(self):
         if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
@@ -168,40 +165,44 @@ class WastesTab(SubInterfaceChildWidget):
             self.table.setVisible(True)
 
     # Ritorna la lista degli scarti filtrata
-    def get_filtered_wastes_list(self) -> list[Product]:
-        return self.controller.get_filtered_wastes_list(self.form_manager.data())
+    def get_filtered_waste_list(self) -> list[StoredWaste]:
+        return self.controller.get_filtered_waste_list(self.form_manager.data())
 
     # Aggiorna la lista degli scarti in base ai filtri
-    def refresh_wastes_list(self):
-        self.table.clearSelection()
-        self.table_adapter.setData(self.get_filtered_wastes_list())
-        if self.table.isEmpty():
-            self.empty_storage.setVisible(True)
-            self.table.setVisible(False)
-        else:
-            self.empty_storage.setVisible(False)
-            self.table.setVisible(True)
+    def refresh_waste_list(self):
+        self.table_adapter.setData(self.get_filtered_waste_list())
+        self.check_empty_table()
 
     # Aggiorna la lista degli scarti in base ai filtri
-    def sell_wastes(self):
-        pass
+    def show_sell_dialog(self, waste_id: str):
 
-    # Mostra la form per l'aggiunta degli scarti
-    '''def show_order_form(self):
-        pass
-        product_form = CreateProductView(self)
-        product_form.exec()
+        data = self.controller.get_waste_by_id(waste_id)
 
-    # Mostra la schermata con i dettagli del prodotto
-    def show_product_details(self, serial: str):
-        print(f"Prodotto selezionato: {serial}")
-        product_details = ProductDetailsView(self, serial)
-        self.window().addRemovableSubInterface(product_details, text=f"Prodotto {serial}")'''
+        sell_dialog = QInputDialog(self)
+        sell_dialog.setStyleSheet(Styles.DIALOG)
+        sell_dialog.setWindowTitle(f"Vendita scarti plastica tipo {data.get_plastic_type().value}")
+        sell_dialog.setLabelText("Quantità da vendere: ")
+        sell_dialog.setInputMode(QInputDialog.IntInput)
+        sell_dialog.setIntValue(0)
+        sell_dialog.setIntMaximum(data.get_quantity())
+        sell_dialog.setIntMinimum(0)
+        sell_dialog.setIntStep(1)
+        sell_dialog.setOkButtonText("Vendi")
+        sell_dialog.setCancelButtonText("Annulla")
+
+        # Eseguito solo se l'utente ha scelto di salvare la modifica
+        if sell_dialog.exec_() == QDialog.Accepted:
+            # Prendo il valore
+            new_value = sell_dialog.intValue()
+
+            # Aggiorno il valore se è diverso
+            if new_value != data.get_quantity():
+                self.controller.update_waste_quantity(waste_id, new_value)
+        # SellWasteDialog(waste_id, self.controller).exec()
 
 
 class StorageListAdapter(TableAdapter):
-    def adaptData(self, waste: Product) -> list[str]:
-        return [
-            f"Plastica {waste.get_details()}",
-            str(waste.get_amount())
-        ]
+    def adaptData(self, waste: StoredWaste) -> list[str]:
+        return [waste.get_item_id(),
+                f"Tipo {waste.get_plastic_type().value}",
+                str(waste.get_quantity())]

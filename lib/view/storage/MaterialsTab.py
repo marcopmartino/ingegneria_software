@@ -1,10 +1,12 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
-from qfluentwidgets import SearchLineEdit, ComboBox, CheckBox, PushButton
+from PyQt5.QtWidgets import QVBoxLayout, QLabel
+from qfluentwidgets import SearchLineEdit, CheckBox, PushButton
 
 from lib.controller.MaterialsListController import MaterialsListController
-from lib.model.Product import Product
+from lib.model.StoredItems import StoredMaterial
+from lib.repository.StorageRepository import StorageRepository
+from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
@@ -39,23 +41,11 @@ class MaterialsTab(SubInterfaceChildWidget):
         font.setBold(False)
         self.max_storage = QLabel(self.sidebar_frame)
         self.max_storage.setObjectName("max_storage_label")
-        self.max_storage.setText(f"Massima capienza: {self.controller.get_max_storge()}")
+        self.max_storage.setText(f"Massima: {self.controller.get_max_storge()}")
         self.max_storage.setFont(font)
-
-        self.used_storage = QLabel(self.sidebar_frame)
-        self.used_storage.setObjectName("used_storage_label")
-        self.used_storage.setText(f"Occupati: {self.controller.get_used_storage()}")
-        self.used_storage.setFont(font)
-
-        self.available_storage = QLabel(self.sidebar_frame)
-        self.available_storage.setObjectName("available_storage_label")
-        self.available_storage.setText(f"Disponibile: {self.controller.get_available_storage()}")
-        self.available_storage.setFont(font)
 
         self.storage_details_layout.addWidget(self.details_title, alignment=Qt.AlignCenter)
         self.storage_details_layout.addWidget(self.max_storage, alignment=Qt.AlignLeft)
-        self.storage_details_layout.addWidget(self.used_storage, alignment=Qt.AlignLeft)
-        self.storage_details_layout.addWidget(self.available_storage, alignment=Qt.AlignLeft)
 
         # SearchBox
         self.search_box = SearchLineEdit(self.sidebar_frame)
@@ -66,7 +56,7 @@ class MaterialsTab(SubInterfaceChildWidget):
         # Label per magazzino vuoto
         self.empty_storage = QLabel(self.central_frame)
         self.empty_storage.setObjectName("empty_label")
-        self.empty_storage.setText("Nessun prodotto presente in magazzino")
+        self.empty_storage.setText("Nessun materiale presente in magazzino, modificare i filtri")
         self.empty_storage.setFont(font)
 
         # Layout con il checkgroup
@@ -83,21 +73,28 @@ class MaterialsTab(SubInterfaceChildWidget):
         self.checkgroup_label.setFont(font)
         self.checkgroup_layout.addWidget(self.checkgroup_label)
 
-        # CheckBox "Abbozzi"
+        # CheckBox "Parti per ferratura"
         self.sketches_checkbox = CheckBox(self.sidebar_frame)
-        self.sketches_checkbox.setObjectName("compass_check_box")
-        self.sketches_checkbox.setText("Bussola")
+        self.sketches_checkbox.setObjectName("shoeing_part_check_box")
+        self.sketches_checkbox.setText("Parti per ferratura")
         self.sketches_checkbox.setChecked(True)
         self.checkgroup_layout.addWidget(self.sketches_checkbox)
 
-        # CheckBox "Semi-lavorati"
+        # CheckBox "Parti per tornitura"
         self.semifinished_check_box = CheckBox(self.sidebar_frame)
-        self.semifinished_check_box.setObjectName("ironparts_check_box")
-        self.semifinished_check_box.setText("Parti per ferratura")
+        self.semifinished_check_box.setObjectName("turning_part_check_box")
+        self.semifinished_check_box.setText("Parti per tornitura")
         self.semifinished_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.semifinished_check_box)
 
-        # CheckBox "Forme finite"
+        # CheckBox "Bussola"
+        self.finished_check_box = CheckBox(self.sidebar_frame)
+        self.finished_check_box.setObjectName("compass_check_box")
+        self.finished_check_box.setText("Bussola")
+        self.finished_check_box.setChecked(True)
+        self.checkgroup_layout.addWidget(self.finished_check_box)
+
+        # CheckBox "Altro"
         self.finished_check_box = CheckBox(self.sidebar_frame)
         self.finished_check_box.setObjectName("other_check_box")
         self.finished_check_box.setText("Altro")
@@ -135,22 +132,29 @@ class MaterialsTab(SubInterfaceChildWidget):
 
         # self.table_adapter.onSelection(self.show_product_details)
 
-        def update_table(message: Product | str):
-            if type(message) is Product:
-                self.table_adapter.addData([message])
-            else:
-                self.table_adapter.removeRowByKey(message)
+        def update_table(message: Message):
+            data = message.data()
+            match message.event():
+                case StorageRepository.Event.MATERIALS_INITIALIZED:
+                    self.table_adapter.setData(
+                        self.controller.filter_materials_list(self.form_manager.data(), *data)
+                    )
+                case StorageRepository.Event.MATERIAL_CREATED:
+                    if len(self.controller.filter_materials_list(self.form_manager.data(), *data)) != 0:
+                        self.table_adapter.addData(data)
+                case StorageRepository.Event.MATERIAL_DELETED:
+                    self.table_adapter.updateDataColumns(data, [3])
 
-            if self.table.isEmpty():
-                self.empty_storage.setVisible(True)
-            else:
-                self.empty_storage.setVisible(False)
+            self.check_empty_table()
 
         self.controller.observe_materials_list(update_table)
 
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
 
+        self.check_empty_table()
+
+    def check_empty_table(self):
         if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
@@ -159,37 +163,20 @@ class MaterialsTab(SubInterfaceChildWidget):
             self.table.setVisible(True)
 
     # Ritorna la lista di ordini filtrata
-    def get_filtered_materials_list(self) -> list[Product]:
+    def get_filtered_materials_list(self) -> list[StoredMaterial]:
         return self.controller.get_filtered_materials_list(self.form_manager.data())
 
     # Aggiorna la lista dei materiali in base ai filtri
     def refresh_materials_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_materials_list())
-        if self.table.isEmpty():
-            self.empty_storage.setVisible(True)
-            self.table.setVisible(False)
-        else:
-            self.empty_storage.setVisible(False)
-            self.table.setVisible(True)
-
-    # Mostra la form per l'aggiunta dei prodotti
-    '''def show_order_form(self):
-        pass
-        product_form = CreateProductView(self)
-        product_form.exec()
-
-    # Mostra la schermata con i dettagli del prodotto
-    def show_product_details(self, serial: str):
-        print(f"Prodotto selezionato: {serial}")
-        product_details = ProductDetailsView(self, serial)
-        self.window().addRemovableSubInterface(product_details, text=f"Prodotto {serial}")'''
+        self.check_empty_table()
 
 
 class StorageListAdapter(TableAdapter):
-    def adaptData(self, product: Product) -> list[str]:
-        return [product.get_serial(),
-                product.get_product_type(),
-                product.get_details(),
-                str(product.get_amount())
+    def adaptData(self, product: StoredMaterial) -> list[str]:
+        return [product.get_item_id(),
+                product.get_material_type(),
+                product.get_description,
+                str(product.get_quantity())
                 ]

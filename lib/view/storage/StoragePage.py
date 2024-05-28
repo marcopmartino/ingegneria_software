@@ -4,14 +4,10 @@ from PyQt5.QtWidgets import (
 )
 from qfluentwidgets import SegmentedWidget, FluentIconBase, FluentIcon
 
-from lib.controller.MaterialsListController import MaterialsListController
-from lib.controller.ProductListController import ProductListController
-from lib.controller.WastesListController import WastesListController
-
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.MaterialsTab import MaterialsTab
 from lib.view.storage.ProductsTab import ProductsTab
-from lib.view.storage.WastesTab import WastesTab
+from lib.view.storage.WasteTab import WasteTab
 
 
 # noinspection PyPep8Naming
@@ -20,7 +16,6 @@ class StoragePage(SubInterfaceWidget):
         super().__init__("storage_page_view", parent_widget, svg_icon)
         # self.central_frame.setMinimumWidth(800)
         self.hideSidebar()
-        self.open_stream()
 
         # Titolo e sottotitolo
         self.setTitleText("Magazzino")
@@ -32,7 +27,7 @@ class StoragePage(SubInterfaceWidget):
 
         self.productsInterface = ProductsTab(self)
         self.materialsInterface = MaterialsTab(self)
-        self.wasteInterface = WastesTab(self)
+        self.wasteInterface = WasteTab(self)
 
         # add items to pivot
         self.addSubInterface(self.productsInterface, 'productsInterface', 'Forme, Abbozzi e Semi-lavorati')
@@ -61,9 +56,3 @@ class StoragePage(SubInterfaceWidget):
     def onCurrentIndexChanged(self, index):
         widget = self.stackedWidget.widget(index)
         self.navigation.setCurrentItem(widget.objectName())
-
-    @staticmethod
-    def open_stream():
-        ProductListController().open_stream()
-        MaterialsListController().open_stream()
-        WastesListController().open_stream()

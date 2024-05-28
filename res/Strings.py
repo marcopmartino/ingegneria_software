@@ -99,3 +99,4 @@ class ValidationStrings:
     PASSWORD_CONFIRM_DIFFERENT = "Le due password non coincidono"
     FIELD_REQUIRED = "Campo richiesto"
     MIN_PASSWORD_ERROR = "La password deve essere lunga almeno 6 caratteri"
+

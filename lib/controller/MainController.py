@@ -32,6 +32,7 @@ class MainController:
     def init_worker_repositories(self):
         self.__repositories = [
             ArticlesRepository(),
+            StorageRepository(),
             MachinesRepository(),
             OrdersRepository(),
             StorageRepository(),
@@ -43,6 +44,7 @@ class MainController:
         self.__repositories = [
             ArticlesRepository(),
             CashRegisterRepository(),
+            StorageRepository(),
             MachinesRepository(),
             OrdersRepository(),
             PriceCatalogRepository(),
