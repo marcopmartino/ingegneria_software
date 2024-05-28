@@ -1,7 +1,7 @@
 from enum import Enum
 
 from lib.model.ShoeLastVariety import ShoeLastVariety
-from lib.model.StoredItems import StoredShoeLastVariety, StoredMaterial, StoredWaste
+from lib.model.StoredItems import StoredShoeLastVariety, StoredMaterial, StoredWaste, StoredItem
 from lib.network.StorageNetwork import StorageNetwork
 from lib.repository.CashRegisterRepository import CashRegisterRepository
 from lib.repository.Repository import Repository
@@ -42,12 +42,12 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
     # Usato internamente per istanziare e aggiungere un prodotto alla lista
     def __instantiate_and_append_product(self, serial: str, data: any):
         shoe = ShoeLastVariety(
-                data['product_type'], data['gender'], data['shoe_last_type'],
-                data['plastic_type'], data['size'], data['processing'],
-                data['first_compass_type'], data['second_compass_type'], data['pivot_under_heel'],
-                data['shoeing'], data['iron_tip'], data['numbering_antineck'],
-                data['numbering_lateral'], data['numbering_heel']
-            )
+            data['product_type'], data['gender'], data['shoe_last_type'],
+            data['plastic_type'], data['size'], data['processing'],
+            data['first_compass_type'], data['second_compass_type'], data['pivot_under_heel'],
+            data['shoeing'], data['iron_tip'], data['numbering_antineck'],
+            data['numbering_lateral'], data['numbering_heel']
+        )
 
         product = StoredShoeLastVariety(serial, data['amount'], shoe)
         self.__products_list.append(product)
@@ -66,6 +66,7 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         waste = StoredWaste(
             serial, data['amount'], data['plastic_type']
         )
+
         self.__waste_list.append(waste)
         return waste
 
@@ -216,28 +217,33 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                 # Aggiornamento del magazzino
                 case "patch":
 
+                    element: StoredItem
+
                     # Estrae il percorso dell'elemento che è stato modificato e il suo id
                     path = path.split('/')
                     element_type = path[1]
                     element_id = path[2]
 
-                    print("Updating element" + element_id)
-
-                    # Prende l'elemento corrispondente
-                    element: StoredShoeLastVariety | StoredMaterial | StoredWaste
-                    message: Message
-                    if element_type == "products":
-                        element = self.get_product_by_id(element_id)
-                        element.update(data)
-                        message = Message(StorageRepository.Event.PRODUCT_UPDATED, element)
-                    elif element_type == "materials":
-                        element = self.get_material_by_id(element_id)
-                        element.update(data)
-                        message = Message(StorageRepository.Event.MATERIAL_UPDATED, element)
+                    if len(data) != 1:
+                        if element_type == "products":
+                            element = self.__instantiate_and_append_product(element_id, data)
+                            message = Message(StorageRepository.Event.PRODUCT_CREATED, element)
                     else:
-                        element = self.get_waste_by_id(element_id)
-                        element.update(data)
-                        message = Message(StorageRepository.Event.WASTE_UPDATED, element)
+                        print("Updating element" + element_id)
+                        # Prende l'elemento corrispondente
+
+                        if element_type == "products":
+                            element = self.get_product_by_id(element_id)
+                            message = Message(StorageRepository.Event.PRODUCT_UPDATED)
+                        elif element_type == "materials":
+                            element = self.get_material_by_id(element_id)
+                            message = Message(StorageRepository.Event.MATERIAL_UPDATED)
+                        else:
+                            element = self.get_waste_by_id(element_id)
+                            message = Message(StorageRepository.Event.WASTE_UPDATED)
+
+                        element.set_quantity(data['amount'])
+                        message.setData(element)
 
                     self.notify(message)
 
@@ -363,11 +369,11 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
             if waste.get_item_id() == waste_id:
                 transaction_amount = 0
                 if waste.get_plastic_type().value == 1:
-                    transaction_amount = new_quantity*1.0
+                    transaction_amount = new_quantity * 1.0
                 elif waste.get_plastic_type() == 2:
-                    transaction_amount = new_quantity*1.5
+                    transaction_amount = new_quantity * 1.5
                 else:
-                    transaction_amount = new_quantity*2.0
+                    transaction_amount = new_quantity * 2.0
 
                 CashRegisterRepository().create_transaction(
                     f"Vendità scarti plastica tipo {waste.get_plastic_type().value}",

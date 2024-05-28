@@ -3,7 +3,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QVBoxLayout, QLabel
 from qfluentwidgets import SearchLineEdit, CheckBox, PushButton
 
-from lib.controller.ProductListController import ProductListController
+from lib.controller.StorageListController import StorageListController
 from lib.model.StoredItems import StoredShoeLastVariety
 from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message
@@ -18,11 +18,11 @@ from res.Dimensions import FontSize
 
 class ProductsTab(SubInterfaceChildWidget):
 
-    def __init__(self, parent_widget: SubInterfaceWidget):
+    def __init__(self, parent_widget: SubInterfaceWidget, storage_controller: StorageListController):
         super().__init__("products_list_view", parent_widget)
         self.hideHeader()
 
-        self.controller = ProductListController()
+        self.controller = storage_controller
 
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(12)
@@ -125,19 +125,15 @@ class ProductsTab(SubInterfaceChildWidget):
 
         # Tabella
         self.table_products = StandardTable(self.central_frame)
-        self.products_headers = ["Seriale", "Tipo Prodotto", "Genere", "Tipo abbozzo", "Tipo plastica",
-                                 "Taglia", "Lavorazione principale", "Prima bussola", "Seconda_bussola",
-                                 "Perno sotto tallone", "Ferratura", "Punta ferrata", "Numeratura anticollo",
-                                 "Numeratura laterale", "Numeratura tacco", "Quantità"]
+        self.products_headers = ["Seriale", "Tipo", "Dettagli", "Quantità"]
         self.table_products.setHeaders(self.products_headers)
+        self.table_products.setWordWrap(True)
 
         # Table Adapter
         self.table_products_adapter = StorageListAdapter(self.table_products)
-        product_list = self.controller.get_products_list()
+        product_list = self.get_filtered_product_list()
         self.table_products_adapter.setData(product_list)
         self.table_products_adapter.onDoubleClick(self.show_product_details)
-
-        # self.table_adapter.onSelection(self.show_product_details)
 
         def update_table(message: Message):
             data = message.data()
@@ -151,17 +147,15 @@ class ProductsTab(SubInterfaceChildWidget):
                         self.table_products_adapter.addData(data)
 
                 case StorageRepository.Event.PRODUCT_UPDATED:
-                    self.table_products_adapter.updateDataColumns(data, [15])
+                    self.table_products_adapter.updateDataColumns(data, [3])
 
             self.check_empty_tables()
 
         self.messageReceived.connect(update_table)
-        self.controller.observe_product_list(self.messageReceived.emit)
+        self.controller.observe_storage_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table_products)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
-
-        self.check_empty_tables()
 
     def check_empty_tables(self):
         if self.table_products.isEmpty():
@@ -192,17 +186,5 @@ class StorageListAdapter(TableAdapter):
     def adaptData(self, product: StoredShoeLastVariety) -> list[str]:
         return [product.get_item_id(),
                 product.get_shoe_last_variety().get_product_type(),
-                product.get_shoe_last_variety().get_gender(),
-                product.get_shoe_last_variety().get_shoe_last_type(),
-                "Tipo" + str(product.get_shoe_last_variety().get_plastic_type()),
-                product.get_shoe_last_variety().get_size(),
-                product.get_shoe_last_variety().get_processing(),
-                product.get_shoe_last_variety().get_first_compass_type(),
-                product.get_shoe_last_variety().get_second_compass_type(),
-                product.get_shoe_last_variety().get_pivot_under_heel(),
-                product.get_shoe_last_variety().get_shoeing(),
-                product.get_shoe_last_variety().get_iron_tip(),
-                product.get_shoe_last_variety().get_numbering_antineck(),
-                product.get_shoe_last_variety().get_numbering_lateral(),
-                product.get_shoe_last_variety().get_numbering_heel(),
+                product.get_description(),
                 str(product.get_quantity())]

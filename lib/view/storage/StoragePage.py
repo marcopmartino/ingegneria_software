@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (
 )
 from qfluentwidgets import SegmentedWidget, FluentIconBase, FluentIcon
 
+from lib.controller.StorageListController import StorageListController
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.MaterialsTab import MaterialsTab
 from lib.view.storage.ProductsTab import ProductsTab
@@ -25,9 +26,11 @@ class StoragePage(SubInterfaceWidget):
         self.stackedWidget = QStackedWidget(self)
         self.vBoxLayout = QVBoxLayout(self.central_frame)
 
-        self.productsInterface = ProductsTab(self)
-        self.materialsInterface = MaterialsTab(self)
-        self.wasteInterface = WasteTab(self)
+        self.storage_controller = StorageListController()
+
+        self.productsInterface = ProductsTab(self, self.storage_controller)
+        self.materialsInterface = MaterialsTab(self, self.storage_controller)
+        self.wasteInterface = WasteTab(self, self.storage_controller)
 
         # add items to pivot
         self.addSubInterface(self.productsInterface, 'productsInterface', 'Forme, Abbozzi e Semi-lavorati')

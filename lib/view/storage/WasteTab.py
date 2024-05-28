@@ -3,7 +3,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QInputDialog, QDialog
 from qfluentwidgets import CheckBox, PushButton
 
-from lib.controller.WasteListController import WasteListController
+from lib.controller.StorageListController import StorageListController
 from lib.model.StoredItems import StoredWaste
 from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message
@@ -17,11 +17,11 @@ from res.Dimensions import FontSize
 
 
 class WasteTab(SubInterfaceChildWidget):
-    def __init__(self, parent_widget: SubInterfaceWidget):
+    def __init__(self, parent_widget: SubInterfaceWidget, storage_controller: StorageListController):
         super().__init__("wastes_list_view", parent_widget)
         self.hideHeader()
 
-        self.controller = WasteListController()
+        self.controller = storage_controller
 
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(12)
@@ -130,7 +130,7 @@ class WasteTab(SubInterfaceChildWidget):
 
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
-        self.table_adapter.setData(self.controller.get_waste_list())
+        self.table_adapter.setData(self.get_filtered_waste_list())
         self.table_adapter.onDoubleClick(self.show_sell_dialog)
 
         # self.table_adapter.onSelection(self.show_product_details)
@@ -149,7 +149,7 @@ class WasteTab(SubInterfaceChildWidget):
                     self.table_adapter.updateDataColumns(data, [2])
             self.check_empty_table()
 
-        self.controller.observe_waste_list(update_table)
+        self.controller.observe_storage_list(update_table)
 
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)

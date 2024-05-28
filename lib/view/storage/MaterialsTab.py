@@ -3,7 +3,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QVBoxLayout, QLabel
 from qfluentwidgets import SearchLineEdit, CheckBox, PushButton
 
-from lib.controller.MaterialsListController import MaterialsListController
+from lib.controller.StorageListController import StorageListController
 from lib.model.StoredItems import StoredMaterial
 from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message
@@ -16,11 +16,11 @@ from res.Dimensions import FontSize
 
 
 class MaterialsTab(SubInterfaceChildWidget):
-    def __init__(self, parent_widget: SubInterfaceWidget):
+    def __init__(self, parent_widget: SubInterfaceWidget, storage_controller: StorageListController):
         super().__init__("materials_list_view", parent_widget)
         self.hideHeader()
 
-        self.controller = MaterialsListController()
+        self.controller = storage_controller
 
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(12)
@@ -128,7 +128,7 @@ class MaterialsTab(SubInterfaceChildWidget):
 
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
-        self.table_adapter.setData(self.controller.get_materials_list())
+        self.table_adapter.setData(self.get_filtered_materials_list())
 
         # self.table_adapter.onSelection(self.show_product_details)
 
@@ -147,7 +147,7 @@ class MaterialsTab(SubInterfaceChildWidget):
 
             self.check_empty_table()
 
-        self.controller.observe_materials_list(update_table)
+        self.controller.observe_storage_list(update_table)
 
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)

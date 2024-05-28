@@ -20,10 +20,6 @@ class StoredItem(ABC):
         self.__stored_quantity = quantity
 
     @abstractmethod
-    def update(self, new_data: dict[str, any]):
-        pass
-
-    @abstractmethod
     def get_description(self) -> str:
         pass
 
@@ -36,12 +32,6 @@ class UncategorizedItem(StoredItem):
     def get_description(self) -> str:
         return self.__description
 
-    def update(self, new_data: dict[str, any]):
-        for key, value in new_data.items():
-            match key:
-                case "amount":
-                    self.set_quantity(value)
-
 
 class StoredWaste(StoredItem):
     def __init__(self, item_id: str, stored_quantity: int, plastic_type: PlasticType | str):
@@ -53,14 +43,6 @@ class StoredWaste(StoredItem):
 
     def get_description(self):
         return f"Scarti di produzione - Plastica tipo {self.__plastic_type.value}"
-
-    def update(self, new_data: dict[str, any]):
-        for key, value in new_data.items():
-            match key:
-                case "amount":
-                    self.set_quantity(value)
-                case "plastic_type":
-                    self.__plastic_type = value
 
 
 class MaterialType(Enum):
@@ -89,7 +71,8 @@ class StoredMaterial(StoredItem):
                  material_description: MaterialDescription | str):
         super().__init__(item_id, stored_quantity)
         self.__material_type = MaterialType[material_type.upper()] if type(material_type) is str else material_type
-        self.__material_description = MaterialDescription[material_description.upper()] if type(material_description) is str \
+        self.__material_description = MaterialDescription[material_description.upper()] if type(
+            material_description) is str \
             else material_description
 
     def get_material_type(self) -> MaterialType:
@@ -98,16 +81,6 @@ class StoredMaterial(StoredItem):
     @property
     def get_description(self):
         return self.__material_description.value
-
-    def update(self, new_data: dict[str, any]):
-        for key, value in new_data.items():
-            match key:
-                case "material_description":
-                    self.__material_description = MaterialDescription[str(value)]
-                case "material_type":
-                    self.__material_type = MaterialType[str(value)]
-                case "amount":
-                    self.set_quantity(value)
 
 
 class StoredShoeLastVariety(StoredItem):
@@ -123,14 +96,6 @@ class StoredShoeLastVariety(StoredItem):
 
     def get_description(self) -> str:
         return self.__shoe_last_variety.get_description()
-
-    def update(self, new_data: dict[str, any]):
-        for key, value in new_data.items():
-            match key:
-                case "amount":
-                    self.set_quantity(value)
-                case _:
-                    self.__shoe_last_variety.update(key, value)
 
 
 class AssignedShoeLastVariety(StoredShoeLastVariety):

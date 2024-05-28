@@ -195,30 +195,3 @@ class ShoeLastVariety:
                 self.__numbering_lateral == shoe_last_variety.get_numbering_lateral() and
                 self.__numbering_heel == shoe_last_variety.get_numbering_heel()
         )
-
-    def update(self, key: str, value: str | int | bool):
-        match key:
-            case "gender":
-                self.__gender = Gender[value]
-            case "iron_tip":
-                self.__iron_tip = value
-            case "numbering_antineck":
-                self.__numbering_antineck = value
-            case "numbering_lateral":
-                self.__numbering_lateral = value
-            case "numbering_heel":
-                self.__numbering_heel = value
-            case "pivot_under_heel":
-                self.__pivot_under_heel = value
-            case "plastic_type":
-                self.__plastic_type = PlasticType[value]
-            case "processing":
-                self.__processing = Processing[value]
-            case "first_compass_type":
-                self.__first_compass_type = CompassType[value]
-            case "second_compass_type":
-                self.__second_compass_type = CompassType[value]
-            case "shoeing":
-                self.__shoeing = Shoeing[value]
-            case "size":
-                self.__size = value
