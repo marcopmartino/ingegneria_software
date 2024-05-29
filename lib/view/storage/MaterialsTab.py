@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QLabel
 from qfluentwidgets import SearchLineEdit, CheckBox, PushButton
 
 from lib.controller.StorageController import StorageController
+from lib.firebaseData import Firebase
 from lib.model.StoredItems import StoredMaterial
 from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message
@@ -120,6 +121,9 @@ class MaterialsTab(SubInterfaceChildWidget):
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_materials_list)
 
+        # Separatore tra "Aggiorna lista" e "Acquista materiali"
+        self.separator = HorizontalLine(self.sidebar_frame)
+
         # Button "Acquista materiali"
         self.purchase_button = CustomPushButton.cyan(self.sidebar_frame)
         self.purchase_button.setText("Acquista materiali")
@@ -130,8 +134,13 @@ class MaterialsTab(SubInterfaceChildWidget):
         self.sidebar_layout.addLayout(self.search_box_layout)
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
-        self.sidebar_layout.addWidget(HorizontalLine(self.sidebar_frame))  # Secondo spacer
+        self.sidebar_layout.addWidget(self.separator)  # Secondo spacer
         self.sidebar_layout.addWidget(self.purchase_button)
+
+        # Nasconde il separatore e il pulsante di acquisto se l'utente corrente è un operaio
+        if Firebase.auth.currentUserRole() == "worker":
+            self.separator.hide()
+            self.purchase_button.hide()
 
         # Form Manager
         self.form_manager = FormManager()

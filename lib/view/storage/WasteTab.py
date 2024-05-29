@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QVBoxLayout, QLabel, QInputDialog, QDialog
 from qfluentwidgets import CheckBox, PushButton
 
 from lib.controller.StorageController import StorageController
+from lib.firebaseData import Firebase
 from lib.model.StoredItems import StoredWaste
 from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message
@@ -96,12 +97,8 @@ class WasteTab(SubInterfaceChildWidget):
         self.refresh_waste_button.setText("Aggiorna lista")
         self.refresh_waste_button.clicked.connect(self.refresh_waste_list)
 
-        # Button "Vendi scarti"
-        self.sell_info_label = QLabel(self.sidebar_frame)
-        self.sell_info_label.setWordWrap(True)
-        self.sell_info_label.setHidden(True)
-        self.sell_info_label.setText("Clicca su una riga della tabella per vendere gli scarti")
-        self.sell_info_label.setAlignment(Qt.AlignCenter)
+        # Separatore tra "Aggiorna lista" e "Vendi scarti"
+        self.separator = HorizontalLine(self.sidebar_frame)
 
         # Button "Acquista materiali"
         self.sale_button = CustomPushButton.cyan(self.sidebar_frame)
@@ -112,8 +109,13 @@ class WasteTab(SubInterfaceChildWidget):
         self.sidebar_layout.addWidget(HorizontalLine(self.sidebar_frame))
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_waste_button)
-        self.sidebar_layout.addWidget(HorizontalLine(self.sidebar_frame))
+        self.sidebar_layout.addWidget(self.separator)
         self.sidebar_layout.addWidget(self.sale_button)
+
+        # Nasconde il separatore e il pulsante di acquisto se l'utente corrente è un operaio
+        if Firebase.auth.currentUserRole() == "worker":
+            self.separator.hide()
+            self.sale_button.hide()
 
         # Form Manager
         self.form_manager = FormManager()
