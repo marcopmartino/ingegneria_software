@@ -34,9 +34,9 @@ class UncategorizedItem(StoredItem):
 
 
 class StoredWaste(StoredItem):
-    def __init__(self, item_id: str, stored_quantity: int, plastic_type: PlasticType | str):
+    def __init__(self, item_id: str, stored_quantity: int, plastic_type: PlasticType):
         super().__init__(item_id, stored_quantity)
-        self.__plastic_type = PlasticType[str(plastic_type).upper()]
+        self.__plastic_type = plastic_type
 
     def get_plastic_type(self) -> PlasticType:
         return self.__plastic_type
@@ -67,19 +67,16 @@ class MaterialDescription(Enum):
 
 
 class StoredMaterial(StoredItem):
-    def __init__(self, item_id: str, stored_quantity: int, material_type: MaterialType | str,
-                 material_description: MaterialDescription | str):
+    def __init__(self, item_id: str, stored_quantity: int, material_type: MaterialType,
+                 material_description: MaterialDescription):
         super().__init__(item_id, stored_quantity)
-        self.__material_type = MaterialType[material_type.upper()] if type(material_type) is str else material_type
-        self.__material_description = MaterialDescription[material_description.upper()] if type(
-            material_description) is str \
-            else material_description
+        self.__material_type = material_type
+        self.__material_description = material_description
 
     def get_material_type(self) -> MaterialType:
         return self.__material_type
 
-    @property
-    def get_description(self):
+    def get_description(self) -> str:
         return self.__material_description.value
 
 

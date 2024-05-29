@@ -16,7 +16,7 @@ class PriceCatalogRepository(Repository, metaclass=RepositoryMeta):
         PRICE_UPDATED = 1
 
     def __init__(self):
-        self.__price_catalog: dict[str, float] = {}  # Inizializzo
+        self.__price_catalog: dict[str, float] = {}  # Inizializzo il model
         self.__price_catalog_network: PriceCatalogNetwork = PriceCatalogNetwork()
         super().__init__(self.__price_catalog_network.stream)
 

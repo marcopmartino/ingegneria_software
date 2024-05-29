@@ -235,6 +235,11 @@ class OrderView(SubInterfaceChildWidget):
                 case OrdersRepository.Event.ORDER_UPDATED:
                     # Aggiorna la tabella dell'ordine
                     self.order_table_adapter.updateDataColumns(self.controller.get_order(), [0, 3, 4])
+
+                    # Aaggiorna il titolo della tabella dei dettagli dell'articolo
+                    self.article_details_title.setText(
+                        f"Dettagli articolo {self.controller.get_order_article_serial()}")
+
                     # Aggiorna le tabelle dell'articolo
                     new_article = self.controller.get_order_article()
                     self.article_table_adapter_main.updateData(new_article.get_shoe_last_variety())
@@ -243,6 +248,7 @@ class OrderView(SubInterfaceChildWidget):
                 case OrdersRepository.Event.ORDER_STATE_UPDATED:
                     # Aggiorna la tabella dell'ordine
                     self.order_table.columnItem(2).setText(self.controller.get_order_state().value)
+
                     # Aggiorna la sidebar
                     self.on_transition_to_next_state()
                     print("Stato aggiornato")

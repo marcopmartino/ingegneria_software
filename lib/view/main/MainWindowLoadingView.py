@@ -121,7 +121,6 @@ class MainWindowLoadingView(QMainWindow):
         self.machines_widget = init_loading_widget("Macchinari")
         self.articles_widget = init_loading_widget("Registro articoli")
         self.cash_register_widget = init_loading_widget("Registro di cassa")
-        self.transactions_widget = init_loading_widget("Transazioni")
 
     # Imposta la vista
     def setup(self):
@@ -181,14 +180,6 @@ class MainWindowLoadingView(QMainWindow):
         if setup_loading_widget(
             self.cash_register_widget,
             CashRegisterRepository,
-            CashRegisterRepository.Event.CASH_AVAILABILITY_INITIALIZED,
-            last_repository_class
-        ):
-            last_repository_class = CashRegisterRepository
-
-        if setup_loading_widget(
-            self.transactions_widget,
-            CashRegisterRepository,
             CashRegisterRepository.Event.TRANSACTIONS_INITIALIZED,
             last_repository_class
         ):
@@ -213,7 +204,7 @@ class MainWindowLoadingView(QMainWindow):
         if setup_loading_widget(
             self.storage_widget,
             StorageRepository,
-            StorageRepository.Event.PRODUCTS_INITIALIZED,
+            StorageRepository.Event.HARDWARE_STORE_PRICE_CATALOG_INITIALIZED,
             last_repository_class
         ):
             last_repository_class = StorageRepository

@@ -2,6 +2,7 @@ from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QInputDialog, QDialog, QMessageBox
 from qfluentwidgets import FluentIconBase
 
+from lib.controller.StorageController import StorageController
 from lib.firebaseData import Firebase
 from lib.model.ShoeLastVariety import ShoeLastVariety, ProductType, Gender, ShoeLastType, PlasticType
 from lib.repository.CashRegisterRepository import CashRegisterRepository
@@ -17,11 +18,12 @@ from res.CustomIcon import CustomIcon
 
 
 class RawShoeLastCenterPriceCatalogView(SubInterfaceWidget):
-    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = CustomIcon.PRICE):
+    def __init__(self, parent_widget: QWidget, controller: StorageController,
+                 svg_icon: FluentIconBase = CustomIcon.PRICE):
         super().__init__("raw_shoe_last_center_price_list_view", parent_widget, svg_icon)
 
         # Controller
-        #self.controller = PriceCatalogController()
+        self.controller = controller
 
         # Titolo e sottotitolo
         self.setTitleText("Listino prezzi centro abbozzi")
@@ -61,28 +63,13 @@ class RawShoeLastCenterPriceCatalogView(SubInterfaceWidget):
                                   )
         )
 
-        # Costruisco una nuova PriceListTable "tracciando" le sezioni su di essa
+        # Costruisce una nuova PriceListTable "tracciando" le sezioni su di essa
         self.table: PriceCatalogTable = table_builder.build()
 
-        def update_price_catalog_view(message: Message):
-            data = message.data()
-            match message.event():
-                case StorageRepository.Event.PRICE_CATALOG_INITIALIZED:
-                    # Aggiorna l'intero listino
-                    self.table.updateAllNamedItems(data)
+        # Popola la tabella
+        self.table.updateAllNamedItems(self.controller.get_raw_shoe_last_center_price_catalog())
 
-        # Aggiorno i dati della tabella ogni volta che cambiano
-
-        # Imposta l'observer
-        # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
-        # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
-        self.messageReceived.connect(update_price_catalog_view)
-        #self.controller.observe_price_catalog(self.messageReceived.emit)
-
-        """Temporaneo"""
-        self.table.updateAllNamedItems(Firebase.database.child("storage/raw_shoe_last_center_price_list").get().val())
-
-        # Connetto il segnale "itemClicked" allo slot "on_item_clicked"
+        # Connette il segnale "itemClicked" allo slot "on_item_clicked"
         self.table.itemClicked.connect(self.on_item_clicked)
 
         # Imposta il testo mostrato nella sidebar
@@ -108,6 +95,8 @@ class RawShoeLastCenterPriceCatalogView(SubInterfaceWidget):
                     PlasticType(int(name_parts[1][-1]))
                 )
 
+                print(vars(shoe_last_variety))
+
                 # Determina la descrizione
                 shoe_last_variety_description = shoe_last_variety.get_description()
 
@@ -122,22 +111,25 @@ class RawShoeLastCenterPriceCatalogView(SubInterfaceWidget):
                     purchased_quantity = dialog.value()
                     total_price = purchased_quantity * price_per_purchase
 
-                    """Aggiorna la quantità in deposito"""
-
-                    """Crea transazione (da modificare)"""
+                    # Determina il nome dell'unità di misura della quantità acquistata
                     pair_string = "paio" if purchased_quantity == 1 else "paia"
 
-                    CashRegisterRepository().create_transaction(
-                        f"Acquisto \"{shoe_last_variety_description}\" "
-                        f"({str(purchased_quantity)} {pair_string})", total_price * -1
+                    # Effettua l'acquisto di abbozzi
+                    self.controller.purchase_product(
+                        shoe_last_variety=shoe_last_variety,
+                        purchased_quantity=purchased_quantity,
+                        transaction_description=f"Acquisto \"{shoe_last_variety_description}\" "
+                                                f"({str(purchased_quantity)} {pair_string})",
+                        transaction_amount=total_price * -1,
                     )
 
             else:
                 # Determina il tipo di plastica
                 plastic_type: PlasticType = PlasticType(int(name_parts[1][-1]))
 
-                """Controllare che ci siano scarti da vendere e in che quantità"""
-                stored_waste_quantity = 16  # Esempio
+                # Ottiene gli scarti del tipo di plastica corrispondente e la quantità immagazzinata
+                stored_waste = self.controller.get_waste_by_plastic_type(plastic_type)
+                stored_waste_quantity = stored_waste.get_quantity()
 
                 # Se non ci sono scarti immagazzinati di quel tipo di plastica
                 if stored_waste_quantity == 0:
@@ -156,8 +148,8 @@ class RawShoeLastCenterPriceCatalogView(SubInterfaceWidget):
 
                     # Crea il dialog di vendita
                     dialog = StoredItemTradeView.waste(
-                            waste_description,
-                            price_per_purchase,
+                        waste_description,
+                        price_per_purchase,
                     )
 
                     # Imposta la quantità massima vendibile e quella di default pari alla quantità immagazzinata
@@ -170,14 +162,11 @@ class RawShoeLastCenterPriceCatalogView(SubInterfaceWidget):
                         sold_quantity = dialog.value()
                         total_price = sold_quantity * price_per_purchase
 
-                        """Aggiorna la quantità in deposito"""
-
-                        """Crea transazione (da modificare)"""
-                        CashRegisterRepository().create_transaction(
-                            f"Vendita \"Scarti di lavorazione in plastica tipo {str(plastic_type.value)}\" "
-                            f"({str(sold_quantity)} kg)", total_price
+                        # Effettua la vendita degli scarti
+                        self.controller.sell_waste(
+                            stored_waste=stored_waste,
+                            sold_quantity=sold_quantity,
+                            transaction_description=f"Vendita \"Scarti di lavorazione in plastica tipo "
+                                                    f"{str(plastic_type.value)}\" ({str(sold_quantity)} kg)",
+                            transaction_amount=total_price,
                         )
-
-
-
-

@@ -1,7 +1,9 @@
 from enum import Enum
 
-from lib.model.ShoeLastVariety import ShoeLastVariety
-from lib.model.StoredItems import StoredShoeLastVariety, StoredMaterial, StoredWaste, StoredItem
+from lib.model.ShoeLastVariety import ShoeLastVariety, ProductType, Gender, ShoeLastType, PlasticType, CompassType, \
+    Processing, Shoeing
+from lib.model.StoredItems import StoredShoeLastVariety, StoredMaterial, StoredWaste, StoredItem, MaterialType, \
+    MaterialDescription
 from lib.network.StorageNetwork import StorageNetwork
 from lib.repository.CashRegisterRepository import CashRegisterRepository
 from lib.repository.Repository import Repository
@@ -15,56 +17,64 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         MAX_STORAGE_UPDATED = 1
         PRODUCTS_INITIALIZED = 2
         PRODUCT_CREATED = 3
-        PRODUCT_DELETED = 4
-        PRODUCT_UPDATED = 5
-        MATERIALS_INITIALIZED = 6
-        MATERIAL_CREATED = 7
-        MATERIAL_DELETED = 8
-        MATERIAL_UPDATED = 9
-        WASTE_INITIALIZED = 10
-        WASTE_CREATED = 11
-        WASTE_DELETED = 12
-        WASTE_UPDATED = 13
+        PRODUCT_UPDATED = 4
+        MATERIALS_INITIALIZED = 5
+        MATERIAL_UPDATED = 6
+        WASTE_INITIALIZED = 7
+        WASTE_UPDATED = 8
+        RAW_SHOE_LAST_CENTER_PRICE_CATALOG_INITIALIZED = 9
+        HARDWARE_STORE_PRICE_CATALOG_INITIALIZED = 10
 
     def __init__(self):
         self.__max_storage = 0
-        self.__products_list: list[StoredShoeLastVariety] = []
-        self.__materials_list: list[StoredMaterial] = []
+
+        # Inizializza le liste di oggetti immagazzinati
+        self.__product_list: list[StoredShoeLastVariety] = []
+        self.__material_list: list[StoredMaterial] = []
         self.__waste_list: list[StoredWaste] = []
+
+        # Inizializza i listini dei fornitori
+        self.__raw_shoe_last_center_price_catalog: dict[str, float] = {}
+        self.__hardware_store_price_catalog: dict[str, float] = {}
+
         self.__storage_network: StorageNetwork = StorageNetwork()
         super().__init__(self.__storage_network.stream)
 
     def clear(self):
         self.__max_storage = 0
-        self.__products_list = []
+        self.__product_list = []
+        self.__product_list = []
         self.__waste_list = []
+        self.__raw_shoe_last_center_price_catalog = {}
+        self.__hardware_store_price_catalog = {}
 
     # Usato internamente per istanziare e aggiungere un prodotto alla lista
     def __instantiate_and_append_product(self, serial: str, data: any):
-        shoe = ShoeLastVariety(
-            data['product_type'], data['gender'], data['shoe_last_type'],
-            data['plastic_type'], data['size'], data['processing'],
-            data['first_compass_type'], data['second_compass_type'], data['pivot_under_heel'],
-            data['shoeing'], data['iron_tip'], data['numbering_antineck'],
-            data['numbering_lateral'], data['numbering_heel']
+        shoe_last_variety = ShoeLastVariety(
+            ProductType(data['product_type']),
+            Gender(data["gender"]), ShoeLastType(data["shoe_last_type"]), PlasticType(data["plastic_type"]),
+            data.get("size"), Processing(data["processing"]), CompassType(data["first_compass_type"]),
+            CompassType(data["second_compass_type"]), data["pivot_under_heel"], Shoeing(data["shoeing"]),
+            data["iron_tip"], data["numbering_antineck"], data["numbering_lateral"], data["numbering_heel"]
         )
 
-        product = StoredShoeLastVariety(serial, data['amount'], shoe)
-        self.__products_list.append(product)
+        product = StoredShoeLastVariety(serial, data['amount'], shoe_last_variety)
+        self.__product_list.append(product)
         return product
 
     # Usato internamente per istanziare e aggiungere un materiale alla lista
     def __instantiate_and_append_material(self, serial: str, data: any):
         material = StoredMaterial(
-            serial, data['amount'], data['material_type'], data['material_description']
+            serial, data['amount'], MaterialType(data['material_type']),
+            MaterialDescription(data['material_description'])
         )
-        self.__materials_list.append(material)
+        self.__material_list.append(material)
         return material
 
     # Usato internamente per istanziare e aggiungere un scarti alla lista
     def __instantiate_and_append_waste(self, serial: str, data: any):
         waste = StoredWaste(
-            serial, data['amount'], data['plastic_type']
+            serial, data['amount'], PlasticType(data['plastic_type'])
         )
 
         self.__waste_list.append(waste)
@@ -93,12 +103,13 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                                 self.__max_storage
                             ))
 
-                            # Estraggo i prodotti
+                            # Estraggo gli oggetti immagazzinati
                             products = data.get("products")
                             materials = data.get("materials")
                             waste = data.get("waste")
 
-                            if products:
+                            # Inizializza i prodotti
+                            if products is not None:
                                 for key, value in products.items():
                                     # Crea e aggiunge un prodotto alla lista dei prodotti
                                     self.__instantiate_and_append_product(key, value)
@@ -106,10 +117,11 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                                 # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
                                 self.notify(Message(
                                     StorageRepository.Event.PRODUCTS_INITIALIZED,
-                                    self.__products_list
+                                    self.__product_list
                                 ))
 
-                            if materials:
+                            # Inizializza i materiali
+                            if materials is not None:
                                 for key, value in materials.items():
                                     # Crea e aggiunge un materiale alla lista dei materiali
                                     self.__instantiate_and_append_material(key, value)
@@ -117,10 +129,11 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                                 # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
                                 self.notify(Message(
                                     StorageRepository.Event.MATERIALS_INITIALIZED,
-                                    self.__materials_list
+                                    self.__material_list
                                 ))
 
-                            if waste:
+                            # Inizializza gli scarti
+                            if waste is not None:
                                 for key, value in waste.items():
                                     # Crea e aggiunge uo scarto alla lista degli scarti
                                     self.__instantiate_and_append_waste(key, value)
@@ -130,6 +143,26 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                                     StorageRepository.Event.WASTE_INITIALIZED,
                                     self.__waste_list
                                 ))
+
+                            # Inizializza i prezzi del listino del centro abbozzi
+                            self.__raw_shoe_last_center_price_catalog.update(
+                                data["raw_shoe_last_center_price_list"])
+
+                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                            self.notify(Message(
+                                StorageRepository.Event.RAW_SHOE_LAST_CENTER_PRICE_CATALOG_INITIALIZED,
+                                self.__raw_shoe_last_center_price_catalog
+                            ))
+
+                            # Inizializza i prezzi del listino della ferramenta
+                            self.__hardware_store_price_catalog.update(
+                                data["hardware_store_price_list"])
+
+                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                            self.notify(Message(
+                                StorageRepository.Event.HARDWARE_STORE_PRICE_CATALOG_INITIALIZED,
+                                self.__hardware_store_price_catalog
+                            ))
 
                     # Se il path è diverso allora sto operando sul singolo campo
                     else:
@@ -144,75 +177,25 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                             # Prepara il messaggio per notificare gli osservatori del magazzino
                             message = Message(StorageRepository.Event.MAX_STORAGE_UPDATED, data)
 
+                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                            self.notify(message)
+
                         else:
                             # Estrae l'id del prodotto del magazzino
                             element_id = path[2]
 
                             # Controlla di che tipo di prodotto si tratta
-                            match path[1]:
-                                case "products":
-                                    # Se viene creato un prodotto data non è None
-                                    if data:
-                                        # Crea e aggiunge un prodotto alla lista dei prodotti
-                                        product = self.__instantiate_and_append_product(element_id, data)
+                            if path[1] == "products":
+                                # Se viene creato un prodotto data non è None
+                                if data:
+                                    # Crea e aggiunge un prodotto alla lista dei prodotti
+                                    product = self.__instantiate_and_append_product(element_id, data)
 
-                                        # Prepara il messaggio per notificare gli osservatori del magazzino
-                                        message = Message(StorageRepository.Event.PRODUCT_CREATED, product)
+                                    # Prepara il messaggio per notificare gli osservatori del magazzino
+                                    message = Message(StorageRepository.Event.PRODUCT_CREATED, product)
 
-                                    # Quando viene eliminato un prodotto data è None
-                                    else:
-                                        for product in self.__products_list:
-                                            if product.get_item_id() == element_id:
-                                                # Rimuove il prodotto dalla lista dei prodotti
-                                                self.__products_list.remove(product)
-
-                                                # Prepara il messaggio per notificare gli osservatori del magazzino
-                                                message = Message(StorageRepository.Event.PRODUCT_DELETED)
-                                                message.setData(element_id)
-                                                break
-                                case "materials":
-                                    # Se viene creato un materiale data non è None
-                                    if data:
-                                        # Crea e aggiunge un materiale alla lista dei materiali
-                                        material = self.__instantiate_and_append_material(element_id, data)
-
-                                        # Prepara il messaggio per notificare gli osservatori del magazzino
-                                        message = Message(StorageRepository.Event.MATERIAL_CREATED, material)
-
-                                    # Quando viene eliminato un prodotto data è None
-                                    else:
-                                        for material in self.__materials_list:
-                                            if material.get_item_id() == element_id:
-                                                # Rimuove il materiale dalla lista dei materiali
-                                                self.__materials_list.remove(material)
-
-                                                # Prepara il messaggio per notificare gli osservatori del magazzino
-                                                message = Message(StorageRepository.Event.MATERIAL_DELETED)
-                                                message.setData(element_id)
-                                                break
-                                case "waste":
-                                    # Se viene creato uno scarto data non è None
-                                    if data:
-                                        # Crea e aggiunge uno scarto alla lista degli scarti
-                                        waste = self.__instantiate_and_append_waste(element_id, data)
-
-                                        # Prepara il messaggio per notificare gli osservatori del magazzino
-                                        message = Message(StorageRepository.Event.WASTE_CREATED, waste)
-
-                                    # Quando viene eliminato un prodotto data è None
-                                    else:
-                                        for waste in self.__waste_list:
-                                            if waste.get_item_id() == element_id:
-                                                # Rimuove lo scarto dalla lista degli scarti
-                                                self.__waste_list.remove(waste)
-
-                                                # Prepara il messaggio per notificare gli osservatori del magazzino
-                                                message = Message(StorageRepository.Event.WASTE_DELETED)
-                                                message.setData(element_id)
-                                                break
-
-                        # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                        self.notify(message)
+                                    # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                                    self.notify(message)
 
                 # Aggiornamento del magazzino
                 case "patch":
@@ -224,26 +207,21 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                     element_type = path[1]
                     element_id = path[2]
 
-                    if len(data) != 1:
-                        if element_type == "products":
-                            element = self.__instantiate_and_append_product(element_id, data)
-                            message = Message(StorageRepository.Event.PRODUCT_CREATED, element)
+                    print("Updating element" + element_id)
+                    # Prende l'elemento corrispondente
+
+                    if element_type == "products":
+                        element = self.get_product_by_id(element_id)
+                        message = Message(StorageRepository.Event.PRODUCT_UPDATED)
+                    elif element_type == "materials":
+                        element = self.get_material_by_id(element_id)
+                        message = Message(StorageRepository.Event.MATERIAL_UPDATED)
                     else:
-                        print("Updating element" + element_id)
-                        # Prende l'elemento corrispondente
+                        element = self.get_waste_by_id(element_id)
+                        message = Message(StorageRepository.Event.WASTE_UPDATED)
 
-                        if element_type == "products":
-                            element = self.get_product_by_id(element_id)
-                            message = Message(StorageRepository.Event.PRODUCT_UPDATED)
-                        elif element_type == "materials":
-                            element = self.get_material_by_id(element_id)
-                            message = Message(StorageRepository.Event.MATERIAL_UPDATED)
-                        else:
-                            element = self.get_waste_by_id(element_id)
-                            message = Message(StorageRepository.Event.WASTE_UPDATED)
-
-                        element.set_quantity(data['amount'])
-                        message.setData(element)
+                    element.set_quantity(data['amount'])
+                    message.setData(element)
 
                     self.notify(message)
 
@@ -251,133 +229,95 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                     pass
 
     # Ritorna la lista dei prodotti
-    def get_products_list(self) -> list[StoredShoeLastVariety]:
-        return self.__products_list.copy()
+    def get_product_list(self) -> list[StoredShoeLastVariety]:
+        return self.__product_list
 
     # Ritorna la lista dei materiali
-    def get_materials_list(self) -> list[StoredMaterial]:
-        return self.__materials_list.copy()
+    def get_material_list(self) -> list[StoredMaterial]:
+        return self.__material_list
 
     # Ritorna la lista degli scarti
     def get_waste_list(self) -> list[StoredWaste]:
-        return self.__waste_list.copy()
+        return self.__waste_list
 
-    # Ritorna un prodotto in base al suo numero
+    # Ritorna un prodotto in base al suo id
     def get_product_by_id(self, product_serial: str) -> StoredShoeLastVariety:
-        for product in self.__products_list:
+        for product in self.__product_list:
             if product.get_item_id() == product_serial:
                 return product
 
-    # Ritorna un materiale in base al suo numero
+    # Ritorna un prodotto in base alla sua varietà di forma
+    def get_product_by_shoe_last_variety(self, shoe_last_variety: ShoeLastVariety) -> StoredShoeLastVariety:
+        for product in self.__product_list:
+            if product.get_shoe_last_variety().equals(shoe_last_variety):
+                return product
+
+    # Ritorna un materiale in base al suo id
     def get_material_by_id(self, material_serial: str) -> StoredMaterial:
-        for material in self.__materials_list:
+        for material in self.__material_list:
             if material.get_item_id() == material_serial:
                 return material
 
-    # Ritorna un materiale in base al suo numero
+    # Ritorna un materiale in base alla sua descrizione
+    def get_material_by_description(self, material_description: MaterialDescription) -> StoredMaterial:
+        for material in self.__material_list:
+            if material.get_description() == material_description.value:
+                return material
+
+    # Ritorna uno scarto in base al suo id
     def get_waste_by_id(self, waste_serial: str) -> StoredWaste:
         for waste in self.__waste_list:
             if waste.get_item_id() == waste_serial:
                 return waste
 
+    # Ritorna uno scarto in base al suo tipo di plastica
+    def get_waste_by_plastic_type(self, plastic_type: PlasticType) -> StoredWaste:
+        for waste in self.__waste_list:
+            if waste.get_plastic_type() == plastic_type:
+                return waste
+
+    # Ritorna il listino prezzi del centro abbozzi
+    def get_raw_shoe_last_center_price_catalog(self) -> dict[str, float]:
+        return self.__raw_shoe_last_center_price_catalog
+
+    # Ritorna il listino prezzi della ferramenta
+    def get_hardware_store_price_catalog(self) -> dict[str, float]:
+        return self.__hardware_store_price_catalog
+
     # Se il prodotto esiste già, ne ritorna il seriale. Altrimenti lo crea e ritorna il nuovo seriale
-    def create_product(self, data: dict[str, any]) -> str:
-        print(f"Nuovo prodotto:{data}")
-        new_shoe = ShoeLastVariety(
-            data['product_type'], data['gender'], data['shoe_last_type'],
-            data['plastic_type'], data['size'], data['processing'],
-            data['first_compass_type'], data['second_compass_type'], data['pivot_under_heel'],
-            data['shoeing'], data['iron_tip'], data['numbering_antineck'],
-            data['numbering_lateral'], data['numbering_heel']
-        )
-        # Controlla se il prodotto esiste
-        for product in self.__products_list:
-            print(f"Prodotto:{vars(product)}")
-            if product.get_shoe_last_variety().equals(new_shoe):
-                # Se il prodotto esiste, ne viene ritornato il seriale
-                print("Trovato")
-                return product.get_item_id()
+    def create_product(self, shoe_last_variety: ShoeLastVariety, quantity: int = 0) -> str:
+        print(f"Nuovo prodotto:{shoe_last_variety.get_description()}")
 
         # Se il prodotto non esiste, ne crea uno nuovo
         product_data = dict(
-            product_type=data.get("product_type"),
-            gender=data.get("gender"),
-            shoe_last_type=data.get("shoe_last_type"),
-            plastic_type=data.get("plastic_type"),
-            size=data.get("size"),
-            processing=data.get("processing"),
-            first_compass_type=data.get("first_compass_type"),
-            second_compass_type=data.get("second_compass_type"),
-            pivot_under_heel=data.get("pivot_under_heel"),
-            shoeing=data.get("shoeing"),
-            iron_tip=data.get("iron_tip"),
-            numbering_antineck=data.get("numbering_antineck"),
-            numbering_lateral=data.get("numbering_lateral"),
-            numbering_heel=data.get("numbering_heel"),
-            amount=data.get("amount")
+            product_type=shoe_last_variety.get_product_type().value,
+            gender=shoe_last_variety.get_gender().value,
+            shoe_last_type=shoe_last_variety.get_shoe_last_type().value,
+            plastic_type=shoe_last_variety.get_plastic_type().value,
+            size=shoe_last_variety.get_size(),
+            processing=shoe_last_variety.get_processing().value,
+            first_compass_type=shoe_last_variety.get_first_compass_type().value,
+            second_compass_type=shoe_last_variety.get_second_compass_type().value,
+            pivot_under_heel=shoe_last_variety.get_pivot_under_heel(),
+            shoeing=shoe_last_variety.get_shoeing().value,
+            iron_tip=shoe_last_variety.get_iron_tip(),
+            numbering_antineck=shoe_last_variety.get_numbering_antineck(),
+            numbering_lateral=shoe_last_variety.get_numbering_lateral(),
+            numbering_heel=shoe_last_variety.get_numbering_heel(),
+            amount=quantity
         )
 
         # Salva il prodotto nel database e ritorna il nuovo seriale
         return self.__storage_network.insert_product(product_data)
 
-    # Se il materiale esiste già, ne ritorna il seriale. Altrimenti lo crea e ritorna il nuovo seriale
-    def create_material(self, new_material_data: dict[str, any]) -> str:
-        print(f"Nuovo materiale:{new_material_data}")
-        # Controlla se il materiale esiste
-        for material in self.__materials_list:
-            print(f"Materiale:{vars(material)}")
-            if (material.get_material_type() == new_material_data.get("material_type")
-                    and material.get_description == new_material_data.get("material_description")
-                    and material.get_quantity() == new_material_data.get("amount")):
-                # Se il materiale esiste, ne viene ritornato il seriale
-                print("Trovato")
-                return material.get_item_id()
+    def get_max_storage(self) -> int:
+        return self.__max_storage
 
-        # Se il prodotto non esiste, ne crea uno nuovo
-        material_data = dict(
-            material_type=new_material_data.get("material_type"),
-            material_description=new_material_data.get("material_description"),
-            amount=new_material_data.get("amount")
-        )
+    def update_product_quantity(self, product_id: str, quantity: int):
+        self.__storage_network.update_product_amount(product_id, quantity)
 
-        # Salva il prodotto nel database e ritorna il nuovo seriale
-        return self.__storage_network.insert_material(material_data)
+    def update_material_quantity(self, material_id: str, quantity: int):
+        self.__storage_network.update_material_amount(material_id, quantity)
 
-    def get_max_storage(self):
-        return self.__storage_network.get_max_storage()
-
-    def sort_list(self, department: str, reverse: bool):
-        match department:
-            case "product":
-                return self.__products_list.sort(key=lambda k: k.get_amount(), reverse=reverse)
-            case "material":
-                return self.__materials_list.sort(key=lambda k: k.get_amount(), reverse=reverse)
-            case "waste":
-                return self.__waste_list.sort(key=lambda k: k.get_amount(), reverse=reverse)
-
-    def delete_product_by_id(self, product_id: str):
-        self.__storage_network.delete_product_by_id(product_id)
-
-    def delete_material_by_id(self, material_id: str):
-        self.__storage_network.delete_material_by_id(material_id)
-
-    def delete_waste_by_id(self, waste_id: str):
-        self.__storage_network.delete_waste_by_id(waste_id)
-
-    def update_and_sell_waste(self, waste_id: str, new_quantity: int):
-        for waste in self.__waste_list:
-            if waste.get_item_id() == waste_id:
-                transaction_amount = 0
-                if waste.get_plastic_type().value == 1:
-                    transaction_amount = new_quantity * 1.0
-                elif waste.get_plastic_type() == 2:
-                    transaction_amount = new_quantity * 1.5
-                else:
-                    transaction_amount = new_quantity * 2.0
-
-                CashRegisterRepository().create_transaction(
-                    f"Vendità scarti plastica tipo {waste.get_plastic_type().value}",
-                    transaction_amount)
-
-                new_quantity = self.get_waste_by_id(waste_id).get_quantity() - new_quantity
-                self.__storage_network.update_waste_amount(waste.get_item_id(), new_quantity)
+    def update_waste_quantity(self, waste_id: str, quantity: int):
+        self.__storage_network.update_waste_amount(waste_id, quantity)

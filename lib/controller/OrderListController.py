@@ -6,7 +6,7 @@ from lib.firebaseData import Firebase
 from lib.model.Article import Article
 from lib.model.Customer import Customer
 from lib.repository.ArticlesRepository import ArticlesRepository
-from lib.model.Order import Order
+from lib.model.Order import Order, OrderState
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 
@@ -39,18 +39,18 @@ class OrderListController(OrderBaseController):
         # Parametri di filtro scelti dall'utente
         search_field: str = filters["searchcombobox"]  # Campo dell'ordine sulla base di cui filtrare
         search_text: str = filters["searchbox"]  # Valore del campo dell'ordine sulla base di cui filtrare
-        allowed_states: list[str] = []  # Stati dell'ordine da mostrare
+        allowed_states: list[OrderState] = []  # Stati dell'ordine da mostrare
 
         # In base ai parametri di filtro, determina se uno stato è ammesso a meno
-        def append_state_if_allowed(filter_key: str, state_name: str):
+        def append_state_if_allowed(filter_key: str, order_state: OrderState):
             if filters[filter_key]:
-                allowed_states.append(state_name)
+                allowed_states.append(order_state)
 
         # Eseguo la funzione per tutti gli stati possibili
-        append_state_if_allowed("notstarted", "Non iniziato")
-        append_state_if_allowed("working", "In lavorazione")
-        append_state_if_allowed("completed", "Completato")
-        append_state_if_allowed("delivered", "Consegnato")
+        append_state_if_allowed("notstarted", OrderState.NOT_STARTED)
+        append_state_if_allowed("working", OrderState.PROCESSING)
+        append_state_if_allowed("completed", OrderState.COMPLETED)
+        append_state_if_allowed("delivered", OrderState.DELIVERED)
 
         # Numero di stati ammessi
         allowed_states_count: int = len(allowed_states)
@@ -101,7 +101,7 @@ class OrderListController(OrderBaseController):
         # Estrae la quantità (numero di paia di forme) dell'ordine
         quantity = data.pop("quantity")
 
-        # Se non esiste, crea un nuovo articolo con i dati della form. Ritorna il seriale dell'ordine
+        # Se non esiste, crea un nuovo articolo con i dati della form. Ritorna il seriale dell'articolo
         article_serial = self.__articles_repository.create_article(data)
 
         # Crea un nuovo ordine

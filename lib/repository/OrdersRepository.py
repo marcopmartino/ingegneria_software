@@ -203,7 +203,7 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
             price=price,
             creation_date=DatetimeUtils.current_date(),
             customer_id=Firebase.auth.currentUserId(),
-            state=OrderStateStrings.NOT_STARTED
+            state=OrderState.NOT_STARTED.value
         )
         # Salva l'ordine nel database e ne ritorna l'id
         return self.__orders_network.insert(order_data)

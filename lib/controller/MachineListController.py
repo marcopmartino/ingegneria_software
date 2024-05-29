@@ -73,7 +73,7 @@ class MachineListController:
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo del macchinario
                 if allowed_types_count != 5:
-                    if machine.get_machine_type() not in allowed_types:
+                    if machine.__class__.__name__ not in allowed_types:
                         continue
 
                 # Se tutti gli stati sono ammessi viene saltato il filtro sullo stato del macchinario

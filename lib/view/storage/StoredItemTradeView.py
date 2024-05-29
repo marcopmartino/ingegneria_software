@@ -50,6 +50,9 @@ class StoredItemTradeView(QDialog):
         # Imposta il testo della Label dello SpinBox
         self.amount_label.setText("Seleziona la quantità da acquistare")
 
+        # Imposta il valore di default dello SpinBox
+        self.amount_spin_box.setValue(1)
+
         # Imposta il testo della Label di informazione
         self.info_label.setText("Informazioni sull'acquisto")
 
@@ -121,7 +124,6 @@ class StoredItemTradeView(QDialog):
         self.amount_label = QLabel(self)
         font = QFont()
         font.setPointSize(FontSize.FLUENT_DEFAULT)
-        font.setBold(True)
         font.setWeight(FontWeight.BOLD)
         self.amount_label.setFont(font)
         self.amount_label.setStyleSheet(Styles.ACCESS_LABEL)

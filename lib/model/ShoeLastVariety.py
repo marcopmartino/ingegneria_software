@@ -57,49 +57,28 @@ class Shoeing(Enum):
 # Classe che rappresenta una varietà della forma (insieme delle caratteristiche di una forma)
 # Non rappresenta una forma concreta
 class ShoeLastVariety:
-    def __init__(self, product_type: ProductType | str, gender: Gender | str, shoe_last_type: ShoeLastType | str,
-                 plastic_type: PlasticType | str, size: str = None, processing: Processing | str = Processing.NESSUNA,
-                 first_compass_type: CompassType | str = CompassType.NESSUNA,
-                 second_compass_type: CompassType | str = CompassType.NESSUNA, pivot_under_heel: bool = False,
-                 shoeing: Shoeing | str = Shoeing.NESSUNA, iron_tip: bool = False, numbering_antineck: bool = False,
+    def __init__(self, product_type: ProductType, gender: Gender, shoe_last_type: ShoeLastType,
+                 plastic_type: PlasticType, size: str = None, processing: Processing = Processing.NESSUNA,
+                 first_compass_type: CompassType = CompassType.NESSUNA,
+                 second_compass_type: CompassType = CompassType.NESSUNA, pivot_under_heel: bool = False,
+                 shoeing: Shoeing = Shoeing.NESSUNA, iron_tip: bool = False, numbering_antineck: bool = False,
                  numbering_lateral: bool = False, numbering_heel: bool = False):
         super().__init__()
-        # Tipo di prodotto
-        self.__product_type = ProductType[product_type.upper()] if type(product_type) is str \
-            else product_type
-
-        # Genere
-        self.__gender = Gender[gender.upper()] if type(gender) is str else gender
-
-        # Tipo di forma
-        self.__shoe_last_type = ShoeLastType[shoe_last_type.upper()] if type(shoe_last_type) is str \
-            else shoe_last_type
-
-        # Tipo di plastica
-        self.__plastic_type = PlasticType[plastic_type.upper()] if type(plastic_type) is str \
-            else plastic_type
+        self.__product_type = product_type  # Tipo di prodotto
+        self.__gender = gender  # Genere
+        self.__shoe_last_type = shoe_last_type  # Tipo di forma
+        self.__plastic_type = plastic_type  # Tipo di plastica
 
         self.__size = size  # Taglia
 
-        # Lavorazione
-        self.__processing = Processing[processing.upper()] if type(processing) is str else processing
+        self.__processing = processing  # Lavorazione
 
-        # Prima bussola
-        self.__first_compass_type = CompassType[first_compass_type.upper()] if type(first_compass_type) is str \
-            else first_compass_type
+        self.__first_compass_type = first_compass_type  # Prima bussola
+        self.__second_compass_type = second_compass_type  # Seconda bussola
+        self.__pivot_under_heel = pivot_under_heel  # Perno sotto tallone
 
-        # Seconda bussola
-        self.__second_compass_type = CompassType[second_compass_type.upper()] if type(second_compass_type) is str \
-            else second_compass_type
-
-        # Perno sotto tallone
-        self.__pivot_under_heel = pivot_under_heel
-
-        # Ferratura
-        self.__shoeing = Shoeing[shoeing.upper()] if type(shoeing) is str else shoeing
-
-        # Punta ferrata
-        self.__iron_tip = iron_tip
+        self.__shoeing = shoeing  # Ferratura
+        self.__iron_tip = iron_tip  # Punta ferrata
 
         self.__numbering_antineck = numbering_antineck  # Segno anticollo
         self.__numbering_lateral = numbering_lateral  # Segni laterali
@@ -132,31 +111,31 @@ class ShoeLastVariety:
     def get_shoeing(self) -> Shoeing:
         return self.__shoeing
 
-    def get_numbering_antineck(self) -> str:
-        return "Si" if self.__numbering_antineck else "No"
+    def get_numbering_antineck(self) -> bool:
+        return self.__numbering_antineck
 
-    def get_numbering_lateral(self) -> str:
-        return "Si" if self.__numbering_lateral else "No"
+    def get_numbering_lateral(self) -> bool:
+        return self.__numbering_lateral
 
-    def get_numbering_heel(self) -> str:
-        return "Si" if self.__numbering_heel else "No"
+    def get_numbering_heel(self) -> bool:
+        return self.__numbering_heel
 
-    def get_iron_tip(self) -> str:
-        return "Si" if self.__iron_tip else "No"
+    def get_iron_tip(self) -> bool:
+        return self.__iron_tip
 
-    def get_pivot_under_heel(self) -> str:
-        return "Si" if self.__pivot_under_heel else "No"
+    def get_pivot_under_heel(self) -> bool:
+        return self.__pivot_under_heel
 
     def get_description(self) -> str:
-        description_abbozzo = (f"{self.__product_type.value}, {self.__gender.value}, {self.__shoe_last_type.value}, "
-                               f"tipo {str(self.__plastic_type.value)}")
+        description_abbozzo = (f"{self.__product_type.value} da {self.__gender.value}, {self.__shoe_last_type.value}, "
+                               f"plastica tipo {str(self.__plastic_type.value)}")
         if self.__product_type == ProductType.ABBOZZO:
             return description_abbozzo
 
         else:
-            description_abbozzo_sgrossato = (f"{description_abbozzo}, {self.__size}" +
+            description_abbozzo_sgrossato = (f"{description_abbozzo}, taglia {self.__size}" +
                                              ("" if self.__processing == Processing.NESSUNA else
-                                              f", {self.__processing.name.lower().replace("_", " ")}"))
+                                              f", lavorazione {self.__processing.name.lower().replace("_", " ")}"))
             if self.__product_type == ProductType.ABBOZZO_SGROSSATO:
                 return description_abbozzo_sgrossato
 
