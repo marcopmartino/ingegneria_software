@@ -247,19 +247,13 @@ BASE_WIDGET = """/* Set style for sub interface */\n
                     border-right: none;\n
                 }\n"""
 
-BASE_WIDGET_2 = """/* Set style for sub interface */\n
-                #header_frame {\n
-                    border: 1px solid;\n
-                    border-right: none;\n
-                }\n
+BASE_WIDGET_TAB = """/* Set style for sub interface */\n
                 #central_frame {\n
-                    border: 1px solid;\n
-                    border-top: none;\n
-                    border-bottom: none;\n
-                    border-right: none;\n
+                    border: none;\n
                 }\n
                 #sidebar_frame {\n
-                    border: 1px solid;\n
+                    background-color: #FFF;\n
+                    border: 1px solid black;\n
                     border-top: none;\n
                     border-bottom: none;\n
                     border-right: none;\n

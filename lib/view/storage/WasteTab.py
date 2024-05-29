@@ -20,10 +20,16 @@ from res.Dimensions import FontSize
 
 class WasteTab(SubInterfaceChildWidget):
     def __init__(self, parent_widget: SubInterfaceWidget, storage_controller: StorageController):
-        super().__init__("waste_list_view", parent_widget)
+        super().__init__("waste_list_view", parent_widget, scrollable_sidebar=True)
+
+        # Controller
+        self.controller = storage_controller
+
+        # Nasconde l'header
         self.hideHeader()
 
-        self.controller = storage_controller
+        # Imposta lo stile
+        self.setStyleSheet(Styles.BASE_WIDGET_TAB)
 
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(24)

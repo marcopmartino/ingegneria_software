@@ -15,16 +15,23 @@ from lib.view.storage.ProductView import ProductView
 from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
+from res import Styles
 from res.Dimensions import FontSize
 
 
 class ProductsTab(SubInterfaceChildWidget):
 
     def __init__(self, parent_widget: SubInterfaceWidget, storage_controller: StorageController):
-        super().__init__("product_list_view", parent_widget)
+        super().__init__("product_list_view", parent_widget, scrollable_sidebar=True)
+
+        # Controller
+        self.controller = storage_controller
+
+        # Nasconde l'header
         self.hideHeader()
 
-        self.controller = storage_controller
+        # Imposta lo stile
+        self.setStyleSheet(Styles.BASE_WIDGET_TAB)
 
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(24)
@@ -85,7 +92,7 @@ class ProductsTab(SubInterfaceChildWidget):
         font.setPointSize(FontSize.FLUENT_DEFAULT)
         self.checkgroup_label = QLabel(self.sidebar_frame)
         self.checkgroup_label.setObjectName("marking_group_label")
-        self.checkgroup_label.setText("Filtra per tipo:")
+        self.checkgroup_label.setText("Filtra per tipo di prodotto:")
         self.checkgroup_label.setFont(font)
         self.checkgroup_layout.addWidget(self.checkgroup_label)
 

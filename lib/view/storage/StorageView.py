@@ -29,7 +29,6 @@ class StorageView(SubInterfaceWidget):
         # Inizializza la navigazione tra le tab
         self.navigation = SegmentedWidget(self)
         self.stackedWidget = QStackedWidget(self)
-        self.vBoxLayout = QVBoxLayout(self.central_frame)
 
         # Inizializza le tab
         self.productsInterface = ProductsTab(self, self.storage_controller)
@@ -46,17 +45,15 @@ class StorageView(SubInterfaceWidget):
         self.addSubInterface(self.materialsInterface, 'materialsInterface', 'Materiali')
         self.addSubInterface(self.wasteInterface, 'wasteInterface', 'Scarti')
 
-        self.vBoxLayout.addWidget(self.navigation)
-        self.vBoxLayout.addWidget(self.stackedWidget)
-        self.vBoxLayout.setContentsMargins(30, 10, 30, 30)
+        self.central_layout.addWidget(self.navigation)
+        self.central_layout.addWidget(self.stackedWidget)
+        self.central_layout.setSpacing(0)
+        self.central_layout.setContentsMargins(12, 12, 12, 12)
 
         # Assegna uno slot al signal "currentChanged" dello StackedWidget; imposta il widget e l'item corrente
         self.stackedWidget.currentChanged.connect(self.onCurrentIndexChanged)
         self.stackedWidget.setCurrentWidget(self.productsInterface)
         self.navigation.setCurrentItem(self.productsInterface.objectName())
-
-        self.central_layout.addLayout(self.vBoxLayout)
-        self.central_layout.setAlignment(self.vBoxLayout, Qt.AlignCenter)
 
     # Aggiunge un'interfaccia di navigazione allo StackedWidget
     def addSubInterface(self, widget: SubInterfaceWidget, objectName, text):
