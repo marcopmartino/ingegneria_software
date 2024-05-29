@@ -30,6 +30,24 @@ class StorageController:
     def get_waste_by_plastic_type(self, plastic_type: PlasticType) -> StoredWaste:
         return self.__storage_repository.get_waste_by_plastic_type(plastic_type)
 
+    # Ritorna il totale di prodotti immagazzinati
+    def get_total_stored_products_quantity(self) -> int:
+        total = 0
+
+        for product in self.__storage_repository.get_product_list():
+            total += product.get_quantity()
+
+        return total
+
+    # Ritorna il totale di prodotti immagazzinati
+    def get_total_stored_waste_quantity(self) -> int:
+        total = 0
+
+        for waste in self.__storage_repository.get_waste_list():
+            total += waste.get_quantity()
+
+        return total
+
     # Ritorna la lista dei prodotti filtrata
     def get_product_list(self, filters: dict[str, any]) -> list[StoredShoeLastVariety]:
         return self.filter_product_list(filters, *self.__storage_repository.get_product_list())
@@ -185,9 +203,6 @@ class StorageController:
                 filtered_wastes_list.append(waste)
 
         return filtered_wastes_list
-
-    def get_max_storage(self):
-        return self.__storage_repository.get_max_storage()
 
     # Ritorna il listino prezzi del centro abbozzi
     def get_raw_shoe_last_center_price_catalog(self) -> dict[str, float]:

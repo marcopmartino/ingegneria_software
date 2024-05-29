@@ -27,27 +27,9 @@ class MaterialsTab(SubInterfaceChildWidget):
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(24)
 
-        self.storage_details_layout = QVBoxLayout(self.sidebar_frame)
-        self.storage_details_layout.setSpacing(8)
-        self.storage_details_layout.setObjectName("storage_details_layout")
-
         font = QFont()
         font.setPointSize(FontSize.FLUENT_DEFAULT)
         font.setBold(True)
-
-        self.details_title = QLabel(self.sidebar_frame)
-        self.details_title.setObjectName("details_title_label")
-        self.details_title.setText("Capienza reparto")
-        self.details_title.setFont(font)
-
-        font.setBold(False)
-        self.max_storage = QLabel(self.sidebar_frame)
-        self.max_storage.setObjectName("max_storage_label")
-        self.max_storage.setText(f"Massima: {self.controller.get_max_storage()}")
-        self.max_storage.setFont(font)
-
-        self.storage_details_layout.addWidget(self.details_title, alignment=Qt.AlignCenter)
-        self.storage_details_layout.addWidget(self.max_storage, alignment=Qt.AlignLeft)
 
         # Search Label
         self.search_label = QLabel(self.sidebar_frame)
@@ -129,12 +111,10 @@ class MaterialsTab(SubInterfaceChildWidget):
         self.purchase_button.setText("Acquista materiali")
 
         # Aggiungo i campi della form e altri widget al layout della sidebar
-        self.sidebar_layout.addItem(self.storage_details_layout)
-        self.sidebar_layout.addWidget(HorizontalLine(self.sidebar_frame))  # Primo spacer
         self.sidebar_layout.addLayout(self.search_box_layout)
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
-        self.sidebar_layout.addWidget(self.separator)  # Secondo spacer
+        self.sidebar_layout.addWidget(self.separator)
         self.sidebar_layout.addWidget(self.purchase_button)
 
         # Nasconde il separatore e il pulsante di acquisto se l'utente corrente è un operaio
@@ -171,8 +151,6 @@ class MaterialsTab(SubInterfaceChildWidget):
 
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
-
-        self.check_empty_table()
 
     def check_empty_table(self):
         if self.table.isEmpty():

@@ -28,6 +28,7 @@ class WasteTab(SubInterfaceChildWidget):
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(24)
 
+        # Informazioni sulla quantità totale immagazzinata di scarti
         self.storage_details_layout = QVBoxLayout(self.sidebar_frame)
         self.storage_details_layout.setSpacing(8)
         self.storage_details_layout.setObjectName("storage_details_layout")
@@ -38,17 +39,16 @@ class WasteTab(SubInterfaceChildWidget):
 
         self.details_title = QLabel(self.sidebar_frame)
         self.details_title.setObjectName("details_title_label")
-        self.details_title.setText("Capienza reparto")
+        self.details_title.setText("Scarti immagazzinati")
         self.details_title.setFont(font)
 
         font.setBold(False)
-        self.max_storage = QLabel(self.sidebar_frame)
-        self.max_storage.setObjectName("max_storage_label")
-        self.max_storage.setText(f"Massima: {self.controller.get_max_storage()}")
-        self.max_storage.setFont(font)
+        self.stored_quantity_label = QLabel(self.sidebar_frame)
+        self.stored_quantity_label.setObjectName("stored_waste_label")
+        self.stored_quantity_label.setFont(font)
 
-        self.storage_details_layout.addWidget(self.details_title, alignment=Qt.AlignCenter)
-        self.storage_details_layout.addWidget(self.max_storage, alignment=Qt.AlignLeft)
+        self.storage_details_layout.addWidget(self.details_title)
+        self.storage_details_layout.addWidget(self.stored_quantity_label)
 
         # Label per magazzino vuoto
         self.empty_storage = QLabel(self.central_frame)
@@ -141,14 +141,14 @@ class WasteTab(SubInterfaceChildWidget):
                     )
                 case StorageRepository.Event.WASTE_UPDATED:
                     self.table_adapter.updateDataColumns(data, [2])
+
             self.check_empty_table()
+            self.refresh_total_stored_waste_quantity()
 
         self.controller.observe_storage(update_table)
 
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
-
-        self.check_empty_table()
 
     def check_empty_table(self):
         if self.table.isEmpty():
@@ -166,6 +166,10 @@ class WasteTab(SubInterfaceChildWidget):
     def refresh_waste_list(self):
         self.table_adapter.setData(self.get_filtered_waste_list())
         self.check_empty_table()
+
+    # Aggiorna la quantità totale immagazzinata di scarti
+    def refresh_total_stored_waste_quantity(self):
+        self.stored_quantity_label.setText(f"{self.controller.get_total_stored_waste_quantity()} kg")
 
     # Aggiorna la lista degli scarti in base ai filtri
     def show_sell_dialog(self, waste_id: str):

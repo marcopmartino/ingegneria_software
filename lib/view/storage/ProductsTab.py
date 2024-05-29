@@ -29,6 +29,7 @@ class ProductsTab(SubInterfaceChildWidget):
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(24)
 
+        # Informazioni sulla quantità totale immagazzinata di forme
         self.storage_details_layout = QVBoxLayout(self.sidebar_frame)
         self.storage_details_layout.setSpacing(8)
         self.storage_details_layout.setObjectName("storage_details_layout")
@@ -39,17 +40,16 @@ class ProductsTab(SubInterfaceChildWidget):
 
         self.details_title = QLabel(self.sidebar_frame)
         self.details_title.setObjectName("details_title_label")
-        self.details_title.setText("Capienza reparto")
+        self.details_title.setText("Prodotti immagazzinati")
         self.details_title.setFont(font)
 
-        self.max_storage = QLabel(self.sidebar_frame)
-        self.max_storage.setObjectName("max_storage_label")
-        self.max_storage.setText(f"Massima: {self.controller.get_max_storage()}")
-        font.setBold(False)
-        self.max_storage.setFont(font)
+        self.stored_quantity_label = QLabel(self.sidebar_frame)
+        self.stored_quantity_label.setObjectName("stored_products_label")
 
+        font.setBold(False)
+        self.stored_quantity_label.setFont(font)
         self.storage_details_layout.addWidget(self.details_title)
-        self.storage_details_layout.addWidget(self.max_storage, alignment=Qt.AlignLeft)
+        self.storage_details_layout.addWidget(self.stored_quantity_label)
 
         # Search Label
         self.search_label = QLabel(self.sidebar_frame)
@@ -174,7 +174,8 @@ class ProductsTab(SubInterfaceChildWidget):
                 case StorageRepository.Event.PRODUCT_UPDATED:
                     self.table_adapter.updateDataColumns(data, [2])
 
-            self.check_empty_tables()
+            self.check_empty_table()
+            self.refresh_total_stored_products_quantity()
 
         self.messageReceived.connect(update_table)
         self.controller.observe_storage(self.messageReceived.emit)
@@ -182,7 +183,7 @@ class ProductsTab(SubInterfaceChildWidget):
         self.central_layout.addWidget(self.table)
         self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
 
-    def check_empty_tables(self):
+    def check_empty_table(self):
         if self.table.isEmpty():
             self.empty_storage.setVisible(True)
             self.table.setVisible(False)
@@ -198,7 +199,11 @@ class ProductsTab(SubInterfaceChildWidget):
     def refresh_products_list(self):
         filtered_list = self.get_filtered_product_list()
         self.table_adapter.setData(filtered_list)
-        self.check_empty_tables()
+        self.check_empty_table()
+
+    # Aggiorna la quantità totale immagazzinata di prodotti
+    def refresh_total_stored_products_quantity(self):
+        self.stored_quantity_label.setText(f"{self.controller.get_total_stored_products_quantity()} paia")
 
     # Mostra la schermata con i dettagli del prodotto
     def show_product_details(self, serial: str):

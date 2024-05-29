@@ -13,21 +13,17 @@ from lib.utility.Singleton import RepositoryMeta
 
 class StorageRepository(Repository, metaclass=RepositoryMeta):
     class Event(Enum):
-        MAX_STORAGE_INITIALIZED = 0
-        MAX_STORAGE_UPDATED = 1
-        PRODUCTS_INITIALIZED = 2
-        PRODUCT_CREATED = 3
-        PRODUCT_UPDATED = 4
-        MATERIALS_INITIALIZED = 5
-        MATERIAL_UPDATED = 6
-        WASTE_INITIALIZED = 7
-        WASTE_UPDATED = 8
-        RAW_SHOE_LAST_CENTER_PRICE_CATALOG_INITIALIZED = 9
-        HARDWARE_STORE_PRICE_CATALOG_INITIALIZED = 10
+        PRODUCTS_INITIALIZED = 0
+        PRODUCT_CREATED = 1
+        PRODUCT_UPDATED = 2
+        MATERIALS_INITIALIZED = 3
+        MATERIAL_UPDATED = 4
+        WASTE_INITIALIZED = 5
+        WASTE_UPDATED = 6
+        RAW_SHOE_LAST_CENTER_PRICE_CATALOG_INITIALIZED = 7
+        HARDWARE_STORE_PRICE_CATALOG_INITIALIZED = 8
 
     def __init__(self):
-        self.__max_storage = 0
-
         # Inizializza le liste di oggetti immagazzinati
         self.__product_list: list[StoredShoeLastVariety] = []
         self.__material_list: list[StoredMaterial] = []
@@ -41,7 +37,6 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         super().__init__(self.__storage_network.stream)
 
     def clear(self):
-        self.__max_storage = 0
         self.__product_list = []
         self.__product_list = []
         self.__waste_list = []
@@ -95,14 +90,6 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                     # All'avvio del programma, quando viene caricata l'intera lista di prodotti
                     if path == "/":
                         if data:
-                            self.__max_storage = data.get('max_capacity', 0)
-
-                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                            self.notify(Message(
-                                StorageRepository.Event.MAX_STORAGE_INITIALIZED,
-                                self.__max_storage
-                            ))
-
                             # Estraggo gli oggetti immagazzinati
                             products = data.get("products")
                             materials = data.get("materials")
@@ -309,9 +296,6 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
 
         # Salva il prodotto nel database e ritorna il nuovo seriale
         return self.__storage_network.insert_product(product_data)
-
-    def get_max_storage(self) -> int:
-        return self.__max_storage
 
     def update_product_quantity(self, product_id: str, quantity: int):
         self.__storage_network.update_product_amount(product_id, quantity)
