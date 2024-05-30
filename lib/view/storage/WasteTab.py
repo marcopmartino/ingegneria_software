@@ -14,7 +14,7 @@ from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWid
 from lib.view.storage.ManualChangeStoredItemView import ManualChangeStoredItemView
 from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
-from lib.widget.TableWidgets import StandardTable
+from lib.widget.TableWidgets import StandardTable, IntegerTableItem
 from res import Styles
 from res.Dimensions import FontSize
 
@@ -163,6 +163,7 @@ class WasteTab(SubInterfaceChildWidget):
 
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
+        self.table_adapter.setColumnItemClass(2, IntegerTableItem)
         self.table_adapter.hideKeyColumn()
         self.table_adapter.onDoubleClick(self.show_waste_edit_dialog)
 

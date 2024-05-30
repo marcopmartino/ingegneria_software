@@ -14,7 +14,7 @@ from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWid
 from lib.view.storage.ManualChangeStoredItemView import ManualChangeStoredItemView
 from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
-from lib.widget.TableWidgets import StandardTable
+from lib.widget.TableWidgets import StandardTable, IntegerTableItem
 from res import Styles
 from res.Dimensions import FontSize
 
@@ -191,6 +191,7 @@ class ProductsTab(SubInterfaceChildWidget):
 
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
+        self.table_adapter.setColumnItemClass(2, IntegerTableItem)
         self.table_adapter.hideKeyColumn()
         self.table_adapter.onDoubleClick(self.show_product_edit_dialog)
 
@@ -265,6 +266,6 @@ class StorageListAdapter(TableAdapter):
     # Adatta l'altezza di cella al numero di righe del testo contenuto
     def _onRowUpdated(self, row_data: list[str], row: int) -> None:
         description_length = len(row_data[1])
-        max_extra_lines = description_length // 45
+        max_extra_lines = description_length // 50
 
         self.table.setRowHeight(row, 40 + 20 * max_extra_lines)
