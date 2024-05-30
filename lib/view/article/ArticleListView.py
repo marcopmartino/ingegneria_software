@@ -33,6 +33,15 @@ class ArticleListView(SubInterfaceWidget):
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(24)
 
+        # Label per tabella vuota
+        font = QFont()
+        font.setPointSize(FontSize.FLUENT_DEFAULT)
+        self.empty_storage = QLabel(self.central_frame)
+        self.empty_storage.setObjectName("empty_storage_label")
+        self.empty_storage.setText("Nessun articolo trovato, modificare i filtri.")
+        font.setBold(True)
+        self.empty_storage.setFont(font)
+
         # Label
         self.search_label = QLabel(self.sidebar_frame)
         self.search_label.setText("Cerca in base al seriale:")
@@ -58,8 +67,7 @@ class ArticleListView(SubInterfaceWidget):
         self.checkgroup_layout.setObjectName("checkgroup_layout")
 
         # Checkgroup Label
-        font = QFont()
-        font.setPointSize(FontSize.FLUENT_DEFAULT)
+        font.setBold(False)
         self.checkgroup_label = QLabel(self.sidebar_frame)
         self.checkgroup_label.setObjectName("checkgroup_label")
         self.checkgroup_label.setText("Mostra solo articoli:")
@@ -118,6 +126,7 @@ class ArticleListView(SubInterfaceWidget):
 
                 case ArticlesRepository.Event.ARTICLE_PRODUCED_SHOE_LASTS_UPDATED:
                     self.table_adapter.updateDataColumns(data, [2])
+            self.check_empty_table()
 
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
@@ -126,6 +135,15 @@ class ArticleListView(SubInterfaceWidget):
         self.controller.observe_article_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
+        self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
+
+    def check_empty_table(self):
+        if self.table.isEmpty():
+            self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Ritorna la lista di articoli filtrata
     def get_filtered_article_list(self) -> list[Article]:
@@ -135,6 +153,7 @@ class ArticleListView(SubInterfaceWidget):
     def refresh_article_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_article_list())
+        self.check_empty_table()
 
     # Mostra la schermata con i dettagli dell'articolo
     def show_article_details(self, article_serial: str):

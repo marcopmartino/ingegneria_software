@@ -1,4 +1,5 @@
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QVBoxLayout
 )
@@ -18,6 +19,7 @@ from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
 from res.CustomIcon import CustomIcon
+from res.Dimensions import FontSize
 
 
 class WorkerListView(SubInterfaceWidget):
@@ -93,6 +95,16 @@ class WorkerListView(SubInterfaceWidget):
         self.refresh_button.setText("Aggiorna lista")
         self.refresh_button.clicked.connect(self.refresh_worker_list)
 
+        # Label per tabella vuota
+        font = QFont()
+        font.setPointSize(FontSize.FLUENT_DEFAULT)
+        self.empty_storage = QLabel(self.central_frame)
+        self.empty_storage.setObjectName("empty_storage_label")
+        self.empty_storage.setText("Nessun operaio trovato, modificare i filtri.")
+        font.setBold(True)
+        self.empty_storage.setFont(font)
+        font.setBold(False)
+
         # Spacer tra i filtri e il pulsante di registrazione di una nuova transazione
         self.sidebar_spacer = HorizontalLine(self.sidebar_frame)
 
@@ -128,6 +140,7 @@ class WorkerListView(SubInterfaceWidget):
 
                 case UsersRepository.Event.USER_UPDATED:
                     self.table_adapter.updateData(data)
+            self.check_empty_table()
 
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
@@ -136,6 +149,15 @@ class WorkerListView(SubInterfaceWidget):
         self.controller.observe_worker_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
+        self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
+
+    def check_empty_table(self):
+        if self.table.isEmpty():
+            self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Ritorna la lista di operai filtrata
     def get_filtered_worker_list(self) -> list[Employee]:
@@ -145,6 +167,7 @@ class WorkerListView(SubInterfaceWidget):
     def refresh_worker_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_worker_list())
+        self.check_empty_table()
 
     # Apre la finestra per aggiungere un operaio
     def show_add_worker_form(self):

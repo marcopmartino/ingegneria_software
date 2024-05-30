@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QVBoxLayout, QLabel, QInputDialog, QDialog
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QDialog
 from qfluentwidgets import CheckBox, PushButton
 
 from lib.controller.StorageController import StorageController
@@ -11,6 +11,7 @@ from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
+from lib.view.storage.ManualChangeStoredItemView import ManualChangeStoredItemView
 from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
@@ -98,6 +99,33 @@ class WasteTab(SubInterfaceChildWidget):
         self.plastic3_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.plastic3_check_box)
 
+        self.checkgroup_layout.addWidget(HorizontalLine(self.sidebar_frame))  # Secondo spacer
+
+        # CheckBox "Disponibile"
+        self.available_check_box = CheckBox(self.sidebar_frame)
+        self.available_check_box.setObjectName("available_check_box")
+        self.available_check_box.setText("Disponibile")
+        self.available_check_box.setChecked(True)
+        self.checkgroup_layout.addWidget(self.available_check_box)
+
+        # CheckBox "Non disponibile"
+        self.not_available_check_box = CheckBox(self.sidebar_frame)
+        self.not_available_check_box.setObjectName("notavailable_check_box")
+        self.not_available_check_box.setText("Non disponibile")
+        self.not_available_check_box.setChecked(False)
+        self.checkgroup_layout.addWidget(self.not_available_check_box)
+
+        def change_available(state: bool):
+            if not state and not self.not_available_check_box.isChecked():
+                self.not_available_check_box.setChecked(True)
+
+        def change_not_available(state: bool):
+            if not state and not self.available_check_box.isChecked():
+                self.available_check_box.setChecked(True)
+
+        self.available_check_box.clicked.connect(change_available)
+        self.not_available_check_box.clicked.connect(change_not_available)
+
         # Button "Aggiorna lista"
         self.refresh_waste_button = PushButton(self.sidebar_frame)
         self.refresh_waste_button.setText("Aggiorna lista")
@@ -112,10 +140,10 @@ class WasteTab(SubInterfaceChildWidget):
 
         # Aggiungo i campi della form e altri widget al layout della sidebar
         self.sidebar_layout.addItem(self.storage_details_layout)
-        self.sidebar_layout.addWidget(HorizontalLine(self.sidebar_frame))
+        self.sidebar_layout.addWidget(HorizontalLine(self.sidebar_frame))  # Primo separator
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_waste_button)
-        self.sidebar_layout.addWidget(self.separator)
+        self.sidebar_layout.addWidget(self.separator)  # Terzo separator
         self.sidebar_layout.addWidget(self.sale_button)
 
         # Nasconde il separatore e il pulsante di acquisto se l'utente corrente è un operaio
@@ -136,7 +164,7 @@ class WasteTab(SubInterfaceChildWidget):
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
         self.table_adapter.hideKeyColumn()
-        self.table_adapter.onDoubleClick(self.show_sell_dialog)
+        self.table_adapter.onDoubleClick(self.show_waste_edit_dialog)
 
         def update_table(message: Message):
             data = message.data()
@@ -177,32 +205,22 @@ class WasteTab(SubInterfaceChildWidget):
     def refresh_total_stored_waste_quantity(self):
         self.stored_quantity_label.setText(f"{self.controller.get_total_stored_waste_quantity()} kg")
 
-    # Aggiorna la lista degli scarti in base ai filtri
-    def show_sell_dialog(self, waste_id: str):
+    # Mostra il dialog per la modifica della quantità di uno scarto
+    def show_waste_edit_dialog(self, serial: str):
 
-        data = self.controller.get_waste_by_id(waste_id)
+        print(f"Scarto selezionato: {serial}")
+        selected_waste = self.controller.get_waste_by_id(serial)
+        waste_description = selected_waste.get_description()
+        waste_amount = selected_waste.get_quantity()
+        dialog = ManualChangeStoredItemView.material(
+            waste_description,
+            waste_amount)
 
-        sell_dialog = QInputDialog(self)
-        sell_dialog.setStyleSheet(Styles.DIALOG)
-        sell_dialog.setWindowTitle(f"Vendita scarti plastica tipo {data.get_plastic_type().value}")
-        sell_dialog.setLabelText("Quantità da vendere: ")
-        sell_dialog.setInputMode(QInputDialog.IntInput)
-        sell_dialog.setIntValue(0)
-        sell_dialog.setIntMaximum(data.get_quantity())
-        sell_dialog.setIntMinimum(0)
-        sell_dialog.setIntStep(1)
-        sell_dialog.setOkButtonText("Vendi")
-        sell_dialog.setCancelButtonText("Annulla")
+        if dialog.exec() == QDialog.Accepted:
+            new_quantity = dialog.value()
 
-        # Eseguito solo se l'utente ha scelto di salvare la modifica
-        if sell_dialog.exec_() == QDialog.Accepted:
-            # Prendo il valore
-            new_value = sell_dialog.intValue()
-
-            # Aggiorno il valore se è diverso
-            if new_value != data.get_quantity():
-                self.controller.update_waste_quantity(waste_id, new_value)
-        # SellWasteDialog(waste_id, self.controller).exec()
+            # Aggiorna la quantità
+            self.controller.update_waste_quantity(serial, new_quantity)
 
 
 class StorageListAdapter(TableAdapter):

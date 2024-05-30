@@ -78,9 +78,17 @@ class CashRegisterView(SubInterfaceWidget):
         self.checkgroup_layout.setSpacing(12)
         self.checkgroup_layout.setObjectName("checkgroup_layout")
 
-        # Checkgroup Label
+        # Label per tabella vuota
         font = QFont()
         font.setPointSize(FontSize.FLUENT_DEFAULT)
+        self.empty_storage = QLabel(self.central_frame)
+        self.empty_storage.setObjectName("empty_storage_label")
+        self.empty_storage.setText("Nessuna transazione trovata, modificare i filtri.")
+        font.setBold(True)
+        self.empty_storage.setFont(font)
+        font.setBold(False)
+
+        # Checkgroup Label
         self.checkgroup_label = QLabel(self.sidebar_frame)
         self.checkgroup_label.setObjectName("checkgroup_label")
         self.checkgroup_label.setText("Filtra in base al tipo di transazione:")
@@ -160,6 +168,7 @@ class CashRegisterView(SubInterfaceWidget):
 
                 case CashRegisterRepository.Event.TRANSACTION_UPDATED:
                     self.table_adapter.updateDataColumns(data, [1, 2, 3])
+            self.check_empty_table()
 
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
@@ -168,6 +177,15 @@ class CashRegisterView(SubInterfaceWidget):
         self.controller.observe_transaction_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
+        self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
+
+    def check_empty_table(self):
+        if self.table.isEmpty():
+            self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Ritorna la lista di ordini filtrata
     def get_filtered_transaction_list(self) -> list[CashRegisterTransaction]:
@@ -177,6 +195,7 @@ class CashRegisterView(SubInterfaceWidget):
     def refresh_transaction_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_transaction_list())
+        self.check_empty_table()
 
     # Mostra la form per la creazione di transazioni
     def show_new_transaction_form(self):

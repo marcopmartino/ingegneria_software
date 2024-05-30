@@ -69,10 +69,12 @@ class StorageController:
 
         # Parametri di filtro scelti dall'utente
         search_text: str = filters["searchbox"]  # Valore del campo del prodotto sulla base di cui filtrare
+        available: bool = filters["available"]  # Quantità di prodotti >0
+        not_available: bool = filters["notavailable"]  # Quantità di prodotti = 0
         allowed_types: list[ProductType] = []  # Tipi di prodotto da mostrare
 
         # In base ai parametri di filtro, determina se un tipo è ammesso a meno
-        def append_types_if_allowed(filter_key: str, product_type: ProductType):
+        def append_types_if_allowed(filter_key: str, product_type: ProductType | bool):
             if filters[filter_key]:
                 allowed_types.append(product_type)
 
@@ -84,6 +86,12 @@ class StorageController:
 
         # Numero di campi ammessi
         allowed_types_count: int = len(allowed_types)
+
+        if available:
+            allowed_types_count = allowed_types_count+1
+
+        if not_available:
+            allowed_types_count = allowed_types_count+1
 
         filtered_product_list: list[StoredShoeLastVariety] = []
 
@@ -105,8 +113,14 @@ class StorageController:
                         continue
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
-                if allowed_types_count != 4:
+                if allowed_types_count != 6:
                     if product.get_shoe_last_variety().get_product_type() not in allowed_types:
+                        continue
+                    elif available and (product.get_quantity() == 0):
+                        continue
+                    elif not_available and (product.get_quantity() > 0):
+                        continue
+                    elif not available and not not_available:
                         continue
 
                 filtered_product_list.append(product)
@@ -121,12 +135,14 @@ class StorageController:
 
         # Parametri di filtro scelti dall'utente
         search_text: str = filters["searchbox"]  # Valore del campo del materiale sulla base di cui filtrare
+        available: bool = filters["available"]  # Quantità di materiali >0
+        not_available: bool = filters["notavailable"]  # Quantità di materiali = 0
         allowed_types: list[MaterialType] = []  # Tipi di materiale da mostrare
 
         # In base ai parametri di filtro, determina se un tipo è ammesso a meno
-        def append_types_if_allowed(filter_key: str, material_type: MaterialType):
+        def append_types_if_allowed(filter_key: str, allowed_check: MaterialType | bool):
             if filters[filter_key]:
-                allowed_types.append(material_type)
+                allowed_types.append(allowed_check)
 
         # Eseguo la funzione per tutti i tipi possibili
         append_types_if_allowed("shoeing", MaterialType.PARTE_PER_FERRATURA)
@@ -136,6 +152,12 @@ class StorageController:
 
         # Numero di campi ammessi
         allowed_types_count: int = len(allowed_types)
+
+        if available:
+            allowed_types_count = allowed_types_count+1
+
+        if not_available:
+            allowed_types_count = allowed_types_count+1
 
         filtered_material_list: list[StoredMaterial] = []
 
@@ -157,8 +179,12 @@ class StorageController:
                         continue
 
                 # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
-                if allowed_types_count != 4:
+                if allowed_types_count != 6:
                     if material.get_material_type() not in allowed_types:
+                        continue
+                    elif available and (material.get_quantity() == 0):
+                        continue
+                    elif not_available and (material.get_quantity() > 0):
                         continue
 
                 filtered_material_list.append(material)
@@ -172,7 +198,8 @@ class StorageController:
         # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio degli scarti
 
         # Parametri di filtro scelti dall'utente
-        # search_text: str = filters["searchbox"] # Valore del campo del prodotto sulla base di cui filtrare
+        available: bool = filters["available"]  # Quantità di materiali > 0
+        not_available: bool = filters["notavailable"]  # Quantità di materiali = 0
         allowed_plastic: list[PlasticType] = []  # Tipi di plastica da mostrare
 
         # In base ai parametri di filtro, determina se un tipo di plastica è ammesso a meno
@@ -187,6 +214,12 @@ class StorageController:
 
         allowed_plastic_count: int = len(allowed_plastic)
 
+        if available:
+            allowed_plastic_count = allowed_plastic_count+1
+
+        if not_available:
+            allowed_plastic_count = allowed_plastic_count+1
+
         filtered_wastes_list: list[StoredWaste] = []
 
         # Se nessuno stato è ammesso, la lista degli scarti da mostrare è quella vuota
@@ -196,8 +229,12 @@ class StorageController:
             for waste in waste_list:
 
                 # Se tutti i tipi di plastica sono ammessi viene saltato il filtro sul tipo di plastica
-                if allowed_plastic_count != 3:
+                if allowed_plastic_count != 5:
                     if waste.get_plastic_type() not in allowed_plastic:
+                        continue
+                    elif available and (waste.get_quantity() == 0):
+                        continue
+                    elif not_available and (waste.get_quantity() > 0):
                         continue
 
                 filtered_wastes_list.append(waste)

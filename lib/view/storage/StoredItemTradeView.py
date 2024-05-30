@@ -160,7 +160,7 @@ class StoredItemTradeView(QDialog):
 
         # Quantità effettiva - Label
         self.actual_quantity_label = QLabel(self)
-        self.unit_price_label.setFont(font)
+        self.actual_quantity_label.setFont(font)
         self.layout.addWidget(self.actual_quantity_label)
 
         # Nasconde la Label della quantità effettiva se la quantità per acquisto è uno
@@ -169,7 +169,7 @@ class StoredItemTradeView(QDialog):
 
         # Prezzo totale - Label
         self.total_price_label = QLabel(self)
-        self.unit_price_label.setFont(font)
+        self.total_price_label.setFont(font)
         self.layout.addWidget(self.total_price_label)
 
         # Pulsanti di acquisto\aggiornamento
@@ -180,10 +180,10 @@ class StoredItemTradeView(QDialog):
         self.layout.addLayout(self.buttons_layout)
 
         # Pulsante di aggiornamento
-        self.refresh_button = CustomPushButton.white(text="Aggiorna info", point_size=FontSize.FLUENT_DEFAULT)
+        '''self.refresh_button = CustomPushButton.white(text="Aggiorna info", point_size=FontSize.FLUENT_DEFAULT)
         self.refresh_button.setFixedHeight(GenericDimensions.FORM_BUTTON_HEIGHT)
         self.refresh_button.setObjectName("refresh_button")
-        self.buttons_layout.addWidget(self.refresh_button)
+        self.buttons_layout.addWidget(self.refresh_button)'''
 
         # Pulsante di acquisto
         self.purchase_button = CustomPushButton.cyan(text="Conferma acquisto", point_size=FontSize.FLUENT_DEFAULT)
@@ -213,8 +213,10 @@ class StoredItemTradeView(QDialog):
             # Aggiorna la quantità
             self.actual_quantity_label.setText(f"Quantità effettiva: {str(calculate_actual_quantity())}")
 
+        self.amount_spin_box.valueChanged.connect(refresh_info)
+
         # Gestione del pulsante per aggiornare il prezzo totale e la quantità effettiva
-        self.refresh_button.clicked.connect(refresh_info)
+        # self.refresh_button.clicked.connect(refresh_info)
 
         # Aggiorna il prezzo totale e la quantità effettiva
         refresh_info()

@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QDialog
 from qfluentwidgets import SearchLineEdit, CheckBox, PushButton
 
 from lib.controller.StorageController import StorageController
@@ -11,6 +11,7 @@ from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
+from lib.view.storage.ManualChangeStoredItemView import ManualChangeStoredItemView
 from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
@@ -105,6 +106,33 @@ class MaterialsTab(SubInterfaceChildWidget):
         self.finished_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.finished_check_box)
 
+        self.checkgroup_layout.addWidget(HorizontalLine(self.sidebar_frame))  # Primo spacer
+
+        # CheckBox "Disponibile"
+        self.available_check_box = CheckBox(self.sidebar_frame)
+        self.available_check_box.setObjectName("available_check_box")
+        self.available_check_box.setText("Disponibile")
+        self.available_check_box.setChecked(True)
+        self.checkgroup_layout.addWidget(self.available_check_box)
+
+        # CheckBox "Non disponibile"
+        self.not_available_check_box = CheckBox(self.sidebar_frame)
+        self.not_available_check_box.setObjectName("notavailable_check_box")
+        self.not_available_check_box.setText("Non disponibile")
+        self.not_available_check_box.setChecked(False)
+        self.checkgroup_layout.addWidget(self.not_available_check_box)
+
+        def change_available(state: bool):
+            if not state and not self.not_available_check_box.isChecked():
+                self.not_available_check_box.setChecked(True)
+
+        def change_not_available(state: bool):
+            if not state and not self.available_check_box.isChecked():
+                self.available_check_box.setChecked(True)
+
+        self.available_check_box.clicked.connect(change_available)
+        self.not_available_check_box.clicked.connect(change_not_available)
+
         # Button "Aggiorna lista"
         self.refresh_button = CustomPushButton.white(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
@@ -121,7 +149,7 @@ class MaterialsTab(SubInterfaceChildWidget):
         self.sidebar_layout.addLayout(self.search_box_layout)
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
-        self.sidebar_layout.addWidget(self.separator)
+        self.sidebar_layout.addWidget(self.separator)  # Secondo separator
         self.sidebar_layout.addWidget(self.purchase_button)
 
         # Nasconde il separatore e il pulsante di acquisto se l'utente corrente è un operaio
@@ -141,6 +169,7 @@ class MaterialsTab(SubInterfaceChildWidget):
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
         self.table_adapter.hideKeyColumn()
+        self.table_adapter.onDoubleClick(self.show_material_edit_dialog)
 
         def update_table(message: Message):
             data = message.data()
@@ -176,6 +205,22 @@ class MaterialsTab(SubInterfaceChildWidget):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_materials_list())
         self.check_empty_table()
+
+    # Mostra il dialog per la modifica della quantità di un materiale
+    def show_material_edit_dialog(self, serial: str):
+        print(f"Materiale selezionato: {serial}")
+        selected_material = self.controller.get_material_by_id(serial)
+        material_description = selected_material.get_description()
+        material_amount = selected_material.get_quantity()
+        dialog = ManualChangeStoredItemView.material(
+            material_description,
+            material_amount)
+
+        if dialog.exec() == QDialog.Accepted:
+            new_quantity = dialog.value()
+
+            # Aggiorna la quantità
+            self.controller.update_material_quantity(serial, new_quantity)
 
 
 class StorageListAdapter(TableAdapter):

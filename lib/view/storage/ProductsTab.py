@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QVBoxLayout, QLabel, QHeaderView
-from qfluentwidgets import SearchLineEdit, CheckBox, PushButton
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QHeaderView, QDialog
+from qfluentwidgets import SearchLineEdit, CheckBox
 
 from lib.controller.StorageController import StorageController
 from lib.firebaseData import Firebase
@@ -11,7 +11,7 @@ from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
-from lib.view.storage.ProductView import ProductView
+from lib.view.storage.ManualChangeStoredItemView import ManualChangeStoredItemView
 from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable
@@ -124,6 +124,33 @@ class ProductsTab(SubInterfaceChildWidget):
         self.finished_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.finished_check_box)
 
+        self.checkgroup_layout.addWidget(HorizontalLine(self.sidebar_frame))  # Secondo spacer
+
+        # CheckBox "Disponibile"
+        self.available_check_box = CheckBox(self.sidebar_frame)
+        self.available_check_box.setObjectName("available_check_box")
+        self.available_check_box.setText("Disponibile")
+        self.available_check_box.setChecked(True)
+        self.checkgroup_layout.addWidget(self.available_check_box)
+
+        # CheckBox "Non disponibile"
+        self.not_available_check_box = CheckBox(self.sidebar_frame)
+        self.not_available_check_box.setObjectName("notavailable_check_box")
+        self.not_available_check_box.setText("Non disponibile")
+        self.not_available_check_box.setChecked(True)
+        self.checkgroup_layout.addWidget(self.not_available_check_box)
+
+        def change_available(state: bool):
+            if not state and not self.not_available_check_box.isChecked():
+                self.not_available_check_box.setChecked(True)
+
+        def change_not_available(state: bool):
+            if not state and not self.available_check_box.isChecked():
+                self.available_check_box.setChecked(True)
+
+        self.available_check_box.clicked.connect(change_available)
+        self.not_available_check_box.clicked.connect(change_not_available)
+
         # Button "Aggiorna lista"
         self.refresh_button = CustomPushButton.white(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
@@ -142,7 +169,7 @@ class ProductsTab(SubInterfaceChildWidget):
         self.sidebar_layout.addLayout(self.search_box_layout)
         self.sidebar_layout.addLayout(self.checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_button)
-        self.sidebar_layout.addWidget(self.separator)  # Secondo spacer
+        self.sidebar_layout.addWidget(self.separator)  # Terzo spacer
         self.sidebar_layout.addWidget(self.purchase_button)
 
         # Nasconde il separatore e il pulsante di acquisto se l'utente corrente è un operaio
@@ -165,7 +192,7 @@ class ProductsTab(SubInterfaceChildWidget):
         # Table Adapter
         self.table_adapter = StorageListAdapter(self.table)
         self.table_adapter.hideKeyColumn()
-        self.table_adapter.onDoubleClick(self.show_product_details)
+        self.table_adapter.onDoubleClick(self.show_product_edit_dialog)
 
         def update_table(message: Message):
             data = message.data()
@@ -212,11 +239,21 @@ class ProductsTab(SubInterfaceChildWidget):
     def refresh_total_stored_products_quantity(self):
         self.stored_quantity_label.setText(f"{self.controller.get_total_stored_products_quantity()} paia")
 
-    # Mostra la schermata con i dettagli del prodotto
-    def show_product_details(self, serial: str):
+    # Mostra la schermata per modificare la quantità di un prodotto
+    def show_product_edit_dialog(self, serial: str):
         print(f"Prodotto selezionato: {serial}")
-        product_details = ProductView(self, self.controller.get_product_by_id(serial))
-        self.window().addRemovableSubInterface(product_details, text=f"Prodotto {serial}")
+        selected_product = self.controller.get_product_by_id(serial)
+        shoe_last_variety_description = selected_product.get_description()
+        shoe_last_variety_amount = selected_product.get_quantity()
+        dialog = ManualChangeStoredItemView.raw_shoe_last(
+            shoe_last_variety_description,
+            shoe_last_variety_amount)
+
+        if dialog.exec() == QDialog.Accepted:
+            new_quantity = dialog.value()
+
+            # Aggiorna la quantità
+            self.controller.update_product_quantity(serial, new_quantity)
 
 
 class StorageListAdapter(TableAdapter):
@@ -231,4 +268,3 @@ class StorageListAdapter(TableAdapter):
         max_extra_lines = description_length // 45
 
         self.table.setRowHeight(row, 40 + 20 * max_extra_lines)
-

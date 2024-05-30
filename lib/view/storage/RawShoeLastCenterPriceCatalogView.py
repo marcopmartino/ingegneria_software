@@ -3,17 +3,12 @@ from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QInputDialog, QDi
 from qfluentwidgets import FluentIconBase
 
 from lib.controller.StorageController import StorageController
-from lib.firebaseData import Firebase
 from lib.model.ShoeLastVariety import ShoeLastVariety, ProductType, Gender, ShoeLastType, PlasticType
-from lib.repository.CashRegisterRepository import CashRegisterRepository
-from lib.repository.StorageRepository import StorageRepository
-from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.StoredItemTradeView import StoredItemTradeView
 from lib.widget.TableWidgets import PriceCatalogTableBuilder, SixColumnsHeaderSection, SixColumnsDataSection, \
     TitleAndSubtitleSection, HorizontalTreeSection, PriceCatalogTable, NamedTableItem
-from res import Styles
 from res.CustomIcon import CustomIcon
 
 
@@ -155,7 +150,7 @@ class RawShoeLastCenterPriceCatalogView(SubInterfaceWidget):
                     # Imposta la quantità massima vendibile e quella di default pari alla quantità immagazzinata
                     dialog.amount_spin_box.setMaximum(stored_waste_quantity)
                     dialog.amount_spin_box.setValue(stored_waste_quantity)
-                    dialog.refresh_button.click()
+                    # dialog.refresh_button.click()
 
                     # Mostra Dialog vendita scarti
                     if dialog.exec() == QDialog.Accepted:

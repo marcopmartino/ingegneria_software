@@ -39,6 +39,16 @@ class OrderListView(SubInterfaceWidget):
         self.sidebar_layout.setAlignment(Qt.AlignTop)
         self.sidebar_layout.setSpacing(24)
 
+        # Label per tabella vuota
+        font = QFont()
+        font.setPointSize(FontSize.FLUENT_DEFAULT)
+        self.empty_storage = QLabel(self.central_frame)
+        self.empty_storage.setObjectName("empty_storage_label")
+        self.empty_storage.setText("Nessun ordine trovato, modificare i filtri.")
+        font.setBold(True)
+        self.empty_storage.setFont(font)
+        font.setBold(False)
+
         # Label
         self.search_label = QLabel(self.sidebar_frame)
         self.search_label.setText("Cerca in base a:")
@@ -75,8 +85,6 @@ class OrderListView(SubInterfaceWidget):
         self.checkgroup_layout.setObjectName("first_checkgroup_layout")
 
         # Checkgroup Label
-        font = QFont()
-        font.setPointSize(FontSize.FLUENT_DEFAULT)
         self.checkgroup_label = QLabel(self.sidebar_frame)
         self.checkgroup_label.setObjectName("marking_group_label")
         self.checkgroup_label.setText("Filtra in base allo stato:")
@@ -174,6 +182,8 @@ class OrderListView(SubInterfaceWidget):
                 case OrdersRepository.Event.ORDER_STATE_UPDATED:
                     self.table_adapter.updateDataColumns(data, [3])
 
+            self.check_empty_table()
+
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
         # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
@@ -181,6 +191,15 @@ class OrderListView(SubInterfaceWidget):
         self.controller.observe_order_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
+        self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
+
+    def check_empty_table(self):
+        if self.table.isEmpty():
+            self.empty_storage.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_storage.setVisible(False)
+            self.table.setVisible(True)
 
     # Ritorna la lista di ordini filtrata
     def get_filtered_order_list(self) -> list[Order]:
@@ -190,6 +209,7 @@ class OrderListView(SubInterfaceWidget):
     def refresh_order_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_order_list())
+        self.check_empty_table()
 
     # Mostra la form per la creazione di ordini
     def show_order_form(self):
