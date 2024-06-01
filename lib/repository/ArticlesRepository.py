@@ -34,7 +34,8 @@ class ArticlesRepository(Repository, metaclass=RepositoryMeta):
             data["iron_tip"], data["numbering_antineck"], data["numbering_lateral"], data["numbering_heel"],
         )
 
-        article = Article(serial, shoe_last_variety, data["creation_date"], data["produced_article_shoe_lasts"])
+        article = Article(serial, shoe_last_variety, DatetimeUtils.format_date(data["creation_date"]),
+                          data["produced_article_shoe_lasts"])
         self.__article_list.append(article)
         return article
 

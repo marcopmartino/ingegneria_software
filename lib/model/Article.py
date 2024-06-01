@@ -1,3 +1,5 @@
+from PyQt5.QtCore import QDate
+
 from lib.model.ShoeLastVariety import ShoeLastVariety
 from lib.utility.ObserverClasses import Observable
 
@@ -9,7 +11,7 @@ from lib.utility.ObserverClasses import Observable
 # La proprietà "produced_article_shoe_lasts" indica il numero totale di forme prodotte dell'articolo in questione,
 # ed è usata per determinare il seriale di produzione delle prossime.
 class Article(Observable):
-    def __init__(self, article_serial: str, shoe_last_variety: ShoeLastVariety, creation_date: str,
+    def __init__(self, article_serial: str, shoe_last_variety: ShoeLastVariety, creation_date: QDate,
                  produced_article_shoe_lasts: int):
         super(Article, self).__init__()
         self.__article_serial = article_serial
@@ -17,16 +19,16 @@ class Article(Observable):
         self.__creation_date = creation_date
         self.__produced_article_shoe_lasts = produced_article_shoe_lasts
 
-    def get_article_serial(self):
+    def get_article_serial(self) -> str:
         return self.__article_serial
 
-    def get_shoe_last_variety(self):
+    def get_shoe_last_variety(self) -> ShoeLastVariety:
         return self.__shoe_last_variety
 
-    def get_creation_date(self):
+    def get_creation_date(self) -> QDate:
         return self.__creation_date
 
-    def get_produced_article_shoe_lasts(self):
+    def get_produced_article_shoe_lasts(self) -> int:
         return self.__produced_article_shoe_lasts
 
     def set_produced_article_shoe_lasts(self, produced_article_shoe_lasts: int):

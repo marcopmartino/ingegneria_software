@@ -32,7 +32,7 @@ class OrdersRepository(Repository, metaclass=RepositoryMeta):
     def __instantiate_and_append_order(self, serial: str, data: any) -> Order:
         order = Order(
             serial, data["article_serial"], OrderState(data["state"]), data["customer_id"], data["quantity"],
-            data["price"], data.get("first_product_serial", -1), data["creation_date"]
+            data["price"], data.get("first_product_serial", -1), DatetimeUtils.format_date(data["creation_date"])
         )
         self.__order_list.append(order)
         return order

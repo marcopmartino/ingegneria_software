@@ -11,7 +11,7 @@ from lib.model.Order import Order
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
-from lib.utility.UtilityClasses import PriceFormatter
+from lib.utility.UtilityClasses import PriceFormatter, DatetimeUtils
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.main.SubInterfaces import SubInterfaceWidget
@@ -226,7 +226,7 @@ class OrderListAdapter(TableAdapter):
     def adaptData(self, order: Order) -> list[str]:
         return [order.get_order_serial(),
                 order.get_article_serial(),
-                order.get_creation_date(),
+                DatetimeUtils.unformat_date(order.get_creation_date()),
                 order.get_state().value,
                 str(order.get_quantity()),
                 PriceFormatter.format(order.get_price())

@@ -8,6 +8,7 @@ from lib.model.Article import Article
 from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
+from lib.utility.UtilityClasses import DatetimeUtils
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.article.ArticleView import ArticleView
@@ -164,6 +165,6 @@ class ArticleListView(SubInterfaceWidget):
 class ArticleListAdapter(TableAdapter):
     def adaptData(self, article: Article) -> list[str]:
         return [article.get_article_serial(),
-                article.get_creation_date(),
+                DatetimeUtils.unformat_date(article.get_creation_date()),
                 str(article.get_produced_article_shoe_lasts())
                 ]

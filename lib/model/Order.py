@@ -1,5 +1,7 @@
 from enum import Enum
 
+from PyQt5.QtCore import QDate
+
 from lib.utility.ObserverClasses import Observable
 from res.Strings import OrderStateStrings
 
@@ -14,7 +16,7 @@ class OrderState(Enum):
 class Order(Observable):
 
     def __init__(self, order_serial: str, article_serial: str, state: OrderState, customer_id: str, quantity: int,
-                 price: float, first_product_serial: int, creation_date: str):
+                 price: float, first_product_serial: int, creation_date: QDate):
         super(Order, self).__init__()
         self.__order_serial = order_serial
         self.__article_serial = article_serial
@@ -46,7 +48,7 @@ class Order(Observable):
     def get_first_product_serial(self) -> int:
         return self.__first_product_serial
 
-    def get_creation_date(self) -> str:
+    def get_creation_date(self) -> QDate:
         return self.__creation_date
 
     def set_article_serial(self, article_serial: str) -> None:

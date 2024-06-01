@@ -15,7 +15,7 @@ from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Observer, Message
 from lib.utility.ResourceManager import ResourceManager
 from lib.utility.TableAdapters import SingleRowTableAdapter
-from lib.utility.UtilityClasses import PriceFormatter
+from lib.utility.UtilityClasses import PriceFormatter, DatetimeUtils
 from lib.view.article.ArticleView import ArticleMainDetailsAdapter, ArticleAccessoriesAdapter
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.view.order.EditOrderView import EditOrderView
@@ -251,7 +251,6 @@ class OrderView(SubInterfaceChildWidget):
 
                     # Aggiorna la sidebar
                     self.on_transition_to_next_state()
-                    print("Stato aggiornato")
 
                 case OrdersRepository.Event.ORDER_DELETED:
                     if order.get_customer_id() != Firebase.auth.currentUserId():
@@ -650,7 +649,7 @@ class OrderDetailsAdapter(SingleRowTableAdapter):
     def adaptData(self, order: Order) -> list[str]:
         return [
             order.get_article_serial(),
-            order.get_creation_date(),
+            DatetimeUtils.unformat_date(order.get_creation_date()),
             order.get_state().value,
             str(order.get_quantity()),
             PriceFormatter.format(order.get_price())
