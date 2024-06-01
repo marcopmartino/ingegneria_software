@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from PyQt5.QtCore import QDate
 
@@ -40,18 +42,43 @@ class SerialNumberFormatter:
 
 
 class DatetimeUtils:
-    # Ritorna la data odierna in formato DD/MM/YYYY
+    # Ritorna la data odierna in formato dd/mm/YYYY
     @staticmethod
     def current_date() -> str:
         return datetime.today().strftime('%d/%m/%Y')
 
-    # Converte una stringa DD/MM/YYYY in un oggetto QDate
+    # Converte una stringa dd/mm/YYYY in un oggetto QDate
     @staticmethod
-    def format(dd_mm_yyyy_string: str) -> QDate:
+    def format_date(dd_mm_yyyy_string: str) -> QDate:
         date_parts: list = dd_mm_yyyy_string.split('/')
         return QDate(int(date_parts[2]), int(date_parts[1]), int(date_parts[0]))
 
-    # Converte un oggetto QDate in una stringa DD/MM/YYYY
+    # Converte un oggetto QDate in una stringa dd/mm/YYYY
     @staticmethod
-    def unformat(date: QDate) -> str:
+    def unformat_date(date: QDate) -> str:
         return date.toString('dd/MM/yyyy')
+
+    # Ritorna la data e l'ora odierna in formato dd/mm/YYYY HH:MM:SS
+    @staticmethod
+    def current_datetime() -> str:
+        return DatetimeUtils.unformat_datetime(datetime.now())
+
+    # Converte una stringa dd/mm/YYYY HH:MM:SS in un oggetto QDate
+    @staticmethod
+    def format_datetime(datetime_string: str) -> datetime:
+        return datetime.strptime(datetime_string, "%d/%m/%Y %H:%M:%S")
+
+    # Converte un oggetto QDate in una stringa dd/mm/YYYY
+    @staticmethod
+    def unformat_datetime(datetime_: datetime) -> str:
+        return datetime_.strftime('dd/MM/yyyy HH:MM:SS')
+
+    # Calcola la differenza in secondi tra due datetime
+    @staticmethod
+    def calculate_time_difference(first_datetime: datetime, second_datetime: datetime) -> int:
+        return int((first_datetime - second_datetime).total_seconds())
+
+    # Aggiunge dei secondi a un datetime
+    @staticmethod
+    def add_seconds_to_datetime(datetime_: datetime, seconds: int) -> datetime:
+        return datetime_ + timedelta(seconds=seconds)

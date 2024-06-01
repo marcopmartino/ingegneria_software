@@ -38,12 +38,12 @@ class UtilityClassesTestCase(TestCase):
         self.assertEqual(SerialNumberFormatter.unformat("32783"), 32783)
 
     def test_date_formatter(self) -> None:
-        self.assertEqual(DatetimeUtils.format("12/03/2024"), QDate(2024, 3, 12))
-        self.assertEqual(DatetimeUtils.format("04/06/2023"), QDate(2023, 6, 4))
-        self.assertEqual(DatetimeUtils.format("21/12/1998"), QDate(1998, 12, 21))
+        self.assertEqual(DatetimeUtils.format_date("12/03/2024"), QDate(2024, 3, 12))
+        self.assertEqual(DatetimeUtils.format_date("04/06/2023"), QDate(2023, 6, 4))
+        self.assertEqual(DatetimeUtils.format_date("21/12/1998"), QDate(1998, 12, 21))
 
-        self.assertEqual(DatetimeUtils.unformat(QDate(2024, 3, 12)), "12/03/2024")
-        self.assertEqual(DatetimeUtils.unformat(QDate(2023, 6, 4)), "04/06/2023")
-        self.assertEqual(DatetimeUtils.unformat(QDate(1998, 12, 21)), "21/12/1998")
+        self.assertEqual(DatetimeUtils.unformat_date(QDate(2024, 3, 12)), "12/03/2024")
+        self.assertEqual(DatetimeUtils.unformat_date(QDate(2023, 6, 4)), "04/06/2023")
+        self.assertEqual(DatetimeUtils.unformat_date(QDate(1998, 12, 21)), "21/12/1998")
 
 
