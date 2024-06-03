@@ -202,5 +202,7 @@ class MachineController:
         self.__storage_repository.attach(observer)
         return observer
 
-    def detach_machine_observer(self, observer: Observer):
-        self.__machine.detach(observer)
+    def detach_observer(self, observer: Observer):
+        self.__machines_repository.detach(observer)
+        self.__orders_repository.detach(observer)
+        self.__storage_repository.detach(observer)

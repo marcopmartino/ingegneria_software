@@ -27,7 +27,7 @@ class MachineView(SubInterfaceChildWidget):
     # Eseguito alla chiusura della finestra (dopo la chiamata "self.close()")
     def closeEvent(self, event: QCloseEvent):
         super().closeEvent(event)
-        self.controller.detach_machine_observer(self.observer)  # Rimuove l'osservatore dal macchinario
+        self.controller.detach_observer(self.observer)  # Rimuove l'osservatore dal macchinario
 
     def __init__(self, parent_widget: SubInterfaceWidget, machine: Machine):
         # Controller

@@ -255,31 +255,44 @@ class MachineThread(QObject):
         # Flag
         self.__keep_alive = True
 
-        try:
-            while self.__keep_alive:
-                sleep(2)  # Periodicità dell'esecuzione in secondi
+        while self.__keep_alive:
+            sleep(2)  # Periodicità dell'esecuzione in secondi
 
+            # Ottiene il processo in esecuzione
+            active_process = self.__machine.get_active_process()
+
+            # Il processo può diventare None in caso di stop d'emergenza
+            if active_process is not None:
                 # Calcola la nuova percentuale
-                self.__machine.get_active_process().refresh_progress_percentage()
+                active_process.refresh_progress_percentage()
 
                 # La percentuale supera 100 se il datetime corrente è successivo a quello di fine
-                if self.__machine.get_active_process().get_progress_percentage() < 100:
+                if active_process.get_progress_percentage() < 100:
                     self.__on_progress_changed()
 
                     print(f"Aggiorno il progresso di {self.__machine.get_machine_serial()}: "
-                          f"{self.__machine.get_active_process().get_progress_percentage()}%")
+                          f"{active_process.get_progress_percentage()}%")
 
                 else:
-                    self.__keep_alive = False  # Modifica la flag per uscire dal ciclo
+                    # Modifica la flag per uscire dal ciclo (processo completato)
+                    self.__keep_alive = False
                     self.__on_machine_stopped()
 
                     print(f"Fine processo {self.__machine.get_machine_serial()}")
 
+            else:
+                # Modifica la flag per uscire dal ciclo (processo fermato d'emergenza)
+                self.__keep_alive = False
+
+        try:
             self.__on_thread_stopped()
+
+            print(f"Fine thread {self.__machine.get_machine_serial()}")
+
             return  # Termina il thread
 
-        # Eccezione lanciata in caso di stop di emergenza ("get_active_process()" ritorna None)
-        except AttributeError:
-            self.__keep_alive = False
-            self.__on_thread_stopped()
-            return  # Termina il thread
+        # Può verificarsi se il thread tenta di rimuoversi da MachinesRepository dopo un clear della repository
+        except ValueError:
+            print(f"Eccezione thread {self.__machine.get_machine_serial()}")
+
+            return
