@@ -60,6 +60,17 @@ class IntegerTableItem(QTableWidgetItem):
         return int(self.text()) < int(other.text())
 
 
+# Elemento della tabella rappresentante una percentuale
+# noinspection PyPep8Naming
+class PercentageTableItem(QTableWidgetItem):
+    def __init__(self, text: str = ''):
+        super().__init__(text)
+
+    # Stabilisce se una percentuale è più piccola di un altra
+    def __lt__(self, other: IntegerTableItem):
+        return int(self.text().split("%")[0]) < int(other.text().split("%")[0])
+
+
 # Elemento della tabella rappresentante un numero in floating point
 # noinspection PyPep8Naming
 class FloatTableItem(QTableWidgetItem):
@@ -162,6 +173,10 @@ class ExtendedTableWidget(QTableWidget):
     # Ritorna True se la tabella è vuota
     def isEmpty(self) -> bool:
         return self.rowCount() == 0 or self.columnCount() == 0
+
+    # Ritorna se una riga è selezionata
+    def isRowSelected(self) -> bool:
+        return self.currentRow() != -1
 
 
 # Tabella standard usata nell'applicazione
