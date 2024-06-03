@@ -123,7 +123,9 @@ class MachineController:
                         # Calcola le forme in produzione in macchinari dello stesso tipo
                         in_production_shoe_lasts = 0
                         for machine in self.__machines_repository.get_machine_list():
-                            if isinstance(machine, type(self.__machine)) and machine.is_running():
+                            if (isinstance(machine, type(self.__machine)) and machine.is_running()
+                                    and machine.get_active_process().get_output_shoe_last_variety().equals(
+                                        output_shoe_last_variety)):
                                 in_production_shoe_lasts += machine.get_active_process().get_quantity()
 
                         # Calcola il numero di forme già prodotto

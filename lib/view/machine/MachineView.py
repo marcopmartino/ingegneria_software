@@ -211,9 +211,9 @@ class MachineView(SubInterfaceChildWidget):
         self.progress_bar.setFixedHeight(20)
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setStyleSheet(Styles.PROGRESS_BAR)
-        self.progress_bar.setValue(35)
+        self.progress_bar.setValue(0)
 
-        self.percentage_progress_label = QLabel("[XX% completata]")
+        self.percentage_progress_label = QLabel()
         self.percentage_progress_label.setAlignment(Qt.AlignCenter)
         self.percentage_progress_label.setContentsMargins(0, 6, 0, 0)
 
