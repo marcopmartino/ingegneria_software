@@ -265,7 +265,8 @@ class StorageController:
         self.__cash_register_repository.create_transaction(transaction_description, transaction_amount)
 
         # Cerca il prodotto tra quelli presenti in magazzino
-        stored_shoe_last_variety = self.__storage_repository.get_product_by_shoe_last_variety(shoe_last_variety)
+        stored_shoe_last_variety = self.__storage_repository.get_unassigned_product_by_shoe_last_variety(
+            shoe_last_variety)
 
         # Se il prodotto non è presente in magazzino, inserisce il prodotto con la quantità acquistata
         if stored_shoe_last_variety is None:

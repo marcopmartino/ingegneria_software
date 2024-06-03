@@ -3,7 +3,7 @@ from enum import Enum
 from lib.model.ShoeLastVariety import ShoeLastVariety, ProductType, Gender, ShoeLastType, PlasticType, CompassType, \
     Processing, Shoeing
 from lib.model.StoredItems import StoredShoeLastVariety, StoredMaterial, StoredWaste, StoredItem, MaterialType, \
-    MaterialDescription
+    MaterialDescription, AssignedShoeLastVariety
 from lib.network.StorageNetwork import StorageNetwork
 from lib.repository.CashRegisterRepository import CashRegisterRepository
 from lib.repository.Repository import Repository
@@ -156,33 +156,21 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                         # Estrae il percorso su cui sta operando
                         path = path.split('/')
 
-                        # Controlla se si tratta della capacità massima del magazzino
-                        if path[1] == "max_capacity":
-                            # Aggiorna magazzino massimo
-                            self.__max_storage = data
+                        # Estrae l'id del prodotto del magazzino
+                        element_id = path[2]
 
-                            # Prepara il messaggio per notificare gli osservatori del magazzino
-                            message = Message(StorageRepository.Event.MAX_STORAGE_UPDATED, data)
+                        # Controlla di che tipo di prodotto si tratta
+                        if path[1] == "products":
+                            # Se viene creato un prodotto data non è None
+                            if data:
+                                # Crea e aggiunge un prodotto alla lista dei prodotti
+                                product = self.__instantiate_and_append_product(element_id, data)
 
-                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                            self.notify(message)
+                                # Prepara il messaggio per notificare gli osservatori del magazzino
+                                message = Message(StorageRepository.Event.PRODUCT_CREATED, product)
 
-                        else:
-                            # Estrae l'id del prodotto del magazzino
-                            element_id = path[2]
-
-                            # Controlla di che tipo di prodotto si tratta
-                            if path[1] == "products":
-                                # Se viene creato un prodotto data non è None
-                                if data:
-                                    # Crea e aggiunge un prodotto alla lista dei prodotti
-                                    product = self.__instantiate_and_append_product(element_id, data)
-
-                                    # Prepara il messaggio per notificare gli osservatori del magazzino
-                                    message = Message(StorageRepository.Event.PRODUCT_CREATED, product)
-
-                                    # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                                    self.notify(message)
+                                # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                                self.notify(message)
 
                 # Aggiornamento del magazzino
                 case "patch":
@@ -233,10 +221,18 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
             if product.get_item_id() == product_serial:
                 return product
 
-    # Ritorna un prodotto in base alla sua varietà di forma
-    def get_product_by_shoe_last_variety(self, shoe_last_variety: ShoeLastVariety) -> StoredShoeLastVariety:
+    # Ritorna un prodotto assegnato in base alla sua varietà di forma
+    def get_assigned_product_by_shoe_last_variety(self, shoe_last_variety: ShoeLastVariety) -> StoredShoeLastVariety:
         for product in self.__product_list:
-            if product.get_shoe_last_variety().equals(shoe_last_variety):
+            if (product.get_shoe_last_variety().equals(shoe_last_variety)
+                    and isinstance(product, AssignedShoeLastVariety)):
+                return product
+
+    # Ritorna un prodotto non assegnato in base alla sua varietà di forma
+    def get_unassigned_product_by_shoe_last_variety(self, shoe_last_variety: ShoeLastVariety) -> StoredShoeLastVariety:
+        for product in self.__product_list:
+            if (product.get_shoe_last_variety().equals(shoe_last_variety)
+                    and not isinstance(product, AssignedShoeLastVariety)):
                 return product
 
     # Ritorna un materiale in base al suo id
