@@ -71,7 +71,7 @@ class DatetimeUtils:
     # Converte un oggetto QDate in una stringa dd/mm/YYYY
     @staticmethod
     def unformat_datetime(datetime_: datetime) -> str:
-        return datetime_.strftime('dd/MM/yyyy HH:MM:SS')
+        return datetime_.strftime("%d/%m/%Y %H:%M:%S")
 
     # Calcola la differenza in secondi tra due datetime
     @staticmethod

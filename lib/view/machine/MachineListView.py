@@ -157,13 +157,14 @@ class MachineListView(SubInterfaceWidget):
                     self.table_adapter.setData(self.controller.filter_machines(
                         self.form_manager.data(), *data))
 
-                case MachinesRepository.Event.MACHINE_STARTED:
-                    pass
-                    #self.table_adapter.updateDataColumns(message.data(), [1, 4, 5])
+                case MachinesRepository.Event.MACHINE_STATE_UPDATED:
+                    self.table_adapter.updateDataColumns(message.data(), [2, 3, 4])
 
-                case MachinesRepository.Event.MACHINE_STOPPED:
-                    pass
-                    #self.table_adapter.updateDataColumns(message.data(), [3])
+                case MachinesRepository.Event.THREAD_MACHINE_PROGRESS_UPDATED:
+                    self.table_adapter.updateDataColumns(data, [3])
+
+                case MachinesRepository.Event.THREAD_MACHINE_STOPPED:
+                    self.controller.stop_machine(data)
 
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
@@ -194,6 +195,7 @@ class MachineListAdapter(TableAdapter):
         return [machine.get_machine_serial(),
                 type(machine).__name__,
                 "In funzione" if machine.is_running() else "Disponibile",
-                "-",
-                f"0/{str(machine.get_capacity())}",
+                f"{str(machine.get_active_process().get_progress_percentage())}%" if machine.is_running() else "-",
+                (f"{machine.get_active_process().get_quantity()}" if machine.is_running() else "0")
+                + f"/{str(machine.get_capacity())}",
                 ]

@@ -1,11 +1,16 @@
+from threading import Thread
+from time import sleep
+
 from lib.model.Machine import Machine
 from lib.repository.MachinesRepository import MachinesRepository
+from lib.repository.StorageRepository import StorageRepository
 
 
 class MachineListController:
     def __init__(self):
         super().__init__()
         self.__machines_repository = MachinesRepository()
+        self.__storage_repository = StorageRepository()
 
     # Imposta un osservatore per la repository
     def observe_machine_list(self, callback: callable):
@@ -84,3 +89,52 @@ class MachineListController:
                 filtered_machine_list.append(machine)
 
         return filtered_machine_list
+
+    def stop_machine(self, machine: Machine) -> None:
+        # Bisogna tenere conto che altri utenti potrebbero star osservando lo stesso macchinario: in tal caso più
+        # utenti andrebbero ad agire sul database, eseguendo più volte l'incremento della quantità immagazzinata. Per
+        # questo motivo ogni dipendente in ascolto richiede di occuparsi dell'aggiornamento dei dati. Ogni richiesta
+        # sovrascrive la precedente, per cui sarà il più ritardatario a occuparsene.
+
+        # Richiede di poter aggiornare lo stop del macchinario
+        self.__machines_repository.request_to_manage_machine_output(machine.get_machine_serial())
+
+        # Esegue le modifiche ai dati
+        def execute_updates():
+
+            # Ottiene la varietà di forma e la quantità in output
+            output_shoe_last_variety = machine.get_active_process().get_output_shoe_last_variety()
+            output_quantity = machine.get_active_process().get_quantity()
+
+            # Cerca i prodotti immagazzinati della varietà di forma in output
+            stored_shoe_last_variety = self.__storage_repository.get_unassigned_product_by_shoe_last_variety(
+                output_shoe_last_variety)
+
+            # Se non esistono prodotti immagazzinati dello stesso tipo di quelli in output...
+            if stored_shoe_last_variety is None:
+                # ...crea un nuovo prodotto con la quantità in output
+                self.__storage_repository.create_product(output_shoe_last_variety, output_quantity)
+
+            # Altrimenti...
+            else:
+                # ...aggiorna la quantità della forma in output
+                self.__storage_repository.update_product_quantity(
+                    stored_shoe_last_variety.get_item_id(),
+                    stored_shoe_last_variety.get_quantity() + output_quantity
+                )
+
+            # Ferma il macchinario
+            self.__machines_repository.stop_machine_by_id(machine.get_machine_serial())
+
+        # Il seguente thread serve a dare tempo a tutti gli utenti di effettuare la richiesta, e al thread di
+        # aggiornamento del progresso del macchinario di essere chiuso ed eliminato definitivamente
+
+        # Avvia il thread
+        Thread(target=lambda: {
+            # Tempo di attesa in secondi
+            sleep(3),
+
+            # Controlla se l'utente corrente puà eseguire le modifiche. Se sì, le esegue
+            execute_updates() if self.__machines_repository.can_manage_machine_output(machine.get_machine_serial())
+            else None
+        }).start()
