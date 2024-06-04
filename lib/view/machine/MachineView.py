@@ -257,6 +257,7 @@ class MachineView(SubInterfaceChildWidget):
         self.operation_layout.addWidget(self.output_in_production_label)
         self.operation_layout.addWidget(self.output_to_be_produced_label)
 
+        self.operation_layout.addSpacerItem(VerticalSpacer(6, QSizePolicy.Fixed))
         self.operation_layout.addWidget(self.second_horizontal_line)
 
         self.operation_layout.addWidget(self.input_info_label)
@@ -339,29 +340,52 @@ class MachineView(SubInterfaceChildWidget):
         # Aggiorna la vista
         self.refresh_machine_view()
 
+        # Se il macchinario è in funzione
+        if self.controller.is_machine_running():
+            # Aggiorna il progresso
+            self.refresh_progress()
+
     # Aggiorna i dettagli delle operazioni e la vista
     def refresh_machine_view(self):
-        if self.controller.is_machine_running():
-            # Disabilita la tabella con le operazioni (per non permettere di modificare la selezione e la sidebar)
-            self.operation_list_table.setDisabled(True)
 
-            # Prende la chiave dell'operazione corrente (seriale del primo ordine associato all'operazione corrente)
-            order_serial = self.controller.get_machine().get_active_process().get_operation_id()
-
+        # Aggiorna i dati sulle operazioni e la tabella
+        def refresh_operation_list_and_table():
             # Aggiorna i dati sulle operazioni
             self.controller.refresh_operation_list()
 
             # Aggiorna la tabella con i dati delle nuove operazioni
             self.refresh_operation_list_table()
 
+        # Aggiorna la vista e seleziona la nuova operazione corrispondente a quella precedente l'aggiornamento
+        def refresh_machine_view_and_select_operation(order_serial: str):
+            # Aggiorna i dati sulle operazioni e la tabella
+            refresh_operation_list_and_table()
+
             # Cerca la nuova operazione che corrisponde a quella precedente (stesso ordine associato)
             operation = self.controller.get_operation_by_order_serial(order_serial)
 
-            # Seleziona la nuova operazione nella tabella
-            self.update_selected_row(operation.get_id())
+            # Se l'operazione è ancora presente nella lista
+            if operation is not None:
+                # Seleziona la nuova operazione nella tabella
+                self.update_selected_row(operation.get_id())
 
-            # Aggiorna la sidebar con i dati della nuova operazione che corrisponde a quella precedente
-            self.refresh_sidebar(operation.get_id())
+                # Aggiorna la sidebar con i dati della nuova operazione che corrisponde a quella precedente
+                self.refresh_sidebar(operation.get_id())
+
+            else:
+                # Nasconde i dettagli dell'operazione nella sidebar
+                self.operation_details_widget.setHidden(True)
+
+        # Esegue l'aggiornamento
+        if self.controller.is_machine_running():
+            # Disabilita la tabella con le operazioni (per non permettere di modificare la selezione e la sidebar)
+            self.operation_list_table.setDisabled(True)
+
+            # Prende la chiave dell'operazione corrente (seriale del primo ordine associato all'operazione corrente)
+            operation_id = self.controller.get_machine().get_active_process().get_operation_id()
+
+            # Aggiorna la vista e seleziona la nuova operazione corrispondente a quella precedente l'aggiornamento
+            refresh_machine_view_and_select_operation(operation_id)
 
         else:
             # Abilita la tabella con la lista di operazioni
@@ -369,29 +393,14 @@ class MachineView(SubInterfaceChildWidget):
 
             if self.operation_list_table.isRowSelected():
                 # Prende la chiave dell'operazione corrente (seriale del primo ordine associato all'operazione corrente)
-                order_serial = self.operation_list_table_adapter.getSelectedItemKey()
+                operation_id = self.operation_list_table_adapter.getSelectedItemKey()
 
-                # Aggiorna i dati sulle operazioni
-                self.controller.refresh_operation_list()
-
-                # Aggiorna la tabella con i dati delle nuove operazioni
-                self.refresh_operation_list_table()
-
-                # Cerca la nuova operazione che corrisponde a quella precedente (stesso ordine associato)
-                operation = self.controller.get_operation_by_order_serial(order_serial)
-
-                # Aggiorna la riga selezionata della tabella
-                self.update_selected_row(operation.get_id())
-
-                # Aggiorna la sidebar con i dati della nuova operazione che corrisponde a quella precedente
-                self.refresh_sidebar(operation.get_id())
+                # Aggiorna la vista e seleziona la nuova operazione corrispondente a quella precedente l'aggiornamento
+                refresh_machine_view_and_select_operation(operation_id)
 
             else:
-                # Aggiorna i dati sulle operazioni
-                self.controller.refresh_operation_list()
-
-                # Aggiorna la tabella con i dati delle nuove operazioni
-                self.refresh_operation_list_table()
+                # Aggiorna i dati sulle operazioni e la tabella
+                refresh_operation_list_and_table()
 
                 # Nasconde i dettagli dell'operazione
                 self.operation_details_widget.setHidden(True)
@@ -467,6 +476,7 @@ class MachineView(SubInterfaceChildWidget):
                     case MaterialDescription.INCHIOSTRO:
                         setup_material_label(8, "Inchiostro")
 
+        # Ottiene i dati dell'operazione
         operation_data = self.controller.get_operation_by_id(operation_id)
 
         # Sezione Output -----------------------------------
@@ -542,7 +552,7 @@ class MachineView(SubInterfaceChildWidget):
         self.start_machine_button.setHidden(is_running)
 
         # Abilita o disabilita il pulsante per l'avvio del macchinario
-        self.start_machine_button.setEnabled(can_start_machine)
+        self.start_machine_button.setEnabled(can_start_machine and operation_data.get_to_be_produced_shoe_lasts() > 0)
 
         # Mostra o nasconde la label che informa che i materiali immagazzinati sono insufficienti
         self.insufficient_input_label.setHidden(can_start_machine)
@@ -579,18 +589,23 @@ class MachineOperationListAdapter(TableAdapter):
         # Ottiene la quantità di paia necessarie ad avviare il processo basato su questa operazione
         process_quantity = operation_data.get_required_to_start_shoe_lasts()
 
+        # Stabilisce se mostrare le quantità richieste
+        show_required_quantities: bool = operation_data.get_to_be_produced_shoe_lasts() > 0
+
         # Determina il testo da mostrare nella prima colonna
-        input_string = f"{operation_data.get_input_shoe_last_variety().get_description()} (x{str(process_quantity)})"
+        input_string = (f"{operation_data.get_input_shoe_last_variety().get_description()}"
+                        + (f" (x{str(process_quantity)})" if show_required_quantities else ""))
 
         for input_material in operation_data.get_required_input_materials():
-            input_string += (f"\n{input_material.get_material_description().value} "
-                             f"(x{str(input_material.get_quantity())})")
+            input_string += (f"\n{input_material.get_material_description().value}"
+                             + (f" (x{str(input_material.get_quantity())})" if show_required_quantities else ""))
 
         if operation_data.get_output_shoe_last_variety().get_product_type() == ProductType.FORMA_NUMERATA:
             input_string = input_string[:-4]  # Rimuove la quantità dall'Inchiostro indelebile "(x0)"
 
         # Determina il testo da mostrare nella seconda colonna
-        output_string = f"{operation_data.get_output_shoe_last_variety().get_description()} (x{str(process_quantity)})"
+        output_string = (f"{operation_data.get_output_shoe_last_variety().get_description()}"
+                         + (f" (x{str(process_quantity)})" if show_required_quantities else ""))
 
         # Determina il testo da mostrare nella terza colonna
         order_string = ""

@@ -55,7 +55,7 @@ class MachineController:
     # Aggiorna le informazioni su tutte le operazioni possibili eseguibili dal macchinario
     def refresh_operation_list(self):
 
-        # Inizializza una lista vuota.
+        # Inizializza una lista vuota di MachineOperationData
         # L'idea è di raggruppare gli ordini sulla base dell'operazione di cui necessitano (stesso ShoeLastVariety in
         # output); gli ordini relativi allo stesso articolo appariranno insieme, ma anche ordini di articoli diversi se
         # hanno in comune una parte (iniziale) del processo produttivo.
@@ -150,7 +150,7 @@ class MachineController:
                             produced_shoe_lasts
                         )
 
-                        # Aggiunge la nuova operazione alla lista
+                        # Aggiunge l'operazione alla lista
                         operation_list.append(new_operation)
 
         # Finalizza le operazioni
