@@ -68,7 +68,10 @@ class PercentageTableItem(QTableWidgetItem):
 
     # Stabilisce se una percentuale è più piccola di un altra
     def __lt__(self, other: IntegerTableItem):
-        return int(self.text().split("%")[0]) < int(other.text().split("%")[0])
+        try:
+            return int(self.text().split("%")[0]) < int(other.text().split("%")[0])
+        except ValueError:
+            return False
 
 
 # Elemento della tabella rappresentante un numero in floating point

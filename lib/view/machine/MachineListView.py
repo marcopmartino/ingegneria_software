@@ -12,7 +12,7 @@ from lib.validation.FormManager import FormManager
 from lib.view.machine.MachineView import MachineView
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.widget.CustomPushButton import CustomPushButton
-from lib.widget.TableWidgets import StandardTable
+from lib.widget.TableWidgets import StandardTable, PercentageTableItem
 from res.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 
@@ -149,6 +149,7 @@ class MachineListView(SubInterfaceWidget):
         # Table Adapter
         self.table_adapter = MachineListAdapter(self.table)
         self.table_adapter.onDoubleClick(self.show_machine_details)
+        self.table_adapter.setColumnItemClass(3, PercentageTableItem)
 
         def update_machine_table(message: Message):
             data = message.data()
