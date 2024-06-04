@@ -98,11 +98,11 @@ class WorkerListView(SubInterfaceWidget):
         # Label per tabella vuota
         font = QFont()
         font.setPointSize(FontSize.FLUENT_DEFAULT)
-        self.empty_storage = QLabel(self.central_frame)
-        self.empty_storage.setObjectName("empty_storage_label")
-        self.empty_storage.setText("Nessun operaio trovato, modificare i filtri.")
+        self.empty_table_label = QLabel(self.central_frame)
+        self.empty_table_label.setObjectName("empty_storage_label")
+        self.empty_table_label.setText("Nessun dipendente trovato, modificare i filtri")
         font.setBold(True)
-        self.empty_storage.setFont(font)
+        self.empty_table_label.setFont(font)
         font.setBold(False)
 
         # Spacer tra i filtri e il pulsante di registrazione di una nuova transazione
@@ -149,14 +149,14 @@ class WorkerListView(SubInterfaceWidget):
         self.controller.observe_worker_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
-        self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
+        self.central_layout.addWidget(self.empty_table_label, alignment=Qt.AlignJustify)
 
     def check_empty_table(self):
         if self.table.isEmpty():
-            self.empty_storage.setVisible(True)
+            self.empty_table_label.setVisible(True)
             self.table.setVisible(False)
         else:
-            self.empty_storage.setVisible(False)
+            self.empty_table_label.setVisible(False)
             self.table.setVisible(True)
 
     # Ritorna la lista di operai filtrata

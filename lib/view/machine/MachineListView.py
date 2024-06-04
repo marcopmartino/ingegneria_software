@@ -101,7 +101,7 @@ class MachineListView(SubInterfaceWidget):
         # Button "Aggiorna lista"
         self.refresh_button = CustomPushButton.white(self.sidebar_frame)
         self.refresh_button.setText("Aggiorna lista")
-        self.refresh_button.clicked.connect(self.refresh_order_list)
+        self.refresh_button.clicked.connect(self.refresh_machine_list)
 
         # Layout con il checkgroup per lo stato
         self.state_checkgroup_layout = QVBoxLayout(self.sidebar_frame)
@@ -151,6 +151,15 @@ class MachineListView(SubInterfaceWidget):
         self.table_adapter.onDoubleClick(self.show_machine_details)
         self.table_adapter.setColumnItemClass(3, PercentageTableItem)
 
+        # Label che indica che la tabella è vuota
+        font = QFont()
+        font.setPointSize(FontSize.FLUENT_DEFAULT)
+        font.setBold(True)
+        self.empty_table_label = QLabel(self.central_frame)
+        self.empty_table_label.setObjectName("empty_storage_label")
+        self.empty_table_label.setText("Nessun macchinario trovato, modificare i filtri")
+        self.empty_table_label.setFont(font)
+
         def update_machine_table(message: Message):
             data = message.data()
             match message.event():
@@ -167,6 +176,9 @@ class MachineListView(SubInterfaceWidget):
                 case MachinesRepository.Event.THREAD_MACHINE_STOPPED:
                     self.controller.stop_machine(data)
 
+            # Controlla se la tabella è vuota; se lo è, mostra la label che informa di ciò
+            self.check_empty_table()
+
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
         # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
@@ -174,15 +186,26 @@ class MachineListView(SubInterfaceWidget):
         self.controller.observe_machine_list(self.messageReceived.emit)
 
         self.central_layout.addWidget(self.table)
+        self.central_layout.addWidget(self.empty_table_label, alignment=Qt.AlignJustify)
+
+    # Controlla se la tabella è vuota; se lo è, mostra la label che informa di ciò
+    def check_empty_table(self):
+        if self.table.isEmpty():
+            self.empty_table_label.setVisible(True)
+            self.table.setVisible(False)
+        else:
+            self.empty_table_label.setVisible(False)
+            self.table.setVisible(True)
 
     # Ritorna la lista di ordini filtrata
     def get_filtered_machine_list(self) -> list[Machine]:
         return self.controller.get_machine_list(self.form_manager.data())
 
-    # Aggiorna la lista degli ordini mostrata in tabella
-    def refresh_order_list(self):
+    # Aggiorna la lista dei macchinari mostrata in tabella
+    def refresh_machine_list(self):
         self.table.clearSelection()
         self.table_adapter.setData(self.get_filtered_machine_list())
+        self.check_empty_table()
 
     # Mostra la schermata con i dettagli del macchinario
     def show_machine_details(self, machine_serial: str):

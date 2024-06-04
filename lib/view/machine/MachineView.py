@@ -100,6 +100,16 @@ class MachineView(SubInterfaceChildWidget):
         self.operation_list_table_adapter.hideKeyColumn()
         self.operation_list_table_adapter.onSelection(lambda operation_id: self.refresh_sidebar(operation_id))
 
+        # Label che indica che la tabella con la lista delle operazioni è vuota
+        font = QFont()
+        font.setPointSize(FontSize.FLUENT_DEFAULT)
+        font.setBold(True)
+        self.empty_table_label = QLabel(self.central_frame)
+        self.empty_table_label.setObjectName("empty_storage_label")
+        self.empty_table_label.setText("Non ci sono operazioni da eseguire")
+        self.empty_table_label.setFixedHeight(150)
+        self.empty_table_label.setFont(font)
+
         # Popola il layout centrale in modo da allineare i Widget in alto
         # Usare "setAlignment" non funziona poiché va in conflitto con la SizePolicy del "central_layout"
         self.inner_central_layout = QVBoxLayout(self.central_frame)
@@ -112,6 +122,7 @@ class MachineView(SubInterfaceChildWidget):
         self.inner_central_layout.addWidget(self.operation_list_title)
         self.inner_central_layout.addWidget(self.operation_list_subtitle)
         self.inner_central_layout.addWidget(self.operation_list_table)
+        self.inner_central_layout.addWidget(self.empty_table_label, alignment=Qt.AlignJustify)
         self.inner_central_layout.setContentsMargins(0, 0, 0, 0)
         self.inner_central_layout.setSpacing(0)
         self.central_layout.addLayout(self.inner_central_layout)
@@ -429,6 +440,9 @@ class MachineView(SubInterfaceChildWidget):
 
         self.operation_list_table.setFixedHeight(table_height)
 
+        # Controlla se la tabella con la lista delle operazioni è vuota; se lo è, mostra la label che informa di ciò
+        self.check_empty_table()
+
     # Aggiorna il progresso del processo
     def refresh_progress(self):
         progress_percentage = self.controller.get_machine().get_active_process().get_progress_percentage()
@@ -571,6 +585,15 @@ class MachineView(SubInterfaceChildWidget):
 
         # Nasconde la label di selezione di un'operazione
         self.select_operation_label.setHidden(True)
+
+    # Controlla se la tabella con la lista delle operazioni è vuota; se lo è, mostra la label che informa di ciò
+    def check_empty_table(self):
+        if self.operation_list_table.isEmpty():
+            self.empty_table_label.setVisible(True)
+            self.operation_list_table.setVisible(False)
+        else:
+            self.empty_table_label.setVisible(False)
+            self.operation_list_table.setVisible(True)
 
 
 # TableAdapters

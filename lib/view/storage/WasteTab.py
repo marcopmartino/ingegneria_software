@@ -58,11 +58,11 @@ class WasteTab(SubInterfaceChildWidget):
         self.storage_details_layout.addWidget(self.stored_quantity_label)
 
         # Label per magazzino vuoto
-        self.empty_storage = QLabel(self.central_frame)
-        self.empty_storage.setObjectName("empty_label")
-        self.empty_storage.setText("Nessuno scarto presente in magazzino, modificare i filtri.")
+        self.empty_table_label = QLabel(self.central_frame)
+        self.empty_table_label.setObjectName("empty_label")
+        self.empty_table_label.setText("Nessuno scarto trovato, modificare i filtri")
         font.setBold(True)
-        self.empty_storage.setFont(font)
+        self.empty_table_label.setFont(font)
 
         # Layout con il checkgroup
         self.checkgroup_layout = QVBoxLayout()
@@ -183,14 +183,14 @@ class WasteTab(SubInterfaceChildWidget):
         self.controller.observe_storage(update_table)
 
         self.central_layout.addWidget(self.table)
-        self.central_layout.addWidget(self.empty_storage, alignment=Qt.AlignJustify)
+        self.central_layout.addWidget(self.empty_table_label, alignment=Qt.AlignJustify)
 
     def check_empty_table(self):
         if self.table.isEmpty():
-            self.empty_storage.setVisible(True)
+            self.empty_table_label.setVisible(True)
             self.table.setVisible(False)
         else:
-            self.empty_storage.setVisible(False)
+            self.empty_table_label.setVisible(False)
             self.table.setVisible(True)
 
     # Ritorna la lista degli scarti filtrata
