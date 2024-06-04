@@ -57,8 +57,8 @@ class MachineOperationData:
                 self.__required_shoe_lasts += order.get_quantity()
 
             # Calcola il numero di paia da produrre per soddisfare le richieste di tutti gli ordini
-            self.__to_be_produced_shoe_lasts = (self.__required_shoe_lasts - self.__produced_shoe_lasts
-                                                - self.__in_production_shoe_lasts)
+            self.__to_be_produced_shoe_lasts = max(0, (self.__required_shoe_lasts - self.__produced_shoe_lasts
+                                                       - self.__in_production_shoe_lasts))
 
             # Determina il minimo numero di paia richieste per poter avviare un processo basato su questa operazione
             self.__required_to_start_shoe_lasts = min(machine_capacity, self.__to_be_produced_shoe_lasts)
