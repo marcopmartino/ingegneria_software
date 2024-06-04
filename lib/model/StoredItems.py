@@ -88,9 +88,6 @@ class StoredShoeLastVariety(StoredItem):
     def get_shoe_last_variety(self) -> ShoeLastVariety:
         return self.__shoe_last_variety
 
-    def set_shoe_last_variety(self, shoe_last_variety: ShoeLastVariety) -> None:
-        self.__shoe_last_variety = shoe_last_variety
-
     def get_description(self) -> str:
         return self.__shoe_last_variety.get_description()
 
@@ -102,9 +99,6 @@ class AssignedShoeLastVariety(StoredShoeLastVariety):
 
     def get_assigned_order_id(self) -> str:
         return self.__assigned_order_id
-
-    def set_assigned_order_id(self, assigned_order_id: str) -> None:
-        self.__assigned_order_id = assigned_order_id
 
     def get_description(self) -> str:
         return f"Forma assegnate all'ordine {self.__assigned_order_id}"

@@ -254,15 +254,18 @@ class OrderView(SubInterfaceChildWidget):
                     # Aggiorna la sidebar
                     self.on_transition_to_next_state()
 
+                    # Aggiorna il completamento dell'ordine
+                    if self.controller.get_order_state() == OrderState.PROCESSING:
+                        self.refresh_order_completion_progress()
+
                 case OrdersRepository.Event.ORDER_DELETED:
                     if order.get_customer_id() != Firebase.auth.currentUserId():
                         # Informa che il cliente ha eliminato l'ordine
                         self.show_deletion_info_dialog()
 
                 case StorageRepository.Event.PRODUCT_CREATED | StorageRepository.Event.PRODUCT_UPDATED:
-                    if self.controller.get_order_state() == OrderState.PROCESSING and \
-                            message.data().get_shoe_last_variety().equals(
-                                self.controller.get_order_article().get_shoe_last_variety()):
+                    # Aggiorna il completamento dell'ordine
+                    if self.controller.get_order_state() == OrderState.PROCESSING:
                         self.refresh_order_completion_progress()
 
         # Imposta l'observer
@@ -271,8 +274,10 @@ class OrderView(SubInterfaceChildWidget):
         self.messageReceived.connect(update_order_view)
         self.observer: Observer = self.controller.observe_order(self.messageReceived.emit)
 
-        # Aggiorna la label sul completamento dell'ordine
-        self.refresh_order_completion_progress()
+        # Se l'ordine è in lavorazione
+        if self.controller.get_order_state() == OrderState.PROCESSING:
+            # Aggiorna la label sul completamento dell'ordine
+            self.refresh_order_completion_progress()
 
     # Aggiorna la label sul completamento dell'ordine
     def refresh_order_completion_progress(self):

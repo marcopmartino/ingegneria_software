@@ -110,7 +110,7 @@ class OrderController(OrderBaseController):
     # Ritorna il numero di paia di forme prodotte dell'ordine
     def get_produced_order_shoe_lasts(self) -> int:
         # Cerca il prodotto
-        product = self.__storage_repository.get_assigned_product_by_shoe_last_variety(
+        product = self.__storage_repository.get_unassigned_product_by_shoe_last_variety(
             self.get_order_article().get_shoe_last_variety())
 
         # Ritorna la quantità
