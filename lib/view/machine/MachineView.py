@@ -144,8 +144,6 @@ class MachineView(SubInterfaceChildWidget):
         self.operation_label = QLabel("Dettagli operazione")
         self.operation_label.setFont(big_font)
 
-        self.first_horizontal_line = HorizontalLine(color=Colors.BLACK)
-
         # Sezione Output
         self.output_info_label = QLabel("Info output")
         self.output_info_label.setFont(big_bold_font)
@@ -156,6 +154,7 @@ class MachineView(SubInterfaceChildWidget):
 
         self.output_required_by_order_label = QLabel()
         self.output_required_by_order_label.setFont(small_font)
+        self.output_required_by_order_label.setContentsMargins(0, 0, 0, 2)
 
         self.output_produced_label = QLabel("Prodotte: ")
         self.output_produced_label.setFont(small_bold_font)
@@ -165,9 +164,6 @@ class MachineView(SubInterfaceChildWidget):
 
         self.output_to_be_produced_label = QLabel("Da produrre: ")
         self.output_to_be_produced_label.setFont(small_bold_font)
-        self.output_to_be_produced_label.setContentsMargins(0, 0, 0, 6)
-
-        self.second_horizontal_line = HorizontalLine()
 
         # Sezione Input
         self.input_info_label = QLabel("Disponibilità input")
@@ -177,13 +173,10 @@ class MachineView(SubInterfaceChildWidget):
         # Lista con le Input Label
         self.input_labels = []
 
-        # Separatore tra Input e Richiesti
-        self.third_horizontal_line = HorizontalLine()
-
         # Sezione Richiesti
         self.required_for_start_label = QLabel("Richiesti per l'avvio")
         self.required_for_start_label.setFont(big_bold_font)
-        self.required_for_start_label.setContentsMargins(0, 6, 0, 2)
+        self.required_for_start_label.setContentsMargins(0, 6, 0, 0)
 
         # Lista con le Required Label
         self.required_labels = []
@@ -195,13 +188,21 @@ class MachineView(SubInterfaceChildWidget):
             self.controller.start_machine(self.operation_list_table_adapter.getSelectedItemKey())
         })
 
+        self.operation_completed_label = BodyLabel(
+            text="Operazione completata. Controlla i macchinari delle fasi successive.")
+        self.operation_completed_label.setFont(small_font)
+        self.operation_completed_label.setWordWrap(True)
+        self.operation_completed_label.setAlignment(Qt.AlignCenter)
+        self.operation_completed_label.setFixedHeight(80)
+        self.operation_completed_label.setContentsMargins(0, 16, 0, 12)
+
         self.insufficient_input_label = BodyLabel(
             text="Input insufficiente per l'avvio del macchinario.")
         self.insufficient_input_label.setFont(small_font)
         self.insufficient_input_label.setWordWrap(True)
         self.insufficient_input_label.setAlignment(Qt.AlignCenter)
         self.insufficient_input_label.setFixedHeight(60)
-        self.insufficient_input_label.setContentsMargins(0, 12, 0, 16)
+        self.insufficient_input_label.setContentsMargins(0, 16, 0, 12)
 
         self.operation_progress_label = QLabel("Progresso operazione")
         self.operation_progress_label.setAlignment(Qt.AlignCenter)
@@ -243,12 +244,11 @@ class MachineView(SubInterfaceChildWidget):
 
         self.operation_layout = QVBoxLayout(self.operation_details_widget)
         self.operation_layout.setAlignment(Qt.AlignTop)
+        self.operation_layout.setContentsMargins(0, 0, 0, 0)
         self.operation_layout.setSpacing(0)
 
         # Aggiungo i widget al layout dell'operazione
         self.operation_layout.addWidget(self.operation_label)
-
-        self.operation_layout.addWidget(self.first_horizontal_line)
 
         self.operation_layout.addWidget(self.output_info_label)
         self.operation_layout.addWidget(self.output_required_label)
@@ -258,7 +258,7 @@ class MachineView(SubInterfaceChildWidget):
         self.operation_layout.addWidget(self.output_to_be_produced_label)
 
         self.operation_layout.addSpacerItem(VerticalSpacer(6, QSizePolicy.Fixed))
-        self.operation_layout.addWidget(self.second_horizontal_line)
+        self.operation_layout.addWidget(HorizontalLine())
 
         self.operation_layout.addWidget(self.input_info_label)
 
@@ -272,7 +272,7 @@ class MachineView(SubInterfaceChildWidget):
             self.operation_layout.addWidget(label)
 
         self.operation_layout.addSpacerItem(VerticalSpacer(6, QSizePolicy.Fixed))
-        self.operation_layout.addWidget(self.third_horizontal_line)
+        self.operation_layout.addWidget(HorizontalLine())
 
         self.operation_layout.addWidget(self.required_for_start_label)
 
@@ -288,20 +288,20 @@ class MachineView(SubInterfaceChildWidget):
         self.running_machine_layout.addWidget(self.operation_progress_label)
         self.running_machine_layout.addWidget(self.progress_bar)
         self.running_machine_layout.addWidget(self.percentage_progress_label)
-        self.running_machine_layout.addSpacerItem(VerticalSpacer(12, QSizePolicy.Fixed))
+        self.running_machine_layout.addSpacerItem(VerticalSpacer(16, QSizePolicy.Fixed))
         self.running_machine_layout.addWidget(self.emergency_stop_button)
         self.running_machine_layout.addWidget(self.emergency_stop_label)
 
         self.operation_layout.addWidget(self.start_machine_button)
+        self.operation_layout.addWidget(self.operation_completed_label)
         self.operation_layout.addWidget(self.insufficient_input_label)
         self.operation_layout.addLayout(self.running_machine_layout)
 
         # Aggiungo i Widget al layout della sidebar
-        self.sidebar_layout.setAlignment(Qt.AlignCenter)
         self.sidebar_layout.setSpacing(0)
 
-        self.sidebar_layout.addWidget(self.select_operation_label)
-        self.sidebar_layout.addWidget(self.operation_details_widget)
+        self.sidebar_layout.addWidget(self.select_operation_label, alignment=Qt.AlignCenter)
+        self.sidebar_layout.addWidget(self.operation_details_widget, alignment=Qt.AlignTop)
 
         # Observer ------------------------------
 
@@ -404,6 +404,9 @@ class MachineView(SubInterfaceChildWidget):
 
                 # Nasconde i dettagli dell'operazione
                 self.operation_details_widget.setHidden(True)
+
+                # Mostra la label di selezione di un'operazione
+                self.select_operation_label.setHidden(False)
 
     # Aggiorna la riga selezionata della tabella in base all'id dell'operazione
     def update_selected_row(self, operation_id: str):
@@ -539,6 +542,9 @@ class MachineView(SubInterfaceChildWidget):
         # Ottiene lo stato del macchinario
         is_running = self.controller.is_machine_running()
 
+        # Determina se l'operazione è stata completata
+        is_operation_completed = operation_data.get_to_be_produced_shoe_lasts() == 0
+
         # Mostra o nasconde la progress bar e le label relative
         self.operation_progress_label.setHidden(not is_running)
         self.progress_bar.setHidden(not is_running)
@@ -552,13 +558,19 @@ class MachineView(SubInterfaceChildWidget):
         self.start_machine_button.setHidden(is_running)
 
         # Abilita o disabilita il pulsante per l'avvio del macchinario
-        self.start_machine_button.setEnabled(can_start_machine and operation_data.get_to_be_produced_shoe_lasts() > 0)
+        self.start_machine_button.setEnabled(can_start_machine and not is_operation_completed)
+
+        # Mostra o nasconde la label che informa che l'operazione è completata
+        self.operation_completed_label.setHidden(not is_operation_completed)
 
         # Mostra o nasconde la label che informa che i materiali immagazzinati sono insufficienti
         self.insufficient_input_label.setHidden(can_start_machine)
 
         # Mostra i dettagli dell'operazione
         self.operation_details_widget.setHidden(False)
+
+        # Nasconde la label di selezione di un'operazione
+        self.select_operation_label.setHidden(True)
 
 
 # TableAdapters
