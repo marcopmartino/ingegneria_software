@@ -1,11 +1,11 @@
 from enum import Enum
 
+from lib.model.Order import Order
 from lib.model.ShoeLastVariety import ShoeLastVariety, ProductType, Gender, ShoeLastType, PlasticType, CompassType, \
     Processing, Shoeing
 from lib.model.StoredItems import StoredShoeLastVariety, StoredMaterial, StoredWaste, StoredItem, MaterialType, \
     MaterialDescription, AssignedShoeLastVariety
 from lib.network.StorageNetwork import StorageNetwork
-from lib.repository.CashRegisterRepository import CashRegisterRepository
 from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
 from lib.utility.Singleton import RepositoryMeta
@@ -16,12 +16,13 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         PRODUCTS_INITIALIZED = 0
         PRODUCT_CREATED = 1
         PRODUCT_UPDATED = 2
-        MATERIALS_INITIALIZED = 3
-        MATERIAL_UPDATED = 4
-        WASTE_INITIALIZED = 5
-        WASTE_UPDATED = 6
-        RAW_SHOE_LAST_CENTER_PRICE_CATALOG_INITIALIZED = 7
-        HARDWARE_STORE_PRICE_CATALOG_INITIALIZED = 8
+        PRODUCT_DELETED = 3
+        MATERIALS_INITIALIZED = 4
+        MATERIAL_UPDATED = 5
+        WASTE_INITIALIZED = 6
+        WASTE_UPDATED = 7
+        RAW_SHOE_LAST_CENTER_PRICE_CATALOG_INITIALIZED = 8
+        HARDWARE_STORE_PRICE_CATALOG_INITIALIZED = 9
 
     def __init__(self):
         # Inizializza le liste di oggetti immagazzinati
@@ -53,7 +54,9 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
             data["iron_tip"], data["numbering_antineck"], data["numbering_lateral"], data["numbering_heel"]
         )
 
-        product = StoredShoeLastVariety(serial, data['amount'], shoe_last_variety)
+        order_serial = data.get("order_serial")
+        product = StoredShoeLastVariety(serial, data['amount'], shoe_last_variety) if order_serial is None else \
+            AssignedShoeLastVariety(serial, data['amount'], shoe_last_variety, order_serial)
         self.__product_list.append(product)
         return product
 
@@ -157,20 +160,32 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                         path = path.split('/')
 
                         # Estrae l'id del prodotto del magazzino
-                        element_id = path[2]
+                        product_id = path[2]
 
                         # Controlla di che tipo di prodotto si tratta
                         if path[1] == "products":
                             # Se viene creato un prodotto data non è None
                             if data:
                                 # Crea e aggiunge un prodotto alla lista dei prodotti
-                                product = self.__instantiate_and_append_product(element_id, data)
+                                product = self.__instantiate_and_append_product(product_id, data)
 
                                 # Prepara il messaggio per notificare gli osservatori del magazzino
                                 message = Message(StorageRepository.Event.PRODUCT_CREATED, product)
 
                                 # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
                                 self.notify(message)
+
+                            # Se data è None, un prodotto è stato eliminato
+                            else:
+                                for product in self.__product_list:
+                                    if product.get_item_id() == product_id:
+                                        # Rimuove il prodotto dalla lista
+                                        self.__product_list.remove(product)
+
+                                        # Prepara il messaggio per notificare gli osservatori del registro di cassa
+                                        message = Message(StorageRepository.Event.PRODUCT_DELETED)
+                                        message.setData(product_id)
+                                        break
 
                 # Aggiornamento del magazzino
                 case "patch":
@@ -180,19 +195,19 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                     # Estrae il percorso dell'elemento che è stato modificato e il suo id
                     path = path.split('/')
                     element_type = path[1]
-                    element_id = path[2]
+                    product_id = path[2]
 
-                    print("Updating element" + element_id)
+                    print("Updating element" + product_id)
                     # Prende l'elemento corrispondente
 
                     if element_type == "products":
-                        element = self.get_product_by_id(element_id)
+                        element = self.get_product_by_id(product_id)
                         message = Message(StorageRepository.Event.PRODUCT_UPDATED)
                     elif element_type == "materials":
-                        element = self.get_material_by_id(element_id)
+                        element = self.get_material_by_id(product_id)
                         message = Message(StorageRepository.Event.MATERIAL_UPDATED)
                     else:
-                        element = self.get_waste_by_id(element_id)
+                        element = self.get_waste_by_id(product_id)
                         message = Message(StorageRepository.Event.WASTE_UPDATED)
 
                     element.set_quantity(data['amount'])
@@ -267,8 +282,8 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
     def get_hardware_store_price_catalog(self) -> dict[str, float]:
         return self.__hardware_store_price_catalog
 
-    # Se il prodotto esiste già, ne ritorna il seriale. Altrimenti lo crea e ritorna il nuovo seriale
-    def create_product(self, shoe_last_variety: ShoeLastVariety, quantity: int = 0) -> str:
+    # Crea un prodotto e ne ritorna il nuovo seriale
+    def create_unassigned_product(self, shoe_last_variety: ShoeLastVariety, quantity: int = 0) -> str:
         print(f"Nuovo prodotto:{shoe_last_variety.get_description()}")
 
         # Se il prodotto non esiste, ne crea uno nuovo
@@ -293,6 +308,33 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         # Salva il prodotto nel database e ritorna il nuovo seriale
         return self.__storage_network.insert_product(product_data)
 
+    # Crea un prodotto, lo assegna a un ordine e ne ritorna il nuovo seriale
+    def create_assigned_product(self, shoe_last_variety: ShoeLastVariety, order: Order) -> str:
+        print(f"Nuovo prodotto:{shoe_last_variety.get_description()} ordine ")
+
+        # Se il prodotto non esiste, ne crea uno nuovo
+        product_data = dict(
+            product_type=shoe_last_variety.get_product_type().value,
+            gender=shoe_last_variety.get_gender().value,
+            shoe_last_type=shoe_last_variety.get_shoe_last_type().value,
+            plastic_type=shoe_last_variety.get_plastic_type().value,
+            size=shoe_last_variety.get_size(),
+            processing=shoe_last_variety.get_processing().value,
+            first_compass_type=shoe_last_variety.get_first_compass_type().value,
+            second_compass_type=shoe_last_variety.get_second_compass_type().value,
+            pivot_under_heel=shoe_last_variety.get_pivot_under_heel(),
+            shoeing=shoe_last_variety.get_shoeing().value,
+            iron_tip=shoe_last_variety.get_iron_tip(),
+            numbering_antineck=shoe_last_variety.get_numbering_antineck(),
+            numbering_lateral=shoe_last_variety.get_numbering_lateral(),
+            numbering_heel=shoe_last_variety.get_numbering_heel(),
+            amount=order.get_quantity(),
+            order_serial=order.get_order_serial()
+        )
+
+        # Salva il prodotto nel database e ritorna il nuovo seriale
+        return self.__storage_network.insert_product(product_data)
+
     def update_product_quantity(self, product_id: str, quantity: int):
         self.__storage_network.update_product_amount(product_id, quantity)
 
@@ -301,3 +343,6 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
 
     def update_waste_quantity(self, waste_id: str, quantity: int):
         self.__storage_network.update_waste_amount(waste_id, quantity)
+
+    def delete_product(self, product_id: str):
+        self.__storage_network.delete_product(product_id)

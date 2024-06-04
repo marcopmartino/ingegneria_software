@@ -209,6 +209,9 @@ class ProductsTab(SubInterfaceChildWidget):
                 case StorageRepository.Event.PRODUCT_UPDATED:
                     self.table_adapter.updateDataColumns(data, [2])
 
+                case StorageRepository.Event.PRODUCT_DELETED:
+                    self.table_adapter.removeRowByKey(data)
+
             self.check_empty_table()
             self.refresh_total_stored_products_quantity()
 

@@ -12,6 +12,7 @@ from lib.firebaseData import Firebase
 from lib.model.Customer import Customer
 from lib.model.Order import Order, OrderState
 from lib.repository.OrdersRepository import OrdersRepository
+from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Observer, Message
 from lib.utility.ResourceManager import ResourceManager
 from lib.utility.TableAdapters import SingleRowTableAdapter
@@ -185,7 +186,8 @@ class OrderView(SubInterfaceChildWidget):
         self.delete_order_button.clicked.connect(self.show_confirm_deletion_dialog)
 
         # Label sul completamento dell'ordine
-        self.order_completion_number_label = QLabel(f"0/{str(self.controller.get_order().get_quantity())}")
+        self.order_completion_number_label = QLabel(f"{str(self.controller.get_produced_order_shoe_lasts())}/"
+                                                    f"{str(self.controller.get_order().get_quantity())}")
         font = QFont()
         font.setPointSize(FontSize.SUBTITLE)
         self.order_completion_number_label.setFont(font)
@@ -257,11 +259,31 @@ class OrderView(SubInterfaceChildWidget):
                         # Informa che il cliente ha eliminato l'ordine
                         self.show_deletion_info_dialog()
 
+                case StorageRepository.Event.PRODUCT_CREATED | StorageRepository.Event.PRODUCT_UPDATED:
+                    if self.controller.get_order_state() == OrderState.PROCESSING and \
+                            message.data().get_shoe_last_variety().equals(
+                                self.controller.get_order_article().get_shoe_last_variety()):
+                        self.refresh_order_completion_progress()
+
         # Imposta l'observer
         # Usando i segnali il codice è eseguito sul Main Thread, evitando il crash dell'applicazione
         # (per esempio, l'apertura o la chiusura di finestre da un Thread secondario causa il crash dell'applicazione)
         self.messageReceived.connect(update_order_view)
         self.observer: Observer = self.controller.observe_order(self.messageReceived.emit)
+
+        # Aggiorna la label sul completamento dell'ordine
+        self.refresh_order_completion_progress()
+
+    # Aggiorna la label sul completamento dell'ordine
+    def refresh_order_completion_progress(self):
+        produced_order_shoe_lasts = self.controller.get_produced_order_shoe_lasts()
+        required_quantity = self.controller.get_order().get_quantity()
+
+        # Aggiorna la Label
+        self.order_completion_number_label.setText(f"{str(produced_order_shoe_lasts)}/{str(required_quantity)}")
+
+        # Aggiorna il pulsante
+        self.state_transition_button.setDisabled(produced_order_shoe_lasts < required_quantity)
 
     # Mostra un Dialog di conferma dell'eliminazione dell'ordine
     def show_confirm_deletion_dialog(self):

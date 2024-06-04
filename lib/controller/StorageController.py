@@ -270,7 +270,7 @@ class StorageController:
 
         # Se il prodotto non è presente in magazzino, inserisce il prodotto con la quantità acquistata
         if stored_shoe_last_variety is None:
-            self.__storage_repository.create_product(shoe_last_variety, purchased_quantity)
+            self.__storage_repository.create_unassigned_product(shoe_last_variety, purchased_quantity)
 
         # Altrimenti aggiorna la quantità immagazzinata del prodotto
         else:

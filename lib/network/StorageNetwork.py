@@ -35,4 +35,7 @@ class StorageNetwork:
         db.child("next_ids").update({"product": product_id + 1})
         return serial_number
 
+    @staticmethod
+    def delete_product(product_id: str) -> None:
+        Firebase.database.child("storage").child("products").child(product_id).remove()
 

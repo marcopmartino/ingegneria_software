@@ -295,4 +295,4 @@ class MachineThread(QObject):
         except ValueError:
             print(f"Eccezione thread {self.__machine.get_machine_serial()}")
 
-            return
+            return  # Termina il thread

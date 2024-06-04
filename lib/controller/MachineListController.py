@@ -113,7 +113,7 @@ class MachineListController:
             # Se non esistono prodotti immagazzinati dello stesso tipo di quelli in output...
             if stored_shoe_last_variety is None:
                 # ...crea un nuovo prodotto con la quantità in output
-                self.__storage_repository.create_product(output_shoe_last_variety, output_quantity)
+                self.__storage_repository.create_unassigned_product(output_shoe_last_variety, output_quantity)
 
             # Altrimenti...
             else:
