@@ -661,20 +661,20 @@ class MachineOperationListAdapter(TableAdapter):
         max_extra_lines = 0
 
         # Prima colonna
-        string_length = len(row_data[1])
-        extra_lines = string_length // 25
-
-        if extra_lines > max_extra_lines:
-            max_extra_lines = extra_lines
-
-        # Seconda colonna
-        second_row_data_strings = row_data[2].split("\n")  # Bisogna tenere conto degli endline presenti
+        second_row_data_strings = row_data[1].split("\n")  # Bisogna tenere conto degli endline presenti
         for second_row_data_string in second_row_data_strings:
             string_length = len(second_row_data_string)
             extra_lines = string_length // 25
 
             if extra_lines > max_extra_lines:
                 max_extra_lines = extra_lines
+
+        # Seconda colonna
+        string_length = len(row_data[2])
+        extra_lines = string_length // 25
+
+        if extra_lines > max_extra_lines:
+            max_extra_lines = extra_lines
 
         # Terza colonna
         string_length = len(row_data[3])
