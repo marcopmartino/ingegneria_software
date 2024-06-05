@@ -241,7 +241,7 @@ class MachineView(SubInterfaceChildWidget):
         self.running_machine_layout.setSpacing(4)
 
         self.emergency_stop_label = BodyLabel(
-            text="Fermare il macchinario solo in caso di emergenza. I materiali in lavorazione finiranno negli scarti.")
+            text="Fermare il macchinario solo in caso di emergenza. I materiali in uso saranno considerati persi.")
         self.emergency_stop_label.setFont(small_font)
         self.emergency_stop_label.setWordWrap(True)
         self.emergency_stop_label.setAlignment(Qt.AlignCenter)
