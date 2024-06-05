@@ -23,7 +23,7 @@ from res.Dimensions import FontSize
 
 class CashRegisterView(SubInterfaceWidget):
     def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = CustomIcon.CASH_REGISTER):
-        super().__init__("cash_register_view", parent_widget, svg_icon)
+        super().__init__("cash_register_view", parent_widget, svg_icon, scrollable_sidebar=True)
 
         # Controller
         self.controller = CashRegisterController()

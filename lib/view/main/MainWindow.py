@@ -200,6 +200,7 @@ class MainWindow(FramelessWindow):
             tooltip="Logout"
         )
 
+        # Imposta la schermata corrente
         self.navigationInterface.setCurrentItem("profile_view")
 
         # Imposta la route key iniziale

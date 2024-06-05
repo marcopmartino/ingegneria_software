@@ -41,7 +41,8 @@ class OrderView(SubInterfaceChildWidget):
         self.controller: OrderController = OrderController(order)
 
         # Inizializzo il widget di base
-        super().__init__(f"order_{self.controller.get_order_serial()}_view", parent_widget, True)
+        super().__init__(f"order_{self.controller.get_order_serial()}_view", parent_widget, True,
+                         True)
 
         # Titolo e sottotitolo
         self.setTitleText(f"Ordine {self.controller.get_order_serial()}")
