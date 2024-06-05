@@ -8,7 +8,7 @@ from lib.model.CashRegisterTransaction import CashRegisterTransaction
 from lib.repository.CashRegisterRepository import CashRegisterRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
-from lib.utility.UtilityClasses import PriceFormatter
+from lib.utility.UtilityClasses import PriceFormatter, DatetimeUtils
 from lib.validation.FormManager import FormManager
 from lib.validation.ValidationRule import ValidationRule
 from lib.view.cashregister.TransactionFormView import TransactionFormView
@@ -210,7 +210,7 @@ class TransactionListAdapter(TableAdapter):
     def adaptData(self, transaction: CashRegisterTransaction) -> list[str]:
         return [transaction.get_transaction_id(),
                 transaction.get_description(),
-                transaction.get_payment_date(),
+                DatetimeUtils.unformat_date(transaction.get_payment_date()),
                 PriceFormatter.format(transaction.get_amount())
                 ]
 

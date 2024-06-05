@@ -51,7 +51,7 @@ class TransactionFormView(QDialog):
         self.form_manager.set_token(transaction.get_transaction_id())
         self.description_line_edit_layout.line_edit.setText(transaction.get_description())
         self.amount_spin_box.setValue(transaction.get_amount())
-        self.date_picker.setDate(DatetimeUtils.format(transaction.get_payment_date()))
+        self.date_picker.setDate(transaction.get_payment_date())
 
         # Mostra i pulsanti di modifica ed eliminazione
         self.edit_button.setHidden(False)

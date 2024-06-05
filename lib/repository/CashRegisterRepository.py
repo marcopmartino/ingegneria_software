@@ -32,7 +32,7 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
     # Usato internamente per istanziare e aggiungere una nuova transazione al registro
     def __instantiate_and_append_transaction(self, serial: str, data: any) -> CashRegisterTransaction:
         order = CashRegisterTransaction(
-            serial, data["description"], data["payment_date"], data["amount"]
+            serial, data["description"], DatetimeUtils.format_date(data["payment_date"]), data["amount"]
         )
         self.__transaction_list.append(order)
         return order
@@ -141,7 +141,7 @@ class CashRegisterRepository(Repository, metaclass=RepositoryMeta):
                 if description is not None:
                     transaction.set_description(description)
                 if date is not None:
-                    transaction.set_payment_date(date)
+                    transaction.set_payment_date(DatetimeUtils.format_date(date))
                 if amount is not None:
                     transaction.set_amount(amount)
 
