@@ -12,6 +12,7 @@ from lib.model.Employee import Employee
 from lib.repository.UsersRepository import UsersRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import SingleColumnTableAdapter
+from lib.utility.UtilityClasses import DatetimeUtils
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.profile.EditCustomerView import EditCustomerView
 from lib.view.profile.EditManagerView import EditManagerView
@@ -278,6 +279,6 @@ class EmployeeProfileTableAdapter(ProfileTableAdapter):
         return [
             employee.get_email(),
             employee.get_phone(),
-            employee.get_birth_date(),
+            DatetimeUtils.unformat_date(employee.get_birth_date()),
             employee.get_CF()
         ]

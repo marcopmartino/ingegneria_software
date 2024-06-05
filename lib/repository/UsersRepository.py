@@ -8,7 +8,7 @@ from lib.network.UsersNetwork import UsersNetwork
 from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
 from lib.utility.Singleton import RepositoryMeta
-from lib.utility.UtilityClasses import PhoneFormatter
+from lib.utility.UtilityClasses import PhoneFormatter, DatetimeUtils
 
 
 class UsersRepository(Repository, metaclass=RepositoryMeta):
@@ -36,7 +36,8 @@ class UsersRepository(Repository, metaclass=RepositoryMeta):
 
     def __instantiate_and_append_employee(self, uid: str, data: any):
         employee = Employee(
-            uid, data["mail"], data["phone"], data["name"], data["CF"], data["birth_date"], data["role"] == "manager"
+            uid, data["mail"], data["phone"], data["name"], data["CF"], DatetimeUtils.format_date(data["birth_date"]),
+            data["role"] == "manager"
         )
         self.__users_list.append(employee)
         return employee
@@ -192,7 +193,7 @@ class UsersRepository(Repository, metaclass=RepositoryMeta):
                         if cf is not None:
                             user.set_CF(cf)
                         if birth_date is not None:
-                            user.set_birth_date(birth_date)
+                            user.set_birth_date(DatetimeUtils.format_date(birth_date))
 
                         # Prepara il messaggio per notificare gli osservatori della lista degli utenti
                         message = Message(UsersRepository.Event.USER_UPDATED)
@@ -224,7 +225,7 @@ class UsersRepository(Repository, metaclass=RepositoryMeta):
         user_data = dict(
             mail=new_user_data.get("email"),
             password=new_user_data.get("password"),
-            phone=PhoneFormatter.format(new_user_data.get("telefono")),
+            phone=new_user_data.get("telefono"),
             company=new_user_data.get("nome azienda"),
             delivery=new_user_data.get("indirizzo di recapito"),
             IVA=new_user_data.get("partita iva"),
@@ -242,7 +243,7 @@ class UsersRepository(Repository, metaclass=RepositoryMeta):
         user_data = dict(
             mail=new_user_data.get("email"),
             password=new_user_data.get("password"),
-            phone=PhoneFormatter.format(new_user_data.get("telefono")),
+            phone=new_user_data.get("telefono"),
             name=new_user_data.get("nome"),
             CF=new_user_data.get("codice fiscale"),
             birth_date=new_user_data.get("data di nascita"),
@@ -257,7 +258,7 @@ class UsersRepository(Repository, metaclass=RepositoryMeta):
         # Crea un dizionario con i dati del nuovo utente
         user_data = dict(
             password=new_user_data.get("nuova password", new_user_data.get("password")),
-            phone=PhoneFormatter.format(new_user_data.get("telefono")),
+            phone=new_user_data.get("telefono"),
             name=new_user_data.get("nome"),
             CF=new_user_data.get("codice fiscale"),
             birth_date=new_user_data.get("data di nascita"),

@@ -106,7 +106,7 @@ class EditWorkerView(QDialog):
 
         self.birthDatePicker = CustomDatePicker()
         self.birthDatePicker.setObjectName("data di nascita_date_picker")
-        self.birthDatePicker.setDate(DatetimeUtils.format(data.get_birth_date()))
+        self.birthDatePicker.setDate(data.get_birth_date())
 
         self.birthDateLayout.addWidget(self.birthDateLabel)
         self.birthDateLayout.addWidget(self.birthDatePicker)

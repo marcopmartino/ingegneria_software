@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QComboBox, QCheckBox, QB
 from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit, DatePicker
 
 from lib.layout.LineEditLayouts import LineEditLayout, LineEditCompositeLayout
+from lib.utility.UtilityClasses import DatetimeUtils
 from lib.validation.ValidationRule import ValidationRule
 from res.Dimensions import ValidationDimensions
 
@@ -238,7 +239,7 @@ class DatePickerFormField(IFormField):
         super().__init__(date_picker)
 
     def data(self):
-        return self.input_field.date.toString('dd/MM/yyyy')
+        return DatetimeUtils.unformat_date(self.input_field.date)
 
     def data_changed(self):
         return self.input_field.dateChanged

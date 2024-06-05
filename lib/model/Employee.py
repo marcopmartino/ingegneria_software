@@ -1,9 +1,11 @@
+from PyQt5.QtCore import QDate
+
 from lib.model.User import User
 
 
 # noinspection PyPep8Naming
 class Employee(User):
-    def __init__(self, uid: str, mail: str, phone: str, name: str, CF: str, birth_date: str, is_manager: bool):
+    def __init__(self, uid: str, mail: str, phone: str, name: str, CF: str, birth_date: QDate, is_manager: bool):
         super().__init__(uid, mail, phone)
         self.__name = name
         self.__CF = CF
@@ -16,7 +18,7 @@ class Employee(User):
     def get_CF(self) -> str:
         return self.__CF
 
-    def get_birth_date(self) -> str:
+    def get_birth_date(self) -> QDate:
         return self.__birth_date
 
     def is_manager(self) -> bool:
