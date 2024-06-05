@@ -101,4 +101,4 @@ class AssignedShoeLastVariety(StoredShoeLastVariety):
         return self.__assigned_order_id
 
     def get_description(self) -> str:
-        return f"Forma assegnate all'ordine {self.__assigned_order_id}"
+        return f"Forme assegnate all'ordine {self.__assigned_order_id}"

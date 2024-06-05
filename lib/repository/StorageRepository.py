@@ -87,136 +87,139 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         # dati (grazie al pattern Singleton)
         data = message["data"]
         path = message["path"]
-        if data is not None:
-            match message["event"]:
-                case "put":
-                    # All'avvio del programma, quando viene caricata l'intera lista di prodotti
-                    if path == "/":
-                        if data:
-                            # Estraggo gli oggetti immagazzinati
-                            products = data.get("products")
-                            materials = data.get("materials")
-                            waste = data.get("waste")
+        match message["event"]:
+            case "put":
+                # All'avvio del programma, quando viene caricata l'intera lista di prodotti
+                if path == "/":
+                    if data:
+                        # Estraggo gli oggetti immagazzinati
+                        products = data.get("products")
+                        materials = data.get("materials")
+                        waste = data.get("waste")
 
-                            # Inizializza i prodotti
-                            if products is not None:
-                                for key, value in products.items():
-                                    # Crea e aggiunge un prodotto alla lista dei prodotti
-                                    self.__instantiate_and_append_product(key, value)
-
-                                # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                                self.notify(Message(
-                                    StorageRepository.Event.PRODUCTS_INITIALIZED,
-                                    self.__product_list
-                                ))
-
-                            # Inizializza i materiali
-                            if materials is not None:
-                                for key, value in materials.items():
-                                    # Crea e aggiunge un materiale alla lista dei materiali
-                                    self.__instantiate_and_append_material(key, value)
-
-                                # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                                self.notify(Message(
-                                    StorageRepository.Event.MATERIALS_INITIALIZED,
-                                    self.__material_list
-                                ))
-
-                            # Inizializza gli scarti
-                            if waste is not None:
-                                for key, value in waste.items():
-                                    # Crea e aggiunge uo scarto alla lista degli scarti
-                                    self.__instantiate_and_append_waste(key, value)
-
-                                # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                                self.notify(Message(
-                                    StorageRepository.Event.WASTE_INITIALIZED,
-                                    self.__waste_list
-                                ))
-
-                            # Inizializza i prezzi del listino del centro abbozzi
-                            self.__raw_shoe_last_center_price_catalog.update(
-                                data["raw_shoe_last_center_price_list"])
-
-                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                            self.notify(Message(
-                                StorageRepository.Event.RAW_SHOE_LAST_CENTER_PRICE_CATALOG_INITIALIZED,
-                                self.__raw_shoe_last_center_price_catalog
-                            ))
-
-                            # Inizializza i prezzi del listino della ferramenta
-                            self.__hardware_store_price_catalog.update(
-                                data["hardware_store_price_list"])
-
-                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                            self.notify(Message(
-                                StorageRepository.Event.HARDWARE_STORE_PRICE_CATALOG_INITIALIZED,
-                                self.__hardware_store_price_catalog
-                            ))
-
-                    # Se il path è diverso allora sto operando sul singolo campo
-                    else:
-                        # Estrae il percorso su cui sta operando
-                        path = path.split('/')
-
-                        # Estrae l'id del prodotto del magazzino
-                        product_id = path[2]
-
-                        # Controlla di che tipo di prodotto si tratta
-                        if path[1] == "products":
-                            # Se viene creato un prodotto data non è None
-                            if data:
+                        # Inizializza i prodotti
+                        if products is not None:
+                            for key, value in products.items():
                                 # Crea e aggiunge un prodotto alla lista dei prodotti
-                                product = self.__instantiate_and_append_product(product_id, data)
+                                self.__instantiate_and_append_product(key, value)
 
-                                # Prepara il messaggio per notificare gli osservatori del magazzino
-                                message = Message(StorageRepository.Event.PRODUCT_CREATED, product)
+                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                            self.notify(Message(
+                                StorageRepository.Event.PRODUCTS_INITIALIZED,
+                                self.__product_list
+                            ))
 
-                                # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
-                                self.notify(message)
+                        # Inizializza i materiali
+                        if materials is not None:
+                            for key, value in materials.items():
+                                # Crea e aggiunge un materiale alla lista dei materiali
+                                self.__instantiate_and_append_material(key, value)
 
-                            # Se data è None, un prodotto è stato eliminato
-                            else:
-                                for product in self.__product_list:
-                                    if product.get_item_id() == product_id:
-                                        # Rimuove il prodotto dalla lista
-                                        self.__product_list.remove(product)
+                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                            self.notify(Message(
+                                StorageRepository.Event.MATERIALS_INITIALIZED,
+                                self.__material_list
+                            ))
 
-                                        # Prepara il messaggio per notificare gli osservatori del registro di cassa
-                                        message = Message(StorageRepository.Event.PRODUCT_DELETED)
-                                        message.setData(product_id)
-                                        break
+                        # Inizializza gli scarti
+                        if waste is not None:
+                            for key, value in waste.items():
+                                # Crea e aggiunge uo scarto alla lista degli scarti
+                                self.__instantiate_and_append_waste(key, value)
 
-                # Aggiornamento del magazzino
-                case "patch":
+                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                            self.notify(Message(
+                                StorageRepository.Event.WASTE_INITIALIZED,
+                                self.__waste_list
+                            ))
 
-                    element: StoredItem
+                        # Inizializza i prezzi del listino del centro abbozzi
+                        self.__raw_shoe_last_center_price_catalog.update(
+                            data["raw_shoe_last_center_price_list"])
 
-                    # Estrae il percorso dell'elemento che è stato modificato e il suo id
+                        # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                        self.notify(Message(
+                            StorageRepository.Event.RAW_SHOE_LAST_CENTER_PRICE_CATALOG_INITIALIZED,
+                            self.__raw_shoe_last_center_price_catalog
+                        ))
+
+                        # Inizializza i prezzi del listino della ferramenta
+                        self.__hardware_store_price_catalog.update(
+                            data["hardware_store_price_list"])
+
+                        # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                        self.notify(Message(
+                            StorageRepository.Event.HARDWARE_STORE_PRICE_CATALOG_INITIALIZED,
+                            self.__hardware_store_price_catalog
+                        ))
+
+                # Se il path è diverso allora sto operando sul singolo campo
+                else:
+
+                    # Estrae il percorso su cui sta operando
                     path = path.split('/')
-                    element_type = path[1]
+
+                    # Estrae l'id del prodotto del magazzino
                     product_id = path[2]
 
-                    print("Updating element" + product_id)
-                    # Prende l'elemento corrispondente
+                    # Controlla di che tipo di prodotto si tratta
+                    if path[1] == "products":
+                        # Se viene creato un prodotto data non è None
+                        if data:
 
-                    if element_type == "products":
-                        element = self.get_product_by_id(product_id)
-                        message = Message(StorageRepository.Event.PRODUCT_UPDATED)
-                    elif element_type == "materials":
-                        element = self.get_material_by_id(product_id)
-                        message = Message(StorageRepository.Event.MATERIAL_UPDATED)
-                    else:
-                        element = self.get_waste_by_id(product_id)
-                        message = Message(StorageRepository.Event.WASTE_UPDATED)
+                            # Crea e aggiunge un prodotto alla lista dei prodotti
+                            product = self.__instantiate_and_append_product(product_id, data)
 
-                    element.set_quantity(data['amount'])
-                    message.setData(element)
+                            # Prepara il messaggio per notificare gli osservatori del magazzino
+                            message = Message(StorageRepository.Event.PRODUCT_CREATED, product)
 
-                    self.notify(message)
+                            # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                            self.notify(message)
 
-                case "cancel":
-                    pass
+                        # Se data è None, un prodotto è stato eliminato
+                        else:
+                            for product in self.__product_list:
+                                if product.get_item_id() == product_id:
+                                    # Rimuove il prodotto dalla lista
+                                    self.__product_list.remove(product)
+
+                                    # Prepara il messaggio per notificare gli osservatori del registro di cassa
+                                    message = Message(StorageRepository.Event.PRODUCT_DELETED)
+                                    message.setData(product_id)
+
+                                    # Notifica gli osservatori così che possano aggiornarsi (grazie al pattern Observer)
+                                    self.notify(message)
+                                    break
+
+            # Aggiornamento del magazzino
+            case "patch":
+                element: StoredItem
+
+                # Estrae il percorso dell'elemento che è stato modificato e il suo id
+                path = path.split('/')
+                element_type = path[1]
+                product_id = path[2]
+
+                print("Updating element" + product_id)
+                # Prende l'elemento corrispondente
+
+                if element_type == "products":
+                    element = self.get_product_by_id(product_id)
+                    message = Message(StorageRepository.Event.PRODUCT_UPDATED)
+                elif element_type == "materials":
+                    element = self.get_material_by_id(product_id)
+                    message = Message(StorageRepository.Event.MATERIAL_UPDATED)
+                else:
+                    element = self.get_waste_by_id(product_id)
+                    message = Message(StorageRepository.Event.WASTE_UPDATED)
+
+                element.set_quantity(data['amount'])
+                message.setData(element)
+
+                self.notify(message)
+
+            case "cancel":
+                pass
 
     # Ritorna la lista dei prodotti
     def get_product_list(self) -> list[StoredShoeLastVariety]:
@@ -284,7 +287,7 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
 
     # Crea un prodotto e ne ritorna il nuovo seriale
     def create_unassigned_product(self, shoe_last_variety: ShoeLastVariety, quantity: int = 0) -> str:
-        print(f"Nuovo prodotto:{shoe_last_variety.get_description()}")
+        print(f"Nuovo prodotto: {shoe_last_variety.get_description()}")
 
         # Se il prodotto non esiste, ne crea uno nuovo
         product_data = dict(
@@ -310,7 +313,7 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
 
     # Crea un prodotto, lo assegna a un ordine e ne ritorna il nuovo seriale
     def create_assigned_product(self, shoe_last_variety: ShoeLastVariety, order: Order) -> str:
-        print(f"Nuovo prodotto:{shoe_last_variety.get_description()} ordine ")
+        print(f"Nuovo prodotto: {shoe_last_variety.get_description()}, ordine {order.get_order_serial()}")
 
         # Se il prodotto non esiste, ne crea uno nuovo
         product_data = dict(
