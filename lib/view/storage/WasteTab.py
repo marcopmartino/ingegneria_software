@@ -11,7 +11,7 @@ from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
-from lib.view.storage.ManualChangeStoredItemView import ManualChangeStoredItemView
+from lib.view.storage.StoredItemEditView import StoredItemEditView
 from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable, IntegerTableItem
@@ -213,7 +213,7 @@ class WasteTab(SubInterfaceChildWidget):
         selected_waste = self.controller.get_waste_by_id(serial)
         waste_description = selected_waste.get_description()
         waste_amount = selected_waste.get_quantity()
-        dialog = ManualChangeStoredItemView.material(
+        dialog = StoredItemEditView.material(
             waste_description,
             waste_amount)
 

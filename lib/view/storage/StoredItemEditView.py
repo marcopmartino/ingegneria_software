@@ -9,12 +9,12 @@ from res import Styles
 from res.Dimensions import GenericDimensions, FontSize, FontWeight
 
 
-class ManualChangeStoredItemView(QDialog):
+class StoredItemEditView(QDialog):
 
     @classmethod
-    def raw_shoe_last(cls, object_description: str, unit_quantity: int):
+    def raw_shoe_last(cls, object_description: str, current_quantity: int):
         # Inizializza il Dialog
-        self = cls(object_description, unit_quantity)
+        self = cls(object_description, current_quantity)
 
         # Imposta il titolo del Dialog
         self.setWindowTitle("Modifica quantità abbozzi")
@@ -23,8 +23,19 @@ class ManualChangeStoredItemView(QDialog):
         self.title.setText(f"Modifica \"{object_description}\"")
         self.title.setWordWrap(True)
 
+        # Imposta l'altezza del titolo
+        max_extra_lines = 0
+
+        string_length = len(self.title.text())
+        extra_lines = string_length // 25
+
+        if extra_lines > max_extra_lines:
+            max_extra_lines = extra_lines
+
+        self.title.setFixedHeight(30 + 30 * max_extra_lines)
+
         # Imposta il valore di default dello SpinBox
-        self.amount_spin_box.setValue(unit_quantity)
+        self.amount_spin_box.setValue(current_quantity)
 
         # Imposta il testo della Label di informazione
         self.info_label.setText("Informazioni sull'acquisto")
@@ -38,22 +49,21 @@ class ManualChangeStoredItemView(QDialog):
         return self
 
     @classmethod
-    def material(cls, object_description: str, unit_quantity: int):
+    def material(cls, object_description: str, current_quantity: int):
         # Inizializza il Dialog
-        self = cls(object_description, unit_quantity)
+        self = cls(object_description, current_quantity)
 
         # Imposta il titolo del Dialog
         self.setWindowTitle("Modifica quantità materiali di lavorazione")
 
         # Imposta il testo della Label principale
         self.title.setText(f"Modifica \"{object_description}\"")
-        self.title.setWordWrap(True)
 
         # Imposta il testo della Label dello SpinBox
         self.amount_label.setText("Quantità in magazzino")
 
         # Imposta il valore di default dello SpinBox
-        self.amount_spin_box.setValue(unit_quantity)
+        self.amount_spin_box.setValue(current_quantity)
 
         # Imposta il testo della Label di informazione
         self.info_label.setText("Informazioni sull'operazione")
@@ -61,33 +71,32 @@ class ManualChangeStoredItemView(QDialog):
         return self
 
     @classmethod
-    def waste(cls, object_description: str, unit_quantity: int):
+    def waste(cls, object_description: str, current_quantity: int):
         # Inizializza il Dialog
-        self = cls(object_description, unit_quantity)
+        self = cls(object_description, current_quantity)
 
         # Imposta il titolo del Dialog
         self.setWindowTitle("Modifica scarti di lavorazione")
 
         # Imposta il testo della Label principale
         self.title.setText(f"Modifica \"{object_description}\"")
-        self.title.setWordWrap(True)
 
         # Imposta il testo della Label dello SpinBox
         self.amount_label.setText("Quantità in magazzino (kg)")
 
         # Imposta il valore di default dello SpinBox
-        self.amount_spin_box.setValue(unit_quantity)
+        self.amount_spin_box.setValue(current_quantity)
 
         # Imposta il testo della Label di informazione
         self.info_label.setText("Informazioni sull'operazione")
 
         return self
 
-    def __init__(self, object_description: str, unit_quantity: int):
+    def __init__(self, object_description: str, current_quantity: int):
         super().__init__()
 
         # Finestra
-        self.setObjectName("manual_change_stored_item_view")
+        self.setObjectName("stored_item_edit_view")
 
         # Finestra e widget
         self.resize(450, 300)
@@ -154,7 +163,7 @@ class ManualChangeStoredItemView(QDialog):
         # Quantità attuale - Label
         self.actual_quantity_label = QLabel(self)
         self.actual_quantity_label.setFont(font)
-        self.actual_quantity_label.setText(f"Quantità attuale:  {unit_quantity}")
+        self.actual_quantity_label.setText(f"Quantità attuale: {current_quantity}")
         self.layout.addWidget(self.actual_quantity_label)
 
         # Nuova quantità - Label
@@ -177,11 +186,10 @@ class ManualChangeStoredItemView(QDialog):
 
         # Mostra la nuova quantità in relazione con quella attuale
         def refresh_info():
-            # Aggiorna il prezzo
-            self.actual_quantity_label.setText(f"Quantità attuale: {unit_quantity}")
-
+            # Ottiene la nuova quantità
             new_quantity = self.amount_spin_box.value()
-            # Aggiorna la quantità
+
+            # Aggiorna la nuova quantità
             self.post_edit_quantity_label.setText(f"Nuova quantità: {str(new_quantity)}")
 
         self.amount_spin_box.valueChanged.connect(refresh_info)
@@ -192,19 +200,25 @@ class ManualChangeStoredItemView(QDialog):
         # Eseguito al click sul pulsante di submit della form
         def on_confirm():
             # Ottiene la quantità modificata
-            new_quantity: str = str(self.amount_spin_box.value())
+            new_quantity = self.amount_spin_box.value()
 
-            # Crea e mostra una richiesta di conferma
-            clicked_button = QMessageBox.question(
-                self,
-                "Conferma modifiche",
-                f"Sei sicuro di voler modifica \"{object_description}\" da {unit_quantity} a {new_quantity}?",
-                QMessageBox.Yes | QMessageBox.No
-            )
+            # Se la quantità non è cambiata, chiude il dialog
+            if new_quantity == current_quantity:
+                self.close()
 
-            # In caso di conferma, chiude il dialog con accettazione
-            if clicked_button == QMessageBox.Yes:
-                self.accept()
+            # Altrimenti chiede la conferma della modifica
+            else:
+                # Crea e mostra una richiesta di conferma
+                clicked_button = QMessageBox.question(
+                    self,
+                    "Conferma modifiche",
+                    f"Sei sicuro di voler modifica \"{object_description}\" da {current_quantity} a {new_quantity}?",
+                    QMessageBox.Yes | QMessageBox.No
+                )
+
+                # In caso di conferma, chiude il dialog con accettazione
+                if clicked_button == QMessageBox.Yes:
+                    self.accept()
 
         # Collega i Button ai QMessageBox di conferma
         self.confirm_change_button.clicked.connect(on_confirm)

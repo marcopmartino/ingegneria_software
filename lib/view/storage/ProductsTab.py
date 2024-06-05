@@ -1,17 +1,17 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QVBoxLayout, QLabel, QHeaderView, QDialog
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QHeaderView, QDialog, QMessageBox
 from qfluentwidgets import SearchLineEdit, CheckBox
 
 from lib.controller.StorageController import StorageController
 from lib.firebaseData import Firebase
-from lib.model.StoredItems import StoredShoeLastVariety
+from lib.model.StoredItems import StoredShoeLastVariety, AssignedShoeLastVariety
 from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.validation.FormManager import FormManager
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
-from lib.view.storage.ManualChangeStoredItemView import ManualChangeStoredItemView
+from lib.view.storage.StoredItemEditView import StoredItemEditView
 from lib.widget.CustomPushButton import CustomPushButton
 from lib.widget.Separators import HorizontalLine
 from lib.widget.TableWidgets import StandardTable, IntegerTableItem
@@ -247,17 +247,30 @@ class ProductsTab(SubInterfaceChildWidget):
     def show_product_edit_dialog(self, serial: str):
         print(f"Prodotto selezionato: {serial}")
         selected_product = self.controller.get_product_by_id(serial)
-        shoe_last_variety_description = selected_product.get_description()
-        shoe_last_variety_amount = selected_product.get_quantity()
-        dialog = ManualChangeStoredItemView.raw_shoe_last(
-            shoe_last_variety_description,
-            shoe_last_variety_amount)
+        if isinstance(selected_product, AssignedShoeLastVariety):
+            self.show_product_edit_denied_dialog()
+        else:
+            shoe_last_variety_description = selected_product.get_description()
+            shoe_last_variety_amount = selected_product.get_quantity()
+            dialog = StoredItemEditView.raw_shoe_last(
+                shoe_last_variety_description,
+                shoe_last_variety_amount)
 
-        if dialog.exec() == QDialog.Accepted:
-            new_quantity = dialog.value()
+            if dialog.exec() == QDialog.Accepted:
+                new_quantity = dialog.value()
 
-            # Aggiorna la quantità
-            self.controller.update_product_quantity(serial, new_quantity)
+                # Aggiorna la quantità
+                self.controller.update_product_quantity(serial, new_quantity)
+
+    # Mostra un Dialog che informa dell'impossibilità di modificare la quantità di un prodotto
+    def show_product_edit_denied_dialog(self):
+        # Imposta e mostra un QMessageBox per informare che la modifica non può avvenire
+        QMessageBox.question(
+            self,
+            "Impossibile modificare prodotto",
+            "La quantità di forme assegnate a un ordine non può essere modificata.",
+            QMessageBox.Ok
+        )
 
 
 class StorageListAdapter(TableAdapter):
