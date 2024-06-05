@@ -1,7 +1,7 @@
 # coding:utf-8
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, QWidget, QMessageBox
+from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, QWidget, QMessageBox, QWIDGETSIZE_MAX
 from qfluentwidgets import FluentIcon as FIF, InfoBar, InfoBarPosition
 from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter)
 from qframelesswindow import FramelessWindow, TitleBar
@@ -205,6 +205,12 @@ class MainWindow(FramelessWindow):
 
         # Imposta la route key iniziale
         qrouter.setDefaultRouteKey(self.stackedWidget, "profile_view")
+
+    # Finalizza la finestra (la modifica dell'altezza forza il ridimensionamento dei widget interni)
+    def finalizeWindow(self):
+        self.setFixedHeight(self.height() + 1)
+        self.setFixedHeight(self.height() - 1)
+        self.setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX)  # Riabilita il ridimensionamento
 
     # Popola le tre sezioni del menù e finalizza la navigazione nel caso di un cliente autenticato
     def setup_customer_navigation(self):
@@ -442,6 +448,9 @@ class MainWindow(FramelessWindow):
 
         # Finalizza la navigazione
         self.finalizeNavigation()
+
+        # Finalizza la finestra
+        self.finalizeWindow()
 
         # Indica che il caricamento degli elementi grafici della MainWindow è stata completata
         self.loading_window.gui_widget.stop()
