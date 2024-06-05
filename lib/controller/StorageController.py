@@ -69,58 +69,57 @@ class StorageController:
 
         # Parametri di filtro scelti dall'utente
         search_text: str = filters["searchbox"]  # Valore del campo del prodotto sulla base di cui filtrare
-        available: bool = filters["available"]  # Quantità di prodotti >0
-        not_available: bool = filters["notavailable"]  # Quantità di prodotti = 0
+        allowed_states: list[bool] = []  # Stati da mostrare
         allowed_types: list[ProductType] = []  # Tipi di prodotto da mostrare
 
+        # In base ai parametri di filtro, determina se uno stato è ammesso a meno
+        def append_state_if_allowed(filter_key: str, type_value: bool):
+            if filters[filter_key]:
+                allowed_states.append(type_value)
+
+        # Eseguo la funzione per tutti gli stati possibili
+        append_state_if_allowed("available", True)
+        append_state_if_allowed("notavailable", False)
+
         # In base ai parametri di filtro, determina se un tipo è ammesso a meno
-        def append_types_if_allowed(filter_key: str, product_type: ProductType | bool):
+        def append_type_if_allowed(filter_key: str, product_type: ProductType | bool):
             if filters[filter_key]:
                 allowed_types.append(product_type)
 
         # Eseguo la funzione per tutti i tipi possibili
-        append_types_if_allowed("sketch", ProductType.ABBOZZO)
-        append_types_if_allowed("worked", ProductType.ABBOZZO_SGROSSATO)
-        append_types_if_allowed("finished", ProductType.FORMA_FINITA)
-        append_types_if_allowed("numbered", ProductType.FORMA_NUMERATA)
+        append_type_if_allowed("sketch", ProductType.ABBOZZO)
+        append_type_if_allowed("worked", ProductType.ABBOZZO_SGROSSATO)
+        append_type_if_allowed("finished", ProductType.FORMA_FINITA)
+        append_type_if_allowed("numbered", ProductType.FORMA_NUMERATA)
 
-        # Numero di campi ammessi
+        # Numero di stati ammessi
+        allowed_states_count: int = len(allowed_states)
+
+        # Numero di tipi ammessi
         allowed_types_count: int = len(allowed_types)
 
-        if available:
-            allowed_types_count = allowed_types_count+1
-
-        if not_available:
-            allowed_types_count = allowed_types_count+1
-
+        # Inizializza la lista dei prodotti da ritornare
         filtered_product_list: list[StoredShoeLastVariety] = []
 
-        # Se nessuno stato è ammesso, la lista dei prodotti da mostrare è quella vuota
-        if allowed_types_count:
-
-            # Dato un prodotto, ne ritorna i dettagli
-            def product_details(product_: StoredShoeLastVariety) -> str:
-                return product_.get_description()
-
-            filter_field = product_details
+        # Se nessuno stato o tipo è ammesso, la lista dei prodotti da mostrare è quella vuota
+        if allowed_types_count or allowed_states_count:
 
             # Filtra la lista dei prodotti
             for product in product_list:
 
                 # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
                 if search_text:
-                    if search_text.lower() not in filter_field(product).lower():
+                    if search_text.lower() not in product.get_description().lower():
                         continue
 
-                # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
-                if allowed_types_count != 6:
+                # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo di prodotto
+                if allowed_types_count != 5:
                     if product.get_shoe_last_variety().get_product_type() not in allowed_types:
                         continue
-                    elif available and (product.get_quantity() == 0):
-                        continue
-                    elif not_available and (product.get_quantity() > 0):
-                        continue
-                    elif not available and not not_available:
+
+                # Se tutti gli stati sono ammessi viene saltato il filtro sulla disponibilità
+                if allowed_states_count != 2:
+                    if (product.get_quantity() > 0) not in allowed_states:
                         continue
 
                 filtered_product_list.append(product)
@@ -135,9 +134,17 @@ class StorageController:
 
         # Parametri di filtro scelti dall'utente
         search_text: str = filters["searchbox"]  # Valore del campo del materiale sulla base di cui filtrare
-        available: bool = filters["available"]  # Quantità di materiali >0
-        not_available: bool = filters["notavailable"]  # Quantità di materiali = 0
+        allowed_states: list[bool] = []  # Stati da mostrare
         allowed_types: list[MaterialType] = []  # Tipi di materiale da mostrare
+
+        # In base ai parametri di filtro, determina se uno stato è ammesso a meno
+        def append_state_if_allowed(filter_key: str, type_value: bool):
+            if filters[filter_key]:
+                allowed_states.append(type_value)
+
+        # Eseguo la funzione per tutti gli stati possibili
+        append_state_if_allowed("available", True)
+        append_state_if_allowed("notavailable", False)
 
         # In base ai parametri di filtro, determina se un tipo è ammesso a meno
         def append_types_if_allowed(filter_key: str, allowed_check: MaterialType | bool):
@@ -150,41 +157,34 @@ class StorageController:
         append_types_if_allowed("compass", MaterialType.BUSSOLA)
         append_types_if_allowed("other", MaterialType.ALTRO)
 
-        # Numero di campi ammessi
+        # Numero di stati ammessi
+        allowed_states_count: int = len(allowed_states)
+
+        # Numero di tipi ammessi
         allowed_types_count: int = len(allowed_types)
 
-        if available:
-            allowed_types_count = allowed_types_count+1
-
-        if not_available:
-            allowed_types_count = allowed_types_count+1
-
+        # Inizializza la lista dei materiali da ritornare
         filtered_material_list: list[StoredMaterial] = []
 
-        # Se nessuno stato è ammesso, la lista dei materiali da mostrare è quella vuota
-        if allowed_types_count:
-
-            # Dato un materiale ne ritorna i dettagli
-            def material_details(material_: StoredMaterial) -> str:
-                return material_.get_description()
-
-            filter_field = material_details
+        # Se nessuno stato o tipo è ammesso, la lista dei materiali da mostrare è quella vuota
+        if allowed_types_count or allowed_states_count:
 
             # Filtra la lista dei materiali
             for material in material_list:
 
                 # Se il testo di ricerca è vuoto viene saltato il filtro sul campo
                 if search_text:
-                    if search_text.lower() not in filter_field(material).lower():
+                    if search_text.lower() not in material.get_description().lower():
                         continue
 
-                # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo
-                if allowed_types_count != 6:
+                # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo di materiale
+                if allowed_types_count != 4:
                     if material.get_material_type() not in allowed_types:
                         continue
-                    elif available and (material.get_quantity() == 0):
-                        continue
-                    elif not_available and (material.get_quantity() > 0):
+
+                # Se tutti gli stati sono ammessi viene saltato il filtro sulla disponibilità
+                if allowed_states_count != 2:
+                    if (material.get_quantity() > 0) not in allowed_states:
                         continue
 
                 filtered_material_list.append(material)
@@ -198,43 +198,51 @@ class StorageController:
         # Inizializzo alcune variabili e funzioni per ottimizzare il filtraggio degli scarti
 
         # Parametri di filtro scelti dall'utente
-        available: bool = filters["available"]  # Quantità di materiali > 0
-        not_available: bool = filters["notavailable"]  # Quantità di materiali = 0
-        allowed_plastic: list[PlasticType] = []  # Tipi di plastica da mostrare
+        allowed_states: list[bool] = []  # Stati da mostrare
+        allowed_plastic_types: list[PlasticType] = []  # Tipi di plastica da mostrare
+
+        # In base ai parametri di filtro, determina se uno stato è ammesso a meno
+        def append_state_if_allowed(filter_key: str, type_value: bool):
+            if filters[filter_key]:
+                allowed_states.append(type_value)
+
+        # Eseguo la funzione per tutti gli stati possibili
+        append_state_if_allowed("available", True)
+        append_state_if_allowed("notavailable", False)
 
         # In base ai parametri di filtro, determina se un tipo di plastica è ammesso a meno
         def append_plastic_if_allowed(filter_key: str, plastic_type: PlasticType):
             if filters[filter_key]:
-                allowed_plastic.append(plastic_type)
+                allowed_plastic_types.append(plastic_type)
 
         # Eseguo la funzione per tutti gli stati possibili
         append_plastic_if_allowed("plastic1", PlasticType.TIPO_1_DISCRETA)
         append_plastic_if_allowed("plastic2", PlasticType.TIPO_2_BUONA)
         append_plastic_if_allowed("plastic3", PlasticType.TIPO_3_OTTIMA)
 
-        allowed_plastic_count: int = len(allowed_plastic)
+        # Numero di stati ammessi
+        allowed_states_count: int = len(allowed_states)
 
-        if available:
-            allowed_plastic_count = allowed_plastic_count+1
+        # Numero di tipi di plastica ammessi
+        allowed_types_count: int = len(allowed_plastic_types)
 
-        if not_available:
-            allowed_plastic_count = allowed_plastic_count+1
-
+        # Inizializza la lista degli scarti da ritornare
         filtered_wastes_list: list[StoredWaste] = []
 
-        # Se nessuno stato è ammesso, la lista degli scarti da mostrare è quella vuota
-        if allowed_plastic_count:
+        # Se nessuno stato o tipo è ammesso, la lista degli scarti da mostrare è quella vuota
+        if allowed_types_count or allowed_states_count:
 
             # Filtra la lista degli scarti
             for waste in waste_list:
 
-                # Se tutti i tipi di plastica sono ammessi viene saltato il filtro sul tipo di plastica
-                if allowed_plastic_count != 5:
-                    if waste.get_plastic_type() not in allowed_plastic:
+                # Se tutti i tipi sono ammessi viene saltato il filtro sul tipo di prodotto
+                if allowed_types_count != 5:
+                    if waste.get_plastic_type() not in allowed_plastic_types:
                         continue
-                    elif available and (waste.get_quantity() == 0):
-                        continue
-                    elif not_available and (waste.get_quantity() > 0):
+
+                # Se tutti gli stati sono ammessi viene saltato il filtro sulla disponibilità
+                if allowed_states_count != 2:
+                    if (waste.get_quantity() > 0) not in allowed_states:
                         continue
 
                 filtered_wastes_list.append(waste)
