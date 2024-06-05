@@ -5,10 +5,10 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QSizePolicy, QLabel, QVBoxLayout, QPushButton
 
 from lib.controller.AccessController import AccessController
-from lib.layout.FrameLayouts import FrameLayout
-from lib.validation.FormManager import FormManager
-from lib.widget.InteractiveLabel import InteractiveLabel
-from lib.widget.StylisableWidget import StylisableWidget
+from lib.utility.gui.layout.FrameLayouts import FrameLayout
+from lib.utility.validation.FormManager import FormManager
+from lib.utility.gui.widget.InteractiveLabel import InteractiveLabel
+from lib.utility.gui.widget.StylisableWidget import StylisableWidget
 from res import Styles
 from res.Dimensions import FontSize, FormDimensions, FontWeight, LineEditDimensions
 from res.Strings import UtilityStrings

@@ -1,13 +1,13 @@
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QCloseEvent, QFont, QPalette
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QHeaderView, QScrollArea, QProgressBar, \
-    QStackedWidget, QAbstractItemView
-from qfluentwidgets import ProgressBar, BodyLabel
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QCloseEvent, QFont
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy, QHeaderView, QProgressBar, \
+    QAbstractItemView
+from qfluentwidgets import BodyLabel
 
 from lib.controller.MachineController import MachineController
 from lib.model.Machine import Machine, MachineOperationData, InputMaterial
-from lib.model.Order import Order, OrderState
-from lib.model.ShoeLastVariety import ShoeLastVariety, ProductType
+from lib.model.Order import OrderState
+from lib.model.ShoeLastVariety import ProductType
 from lib.model.StoredItems import MaterialDescription
 from lib.repository.MachinesRepository import MachinesRepository
 from lib.repository.OrdersRepository import OrdersRepository
@@ -15,10 +15,10 @@ from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter, TableAdapter
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
-from lib.widget.CustomPushButton import CustomPushButton
-from lib.widget.Separators import VerticalSpacer, HorizontalLine
-from lib.widget.TableWidgets import SingleRowStandardTable, StandardTable
-from res import Colors, Styles
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.Separators import VerticalSpacer, HorizontalLine
+from lib.utility.gui.widget.TableWidgets import SingleRowStandardTable, StandardTable
+from res import Styles
 from res.Dimensions import FontSize, FontWeight
 
 

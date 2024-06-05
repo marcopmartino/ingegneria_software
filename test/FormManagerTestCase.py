@@ -5,10 +5,10 @@ from PyQt5.QtWidgets import QLineEdit, QCheckBox, QSpinBox, QComboBox, QApplicat
 from qfluentwidgets import DatePicker
 
 from lib.utility.UtilityClasses import DatetimeUtils
-from lib.validation.FormField import CheckBoxFormField, SpinBoxFormField, ComboBoxFormField, \
+from lib.utility.validation.FormField import CheckBoxFormField, SpinBoxFormField, ComboBoxFormField, \
     DatePickerFormField, LineEditValidatableFormField
-from lib.validation.FormManager import FormManager
-from lib.validation.ValidationRule import ValidationRule
+from lib.utility.validation.FormManager import FormManager
+from lib.utility.validation.ValidationRule import ValidationRule
 
 app = QApplication(sys.argv)
 

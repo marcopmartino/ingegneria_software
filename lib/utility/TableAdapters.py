@@ -2,12 +2,9 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Callable
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidgetItem
 
-from lib.validation.FormManager import FormManager
-from lib.widget.TableWidgets import ExtendedTableWidget, SingleRowStandardTable, StandardTable, \
-    SingleColumnStandardTable
+from lib.utility.gui.widget.TableWidgets import ExtendedTableWidget
 
 
 # Classe astratta rappresentante un adattatore per tabelle. Si tratta di un'interfaccia per interagire con una tabella

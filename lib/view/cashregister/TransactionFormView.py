@@ -1,18 +1,17 @@
 from PyQt5.QtCore import Qt, QDate
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QDialog, QSizePolicy, QVBoxLayout, QLabel, QHBoxLayout, QMessageBox, QWidget
-from qfluentwidgets import DoubleSpinBox, PushButton, LineEdit
+from qfluentwidgets import DoubleSpinBox, LineEdit
 
 from lib.controller.CashRegisterController import CashRegisterController
-from lib.layout.CustomDatePicker import CustomDatePicker
-from lib.layout.FrameLayouts import HFrameLayout
-from lib.layout.LineEditLayouts import LineEditCompositeLayout
+from lib.utility.gui.widget.CustomDatePicker import CustomDatePicker
+from lib.utility.gui.layout.FrameLayouts import HFrameLayout
+from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.CashRegisterTransaction import CashRegisterTransaction
-from lib.utility.UtilityClasses import DatetimeUtils
-from lib.validation.FormField import LineEditCompositeFormField, SpinBoxFormField, DatePickerFormField
-from lib.validation.FormManager import FormManager
-from lib.validation.ValidationRule import ValidationRule
-from lib.widget.CustomPushButton import CustomPushButton
+from lib.utility.validation.FormField import LineEditCompositeFormField, SpinBoxFormField, DatePickerFormField
+from lib.utility.validation.FormManager import FormManager
+from lib.utility.validation.ValidationRule import ValidationRule
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from res import Styles
 from res.Dimensions import FontWeight, LineEditDimensions, FontSize, GenericDimensions
 from res.Strings import FormStrings

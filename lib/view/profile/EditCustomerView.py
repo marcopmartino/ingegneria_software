@@ -3,13 +3,13 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, Q
 from qfluentwidgets import LineEdit
 
 from lib.controller.ProfileController import ProfileController
-from lib.layout.LineEditLayouts import LineEditCompositeLayout
+from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.Customer import Customer
 from lib.utility.ErrorHelpers import InvalidLoginCredentialsException
-from lib.validation.FormField import LineEditCompositeFormField
-from lib.validation.FormManager import FormManager
-from lib.validation.ValidationRule import ValidationRule
-from lib.widget.CustomPushButton import CustomPushButton
+from lib.utility.validation.FormField import LineEditCompositeFormField
+from lib.utility.validation.FormManager import FormManager
+from lib.utility.validation.ValidationRule import ValidationRule
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from res import Styles, Dimensions
 from res.Dimensions import FontSize, GenericDimensions
 from res.Strings import FormStrings, Config, ProfileStrings, ValidationStrings

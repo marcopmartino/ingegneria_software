@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QPushButton, QLayout, QWidget
 
-from lib.validation.FormField import IFormField, CheckBoxFormField, SpinBoxFormField, ComboBoxFormField, \
+from lib.utility.validation.FormField import IFormField, CheckBoxFormField, SpinBoxFormField, ComboBoxFormField, \
     LineEditFormField, DatePickerFormField
 
 

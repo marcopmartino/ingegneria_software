@@ -9,12 +9,12 @@ from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.utility.UtilityClasses import DatetimeUtils
-from lib.validation.FormManager import FormManager
-from lib.validation.ValidationRule import ValidationRule
+from lib.utility.validation.FormManager import FormManager
+from lib.utility.validation.ValidationRule import ValidationRule
 from lib.view.article.ArticleView import ArticleView
 from lib.view.main.SubInterfaces import SubInterfaceWidget
-from lib.widget.CustomPushButton import CustomPushButton
-from lib.widget.TableWidgets import StandardTable, IntegerTableItem, DateTableItem
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.TableWidgets import StandardTable, IntegerTableItem, DateTableItem
 from res.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 

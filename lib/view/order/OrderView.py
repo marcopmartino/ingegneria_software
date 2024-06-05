@@ -20,9 +20,9 @@ from lib.utility.UtilityClasses import PriceFormatter, DatetimeUtils
 from lib.view.article.ArticleView import ArticleMainDetailsAdapter, ArticleAccessoriesAdapter
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.view.order.EditOrderView import EditOrderView
-from lib.widget.CustomPushButton import CustomPushButton
-from lib.widget.Separators import VerticalSpacer
-from lib.widget.TableWidgets import SingleRowStandardTable
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.Separators import VerticalSpacer
+from lib.utility.gui.widget.TableWidgets import SingleRowStandardTable
 from res import Colors
 from res.Dimensions import FontSize, FontWeight
 from res.Strings import OrderStateStrings

@@ -1,9 +1,8 @@
-from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QLabel, QWidget
+from PyQt5.QtWidgets import QWidget
 
-from lib.widget.ClickableLabel import ClickableLabel
-from lib.widget.FocusableLabel import FocusableLabel
+from lib.utility.gui.widget.ClickableLabel import ClickableLabel
+from lib.utility.gui.widget.FocusableLabel import FocusableLabel
 from res.Dimensions import FontWeight, FontSize
 
 

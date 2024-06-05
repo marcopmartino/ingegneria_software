@@ -7,11 +7,11 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSpacerItem, QSizePolicy, QVBo
 from qfluentwidgets import ComboBox, SpinBox, CheckBox
 
 from lib.controller.OrderBaseController import OrderBaseController
-from lib.layout.FrameLayouts import HFrameLayout, VFrameLayout
+from lib.utility.gui.layout.FrameLayouts import HFrameLayout, VFrameLayout
 from lib.model.ShoeLastVariety import Gender, ShoeLastType, PlasticType, CompassType, Processing, Shoeing
 from lib.utility.UtilityClasses import PriceFormatter
-from lib.validation.FormManager import FormManager
-from lib.widget.CustomPushButton import CustomPushButton
+from lib.utility.validation.FormManager import FormManager
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from res.Dimensions import FontWeight, FontSize
 
 

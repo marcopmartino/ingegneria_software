@@ -10,14 +10,14 @@ from lib.model.Employee import Employee
 from lib.repository.UsersRepository import UsersRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
-from lib.validation.FormManager import FormManager
-from lib.validation.ValidationRule import ValidationRule
+from lib.utility.validation.FormManager import FormManager
+from lib.utility.validation.ValidationRule import ValidationRule
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.worker.AddWorkerView import AddWorkerView
 from lib.view.worker.EditWorkerView import EditWorkerView
-from lib.widget.CustomPushButton import CustomPushButton
-from lib.widget.Separators import HorizontalLine
-from lib.widget.TableWidgets import StandardTable
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.Separators import HorizontalLine
+from lib.utility.gui.widget.TableWidgets import StandardTable
 from res.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 

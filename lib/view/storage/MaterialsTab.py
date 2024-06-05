@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QVBoxLayout, QLabel, QDialog
-from qfluentwidgets import SearchLineEdit, CheckBox, PushButton
+from qfluentwidgets import SearchLineEdit, CheckBox
 
 from lib.controller.StorageController import StorageController
 from lib.firebaseData import Firebase
@@ -9,12 +9,12 @@ from lib.model.StoredItems import StoredMaterial
 from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
-from lib.validation.FormManager import FormManager
+from lib.utility.validation.FormManager import FormManager
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
 from lib.view.storage.StoredItemEditView import StoredItemEditView
-from lib.widget.CustomPushButton import CustomPushButton
-from lib.widget.Separators import HorizontalLine
-from lib.widget.TableWidgets import StandardTable, IntegerTableItem
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.Separators import HorizontalLine
+from lib.utility.gui.widget.TableWidgets import StandardTable, IntegerTableItem
 from res import Styles
 from res.Dimensions import FontSize
 

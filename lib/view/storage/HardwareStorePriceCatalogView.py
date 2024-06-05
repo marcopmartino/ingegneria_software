@@ -3,15 +3,11 @@ from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QDialog
 from qfluentwidgets import FluentIconBase
 
 from lib.controller.StorageController import StorageController
-from lib.firebaseData import Firebase
 from lib.model.StoredItems import MaterialDescription
-from lib.repository.CashRegisterRepository import CashRegisterRepository
-from lib.repository.StorageRepository import StorageRepository
-from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.StoredItemTradeView import StoredItemTradeView
-from lib.widget.TableWidgets import PriceCatalogTableBuilder, TitleAndSubtitleSection, HorizontalTreeSection, \
+from lib.utility.gui.widget.TableWidgets import PriceCatalogTableBuilder, TitleAndSubtitleSection, HorizontalTreeSection, \
     PriceCatalogTable, NamedTableItem
 from res.CustomIcon import CustomIcon
 

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from PyQt5.QtWidgets import QWidget, QGridLayout, QLayout, QSpacerItem, QSizePolicy, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QGridLayout, QLayout, QSizePolicy, QHBoxLayout, QVBoxLayout
 
-from lib.widget.Separators import HorizontalSpacer, VerticalSpacer
+from lib.utility.gui.widget.Separators import HorizontalSpacer, VerticalSpacer
 from res.Dimensions import SpacerDimensions
 
 

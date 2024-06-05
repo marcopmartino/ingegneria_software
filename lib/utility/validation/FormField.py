@@ -2,12 +2,12 @@ from abc import abstractmethod, ABC
 
 from PyQt5.QtCore import QObject, QDate
 from PyQt5.QtGui import QValidator
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QComboBox, QCheckBox, QButtonGroup, QSpinBox, QAbstractSpinBox
-from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit, DatePicker
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QComboBox, QCheckBox, QButtonGroup, QAbstractSpinBox
+from qfluentwidgets import ComboBox, DatePicker
 
-from lib.layout.LineEditLayouts import LineEditLayout, LineEditCompositeLayout
+from lib.utility.gui.layout.LineEditLayouts import LineEditLayout, LineEditCompositeLayout
 from lib.utility.UtilityClasses import DatetimeUtils
-from lib.validation.ValidationRule import ValidationRule
+from lib.utility.validation.ValidationRule import ValidationRule
 from res.Dimensions import ValidationDimensions
 
 # Lunghezza di default per il testo in input

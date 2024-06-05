@@ -3,11 +3,11 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QDialog, QLabel, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QMessageBox
 from qfluentwidgets import SpinBox
 
-from lib.layout.FrameLayouts import HFrameLayout
+from lib.utility.gui.layout.FrameLayouts import HFrameLayout
 from lib.utility.UtilityClasses import PriceFormatter
-from lib.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from res import Styles
-from res.Dimensions import GenericDimensions, FontSize, FontWeight, LineEditDimensions
+from res.Dimensions import GenericDimensions, FontSize, FontWeight
 
 
 class StoredItemTradeView(QDialog):

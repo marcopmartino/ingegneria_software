@@ -8,11 +8,11 @@ from lib.model.Machine import Machine
 from lib.repository.MachinesRepository import MachinesRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
-from lib.validation.FormManager import FormManager
+from lib.utility.validation.FormManager import FormManager
 from lib.view.machine.MachineView import MachineView
 from lib.view.main.SubInterfaces import SubInterfaceWidget
-from lib.widget.CustomPushButton import CustomPushButton
-from lib.widget.TableWidgets import StandardTable, PercentageTableItem
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.TableWidgets import StandardTable, PercentageTableItem
 from res.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 

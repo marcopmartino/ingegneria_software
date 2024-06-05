@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QInputDialog, QDialog, QMessageBox
+from PyQt5.QtWidgets import QWidget, QLabel, QTableWidgetItem, QDialog, QMessageBox
 from qfluentwidgets import FluentIconBase
 
 from lib.controller.StorageController import StorageController
@@ -7,7 +7,7 @@ from lib.model.ShoeLastVariety import ShoeLastVariety, ProductType, Gender, Shoe
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.StoredItemTradeView import StoredItemTradeView
-from lib.widget.TableWidgets import PriceCatalogTableBuilder, SixColumnsHeaderSection, SixColumnsDataSection, \
+from lib.utility.gui.widget.TableWidgets import PriceCatalogTableBuilder, SixColumnsHeaderSection, SixColumnsDataSection, \
     TitleAndSubtitleSection, HorizontalTreeSection, PriceCatalogTable, NamedTableItem
 from res.CustomIcon import CustomIcon
 

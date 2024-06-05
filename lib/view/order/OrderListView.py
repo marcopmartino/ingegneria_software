@@ -12,14 +12,14 @@ from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.utility.UtilityClasses import PriceFormatter, DatetimeUtils
-from lib.validation.FormManager import FormManager
-from lib.validation.ValidationRule import ValidationRule
+from lib.utility.validation.FormManager import FormManager
+from lib.utility.validation.ValidationRule import ValidationRule
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.order.CreateOrderView import CreateOrderView
 from lib.view.order.OrderView import OrderView
-from lib.widget.CustomPushButton import CustomPushButton
-from lib.widget.Separators import HorizontalLine
-from lib.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.Separators import HorizontalLine
+from lib.utility.gui.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
 from res.Dimensions import FontSize
 
 

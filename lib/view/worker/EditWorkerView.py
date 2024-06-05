@@ -1,18 +1,17 @@
-from PyQt5.QtCore import Qt, QDate
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, QLineEdit, QDialog, \
     QMessageBox
 from qfluentwidgets import LineEdit
 
 from lib.controller.WorkerListController import WorkerListController
-from lib.layout.CustomDatePicker import CustomDatePicker
-from lib.layout.LineEditLayouts import LineEditCompositeLayout
+from lib.utility.gui.widget.CustomDatePicker import CustomDatePicker
+from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.Employee import Employee
-from lib.utility.UtilityClasses import DatetimeUtils
-from lib.validation.FormField import LineEditCompositeFormField, DatePickerFormField
-from lib.validation.FormManager import FormManager
-from lib.validation.ValidationRule import ValidationRule
-from lib.widget.CustomPushButton import CustomPushButton
+from lib.utility.validation.FormField import LineEditCompositeFormField, DatePickerFormField
+from lib.utility.validation.FormManager import FormManager
+from lib.utility.validation.ValidationRule import ValidationRule
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from res import Styles, Dimensions
 from res.Dimensions import LineEditDimensions, FontWeight, FontSize, GenericDimensions
 from res.Strings import FormStrings, Config, ValidationStrings, WorkerStrings
