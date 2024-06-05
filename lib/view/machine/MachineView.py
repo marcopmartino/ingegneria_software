@@ -200,11 +200,13 @@ class MachineView(SubInterfaceChildWidget):
         })
 
         self.operation_completed_label = BodyLabel(
-            text="Operazione completata. Controlla i macchinari delle fasi successive.")
+            text=("Le operazioni per quest'ordine sono finite. Controlla l'ordine per completarlo."
+                  if self.controller.get_machine_type() == "Timbratrice"
+                  else "Operazione completata. Controlla i macchinari delle fasi successive."))
         self.operation_completed_label.setFont(small_font)
         self.operation_completed_label.setWordWrap(True)
         self.operation_completed_label.setAlignment(Qt.AlignCenter)
-        self.operation_completed_label.setFixedHeight(80)
+        self.operation_completed_label.setFixedHeight(85)
         self.operation_completed_label.setContentsMargins(0, 16, 0, 12)
 
         self.insufficient_input_label = BodyLabel(
