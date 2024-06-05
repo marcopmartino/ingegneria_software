@@ -124,3 +124,4 @@ class OrderController(OrderBaseController):
 
     def detach_order_observer(self, observer: Observer):
         self.__order.detach(observer)
+        self.__storage_repository.detach(observer)

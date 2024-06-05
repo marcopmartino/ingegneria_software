@@ -32,7 +32,6 @@ class MainController:
     def init_worker_repositories(self):
         self.__repositories = [
             ArticlesRepository(),
-            StorageRepository(),
             MachinesRepository(),
             OrdersRepository(),
             StorageRepository(),
@@ -44,7 +43,6 @@ class MainController:
         self.__repositories = [
             ArticlesRepository(),
             CashRegisterRepository(),
-            StorageRepository(),
             MachinesRepository(),
             OrdersRepository(),
             PriceCatalogRepository(),
@@ -64,8 +62,3 @@ class MainController:
         for repository in self.__repositories:
             if isinstance(repository, CashRegisterRepository):
                 repository.observe(callback)
-
-    # Apre gli stream
-    def open_streams(self):
-        for repository in self.__repositories:
-            repository.open_stream()

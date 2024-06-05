@@ -39,7 +39,7 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
 
     def clear(self):
         self.__product_list = []
-        self.__product_list = []
+        self.__material_list = []
         self.__waste_list = []
         self.__raw_shoe_last_center_price_catalog = {}
         self.__hardware_store_price_catalog = {}
