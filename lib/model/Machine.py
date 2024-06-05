@@ -425,7 +425,8 @@ class Finitore(Machine):
         if desired_shoe_last_variety.get_pivot_under_heel():
             input_materials.append(InputMaterial(MaterialDescription.PERNO))
 
-        input_materials.append(InputMaterial(MaterialDescription.BUSSOLA_STANDARD, standard_compass_quantity))
+        if standard_compass_quantity != 0:
+            input_materials.append(InputMaterial(MaterialDescription.BUSSOLA_STANDARD, standard_compass_quantity))
 
         if reinforced_compass_quantity != 0:
             input_materials.append(InputMaterial(MaterialDescription.BUSSOLA_RINFORZATA, reinforced_compass_quantity))
