@@ -99,21 +99,33 @@ class WasteTab(SubInterfaceChildWidget):
         self.plastic3_check_box.setChecked(True)
         self.checkgroup_layout.addWidget(self.plastic3_check_box)
 
-        self.checkgroup_layout.addWidget(HorizontalLine(self.sidebar_frame))  # Secondo spacer
+        # Secondo checkgroup
+        self.second_checkgroup_layout = QVBoxLayout()
+        self.second_checkgroup_layout.setSpacing(12)
+        self.second_checkgroup_layout.setObjectName("second_checkgroup_layout")
+
+        # Seconda Checkgroup Label
+        font = QFont()
+        font.setPointSize(FontSize.FLUENT_DEFAULT)
+        self.checkgroup_label = QLabel(self.sidebar_frame)
+        self.checkgroup_label.setObjectName("marking_group_label")
+        self.checkgroup_label.setText("Filtra per disponibilità:")
+        self.checkgroup_label.setFont(font)
+        self.second_checkgroup_layout.addWidget(self.checkgroup_label)
 
         # CheckBox "Disponibile"
         self.available_check_box = CheckBox(self.sidebar_frame)
         self.available_check_box.setObjectName("available_check_box")
         self.available_check_box.setText("Disponibile")
         self.available_check_box.setChecked(True)
-        self.checkgroup_layout.addWidget(self.available_check_box)
+        self.second_checkgroup_layout.addWidget(self.available_check_box)
 
         # CheckBox "Non disponibile"
         self.not_available_check_box = CheckBox(self.sidebar_frame)
         self.not_available_check_box.setObjectName("notavailable_check_box")
         self.not_available_check_box.setText("Non disponibile")
         self.not_available_check_box.setChecked(False)
-        self.checkgroup_layout.addWidget(self.not_available_check_box)
+        self.second_checkgroup_layout.addWidget(self.not_available_check_box)
 
         def change_available(state: bool):
             if not state and not self.not_available_check_box.isChecked():
@@ -142,6 +154,7 @@ class WasteTab(SubInterfaceChildWidget):
         self.sidebar_layout.addItem(self.storage_details_layout)
         self.sidebar_layout.addWidget(HorizontalLine(self.sidebar_frame))  # Primo separator
         self.sidebar_layout.addLayout(self.checkgroup_layout)
+        self.sidebar_layout.addLayout(self.second_checkgroup_layout)
         self.sidebar_layout.addWidget(self.refresh_waste_button)
         self.sidebar_layout.addWidget(self.separator)  # Terzo separator
         self.sidebar_layout.addWidget(self.sale_button)
