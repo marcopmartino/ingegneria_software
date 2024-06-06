@@ -139,7 +139,7 @@ class WasteTab(SubInterfaceChildWidget):
         self.not_available_check_box.clicked.connect(change_not_available)
 
         # Button "Aggiorna lista"
-        self.refresh_waste_button = PushButton(self.sidebar_frame)
+        self.refresh_waste_button = CustomPushButton.white(self.sidebar_frame)
         self.refresh_waste_button.setText("Aggiorna lista")
         self.refresh_waste_button.clicked.connect(self.refresh_waste_list)
 
