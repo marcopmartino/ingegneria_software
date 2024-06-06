@@ -10,7 +10,7 @@ class UsersNetwork:
             else Firebase.database.child("users").child(Firebase.auth.currentUserId()).stream(stream_handler)
 
     @staticmethod
-    def register_user(data: dict[str, any], sign_in: bool = True) -> str:
+    def register_user(data: dict[str, any], sign_in: bool) -> str:
         new_uid = HTTPErrorHelper.differentiate(
             lambda: Firebase.auth.create_user_with_email_and_password(data["mail"], data.pop("password"), sign_in)
         )

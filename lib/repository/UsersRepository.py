@@ -233,7 +233,7 @@ class UsersRepository(Repository, metaclass=RepositoryMeta):
         )
 
         # Salva l'utente nel database e ne ritorna l'id
-        return self.__users_network.register_user(user_data)
+        return self.__users_network.register_user(user_data, True)
 
     # Crea un nuovo account utente operaio
     def create_worker(self, new_user_data: dict[str, any]) -> str:
@@ -251,7 +251,7 @@ class UsersRepository(Repository, metaclass=RepositoryMeta):
         )
 
         # Salva l'utente nel database e ne ritorna l'id
-        return self.__users_network.register_user(user_data)
+        return self.__users_network.register_user(user_data, False)
 
     # Aggiorna un utente
     def update_user_by_id(self, user_id: str, new_user_data: dict[str, any]):
