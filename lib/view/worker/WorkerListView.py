@@ -18,7 +18,7 @@ from lib.view.worker.EditWorkerView import EditWorkerView
 from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from lib.utility.gui.widget.Separators import HorizontalLine
 from lib.utility.gui.widget.TableWidgets import StandardTable
-from res.CustomIcon import CustomIcon
+from lib.utility.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 
 

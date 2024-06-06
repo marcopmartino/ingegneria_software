@@ -4,10 +4,11 @@
 class Config:
     APPLICATION_NAME = "ShoeLastFactoryManager"
     APPLICATION_VERSION = "1.0.0"
-    APPLICATION_VERSION_NAME = "First version"
+    APPLICATION_VERSION_NAME = "Dima"
     APPLICATION_LOGO_FILENAME = "app_logo.png"
     IMAGES_PATH = "res/images/"
-    ICONS_PATH = "res/images/icons/"
+    ICONS_PATH = "res/images/icons/png/"
+    SVG_ICONS_PATH = "res/images/icons/svg/"
 
 
 # Stringhe usate nell'applicazione
@@ -99,4 +100,3 @@ class ValidationStrings:
     PASSWORD_CONFIRM_DIFFERENT = "Le due password non coincidono"
     FIELD_REQUIRED = "Campo richiesto"
     MIN_PASSWORD_ERROR = "La password deve essere lunga almeno 6 caratteri"
-

@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget
 from qfluentwidgets import SegmentedWidget, FluentIconBase, FluentIcon
 
 from lib.controller.StorageController import StorageController
+from lib.utility.CustomIcon import CustomIcon
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.HardwareStorePriceCatalogView import HardwareStorePriceCatalogView
 from lib.view.storage.MaterialsTab import MaterialsTab
@@ -13,12 +14,12 @@ from lib.view.storage.WasteTab import WasteTab
 
 # noinspection PyPep8Naming
 class StorageView(SubInterfaceWidget):
-    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = FluentIcon.LIBRARY):
+    def __init__(self, parent_widget: QWidget, svg_icon: FluentIconBase = CustomIcon.STORAGE):
         super().__init__("storage_page_view", parent_widget, svg_icon)
 
         # Titolo e sottotitolo
         self.setTitleText("Magazzino")
-        self.setSubtitleText("Visualizzazione magazzino formificio")
+        self.setSubtitleText("Clicca due volte su un oggetto immagazzinato per modificarne la quantità")
 
         # Nasconde la sidebar
         self.hideSidebar()
