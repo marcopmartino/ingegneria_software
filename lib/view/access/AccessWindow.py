@@ -19,7 +19,7 @@ class AccessWindow(QMainWindow):
         self.controller: AccessController = AccessController()
 
         # Finestra
-        self.setWindowTitle(Config.APPLICATION_NAME)
+        self.setWindowTitle(Config.APPLICATION_WINDOW_TITLE)
         self.setObjectName("access_window")
         self.resize(1000, 600)
         self.setStyleSheet(Styles.ACCESS)

@@ -5,6 +5,7 @@ class Config:
     APPLICATION_NAME = "ShoeLastFactoryManager"
     APPLICATION_VERSION = "1.0.0"
     APPLICATION_VERSION_NAME = "Dima"
+    APPLICATION_WINDOW_TITLE = f"{APPLICATION_NAME} - v. {APPLICATION_VERSION} \"{APPLICATION_VERSION_NAME}\""
     APPLICATION_LOGO_FILENAME = "app_logo.png"
     IMAGES_PATH = "res/images/"
     ICONS_PATH = "res/images/icons/png/"

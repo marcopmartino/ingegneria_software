@@ -155,7 +155,7 @@ class MainWindow(FramelessWindow):
     # Funzione per inizializzare la finestra (dimensione, titolo, logo e stile[dark/light])
     def initWindow(self):
         self.resize(1280, 720)
-        self.setWindowTitle(Config.APPLICATION_NAME)
+        self.setWindowTitle(Config.APPLICATION_WINDOW_TITLE)
         self.setWindowIcon(QIcon(ResourceManager.icon_path(Config.APPLICATION_LOGO_FILENAME)))
         self.titleBar.setAttribute(Qt.WA_StyledBackground)
 
