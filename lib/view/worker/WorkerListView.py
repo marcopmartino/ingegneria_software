@@ -132,14 +132,16 @@ class WorkerListView(SubInterfaceWidget):
                     self.table_adapter.setData(self.controller.filter_workers(self.form_manager.data(), *data))
 
                 case UsersRepository.Event.USER_CREATED:
-                    if len(self.controller.filter_workers(self.form_manager.data(), data)) != 0:
-                        self.table_adapter.addData(data)
+                    if isinstance(data, Employee):
+                        if len(self.controller.filter_workers(self.form_manager.data(), data)) != 0:
+                            self.table_adapter.addData(data)
 
                 case UsersRepository.Event.USER_DELETED:
                     self.table_adapter.removeRowByKey(data)
 
                 case UsersRepository.Event.USER_UPDATED:
-                    self.table_adapter.updateData(data)
+                    if isinstance(data, Employee):
+                        self.table_adapter.updateData(data)
             self.check_empty_table()
 
         # Imposta l'observer
