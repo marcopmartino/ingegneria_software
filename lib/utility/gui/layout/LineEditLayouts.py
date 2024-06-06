@@ -39,14 +39,12 @@ class LineEditLayout(QVBoxLayout):
         self.line_edit.setObjectName(f"{lowercase_field_name}_line_edit")
         self.line_edit.setMinimumSize(QSize(LineEditDimensions.DEFAULT_MINIMUM_WIDTH, 0))
         self.line_edit.textChanged.connect(self.__on_text_changed)  # Logica quando il testo cambia
+        self.line_edit.setClearButtonEnabled(True)  # Abilita il pulsante per lo svuotamento del campo
         self.line_edit.setPlaceholderText(field_name)
         self.line_edit.setText(text)
 
         if line_edit_class == LineEdit:
             self.line_edit.setFixedHeight(35)
-
-        if not text:
-            self.line_edit.setClearButtonEnabled(True)  # Abilita il pulsante per lo svuotamento del campo
 
         # Imposta l'oggetto Layout stesso
         self.setObjectName(f"{lowercase_field_name}_layout")

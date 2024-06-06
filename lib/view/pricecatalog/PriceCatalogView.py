@@ -11,7 +11,7 @@ from lib.controller.PriceCatalogController import PriceCatalogController
 from lib.utility.gui.widget.TableWidgets import PriceCatalogTable, PriceCatalogTableBuilder, TitleAndSubtitleSection, \
     SixColumnsHeaderSection, SixColumnsDataSection, HorizontalTreeSection, NamedTableItem
 from res import Styles
-from res.CustomIcon import CustomIcon
+from lib.utility.CustomIcon import CustomIcon
 
 
 class PriceCatalogView(SubInterfaceWidget):

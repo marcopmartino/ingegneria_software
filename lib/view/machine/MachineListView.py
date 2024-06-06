@@ -13,7 +13,7 @@ from lib.view.machine.MachineView import MachineView
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from lib.utility.gui.widget.TableWidgets import StandardTable, PercentageTableItem
-from res.CustomIcon import CustomIcon
+from lib.utility.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 
 

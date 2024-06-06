@@ -9,7 +9,6 @@ from qframelesswindow import FramelessWindow, TitleBar
 from lib.controller.MainController import MainController
 from lib.firebaseData import Firebase
 from lib.repository.CashRegisterRepository import CashRegisterRepository
-from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
 from lib.utility.ResourceManager import ResourceManager
 from lib.utility.UtilityClasses import PriceFormatter
@@ -22,12 +21,10 @@ from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.order.OrderListView import OrderListView
 from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.view.profile.ProfileView import ProfileView
-from lib.view.storage.HardwareStorePriceCatalogView import HardwareStorePriceCatalogView
-from lib.view.storage.RawShoeLastCenterPriceCatalogView import RawShoeLastCenterPriceCatalogView
 from lib.view.storage.StorageView import StorageView
 from lib.view.worker.WorkerListView import WorkerListView
 # from lib.view.storage.StoragePage import StoragePage
-from res.CustomIcon import CustomIcon as CustomFIF
+from lib.utility.CustomIcon import CustomIcon as CustomFIF
 from res.Strings import Config
 
 
