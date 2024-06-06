@@ -226,9 +226,10 @@ class WasteTab(SubInterfaceChildWidget):
         selected_waste = self.controller.get_waste_by_id(serial)
         waste_description = selected_waste.get_description()
         waste_amount = selected_waste.get_quantity()
-        dialog = StoredItemEditView.material(
+        dialog = StoredItemEditView.waste(
             waste_description,
-            waste_amount)
+            waste_amount
+        )
 
         if dialog.exec() == QDialog.Accepted:
             new_quantity = dialog.value()

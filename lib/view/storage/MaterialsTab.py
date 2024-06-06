@@ -5,7 +5,7 @@ from qfluentwidgets import SearchLineEdit, CheckBox
 
 from lib.controller.StorageController import StorageController
 from lib.firebaseData import Firebase
-from lib.model.StoredItems import StoredMaterial
+from lib.model.StoredItems import StoredMaterial, MaterialDescription
 from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
@@ -228,7 +228,9 @@ class MaterialsTab(SubInterfaceChildWidget):
         material_amount = selected_material.get_quantity()
         dialog = StoredItemEditView.material(
             material_description,
-            material_amount)
+            material_amount,
+            MaterialDescription(material_description)
+        )
 
         if dialog.exec() == QDialog.Accepted:
             new_quantity = dialog.value()

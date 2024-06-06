@@ -265,9 +265,11 @@ class ProductsTab(SubInterfaceChildWidget):
         else:
             shoe_last_variety_description = selected_product.get_description()
             shoe_last_variety_amount = selected_product.get_quantity()
-            dialog = StoredItemEditView.raw_shoe_last(
+            dialog = StoredItemEditView.shoe_last(
                 shoe_last_variety_description,
-                shoe_last_variety_amount)
+                shoe_last_variety_amount,
+                selected_product.get_shoe_last_variety().get_product_type()
+            )
 
             if dialog.exec() == QDialog.Accepted:
                 new_quantity = dialog.value()
