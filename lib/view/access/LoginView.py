@@ -18,10 +18,10 @@ class LoginView(AccessView):
         super(LoginView, self).__init__(parent_widget, controller)
 
         # Campo di input Email
-        self.emailLayout = LineEditLayout(FormStrings.EMAIL, parent_widget=self, text="admin@mail.com")
+        self.emailLayout = LineEditLayout(FormStrings.EMAIL, parent_widget=self)
 
         # Campo di input Password
-        self.passwordLayout = LineEditLayout(FormStrings.PASSWORD, parent_widget=self, text="passwordadmin1")
+        self.passwordLayout = LineEditLayout(FormStrings.PASSWORD, parent_widget=self)
         self.passwordLayout.line_edit.setEchoMode(QLineEdit.Password)  # Nasconde il testo con asterischi
 
         # Aggiunge i campi di input della form al layout
