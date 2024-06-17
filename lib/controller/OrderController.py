@@ -91,12 +91,9 @@ class OrderController(OrderBaseController):
         # Aggiorna lo stato dell'ordine
         self.__orders_repository.update_order_state_by_id(self.get_order_serial(), OrderStateStrings.DELIVERED)
 
-        # Ottiene l'articolo dell'ordine
-        order_article = self.get_order_article()
-
         # Cerca il prodotto
-        product = self.__storage_repository.get_assigned_product_by_shoe_last_variety(
-            order_article.get_shoe_last_variety())
+        product = self.__storage_repository.get_assigned_product_by_order_id(
+            self.get_order_serial())
 
         # Rimuove le forme assegnate dal magazzino
         self.__storage_repository.delete_product(product.get_item_id())

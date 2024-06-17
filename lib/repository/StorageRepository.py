@@ -239,11 +239,11 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
             if product.get_item_id() == product_serial:
                 return product
 
-    # Ritorna un prodotto assegnato in base alla sua varietà di forma
-    def get_assigned_product_by_shoe_last_variety(self, shoe_last_variety: ShoeLastVariety) -> StoredShoeLastVariety:
+    # Ritorna un prodotto assegnato in base al seriale dell'ordine associato
+    def get_assigned_product_by_order_id(self, order_serial: str) -> StoredShoeLastVariety:
         for product in self.__product_list:
-            if (product.get_shoe_last_variety().equals(shoe_last_variety)
-                    and isinstance(product, AssignedShoeLastVariety)):
+            if (isinstance(product, AssignedShoeLastVariety) and
+                    product.get_assigned_order_id() == order_serial):
                 return product
 
     # Ritorna un prodotto non assegnato in base alla sua varietà di forma
