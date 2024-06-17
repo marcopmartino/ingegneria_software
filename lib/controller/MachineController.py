@@ -1,6 +1,5 @@
-from lib.model.Machine import Machine, MachineOperationData, InputMaterial, MachineProcess
-from lib.model.Order import OrderState, Order
-from lib.model.ShoeLastVariety import ShoeLastVariety
+from lib.model.Machine import Machine, MachineOperationData, InputMaterial
+from lib.model.Order import OrderState
 from lib.model.StoredItems import AssignedShoeLastVariety
 from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.repository.MachinesRepository import MachinesRepository

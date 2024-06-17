@@ -2,7 +2,6 @@ from lib.firebaseData import Firebase
 from lib.model.Customer import Customer
 from lib.model.Employee import Employee
 from lib.model.Order import OrderState
-from lib.model.User import User
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.UsersRepository import UsersRepository
 from lib.utility.ObserverClasses import Observer

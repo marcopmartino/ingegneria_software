@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import Enum
 from time import sleep
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import QObject
 
 from lib.model.Machine import Machine, Sgrossatore, Tornio, Finitore, Ferratore, Timbratrice, MachineProcess
 from lib.model.ShoeLastVariety import ShoeLastVariety, ProductType, Gender, ShoeLastType, PlasticType, CompassType, \

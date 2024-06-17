@@ -1,7 +1,5 @@
 from enum import Enum
 
-from pyrebase.pyrebase import Stream
-
 from lib.model.ShoeLastVariety import Gender, ShoeLastType, PlasticType, CompassType, Processing, Shoeing
 from lib.network.PriceCatalogNetwork import PriceCatalogNetwork
 from lib.repository.Repository import Repository
@@ -50,10 +48,6 @@ class PriceCatalogRepository(Repository, metaclass=RepositoryMeta):
             # Se per qualche motivo il collegamento fallisce
             case "cancel":
                 pass
-                ''' Da gestire in qualche modo '''
-
-        '''for key in message.keys():
-            print(f"{key}: {message[key]}")'''
 
     # Ritorna il listino prezzi
     def get_price_catalog(self) -> dict[str, float]:

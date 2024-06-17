@@ -133,7 +133,7 @@ class OrderView(SubInterfaceChildWidget):
 
             # Altrimenti, se l'utente ha eliminato il proprio account
             else:
-                # Titolo dettabli cliente
+                # Titolo dettagli cliente
                 self.customer_details_title = QLabel("Dettagli cliente")
                 self.customer_details_title.setFont(font)
                 self.customer_details_title.setContentsMargins(16, 16, 16, 8)

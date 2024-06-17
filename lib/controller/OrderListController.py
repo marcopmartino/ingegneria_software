@@ -2,13 +2,9 @@
 from typing import Callable
 
 from lib.controller.OrderBaseController import OrderBaseController
-from lib.firebaseData import Firebase
-from lib.model.Article import Article
-from lib.model.Customer import Customer
-from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.model.Order import Order, OrderState
+from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.repository.OrdersRepository import OrdersRepository
-from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 
 
 class OrderListController(OrderBaseController):

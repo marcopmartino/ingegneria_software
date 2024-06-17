@@ -3,7 +3,6 @@ from PyQt5.QtGui import QCloseEvent
 from PyQt5.QtWidgets import QMessageBox
 
 from lib.controller import OrderController
-from lib.model.Article import Article
 from lib.model.ShoeLastVariety import Gender, ShoeLastType, CompassType, Processing, Shoeing
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.utility.ObserverClasses import Message, Observer

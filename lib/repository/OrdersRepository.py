@@ -9,7 +9,6 @@ from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
 from lib.utility.Singleton import RepositoryMeta
 from lib.utility.UtilityClasses import DatetimeUtils
-from res.Strings import OrderStateStrings
 
 
 class OrdersRepository(Repository, metaclass=RepositoryMeta):
