@@ -16,9 +16,9 @@ class MachineListController:
     def observe_machine_list(self, callback: callable):
         self.__machines_repository.observe(callback)
 
-    # Ritorna un ordine in base all'id
-    def get_machine_by_id(self, order_id: str) -> Machine:
-        return self.__machines_repository.get_machine_by_id(order_id)
+    # Ritorna un macchinario in base al suo nome seriale
+    def get_machine_by_id(self, machine_serial: str) -> Machine:
+        return self.__machines_repository.get_machine_by_id(machine_serial)
 
     # Ritorna la lista di macchinari filtrata
     def get_machine_list(self, filters: dict[str, any]) -> list[Machine]:
