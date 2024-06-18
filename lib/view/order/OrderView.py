@@ -618,7 +618,7 @@ class OrderViewStateCompleted(OrderViewState):
             case "customer":
                 # Nasconde i pulsanti di modifica e di eliminazione dell'ordine
                 self._view.modify_order_button.setHidden(True)
-                self._view.delete_order_button.setEnabled(True)
+                self._view.delete_order_button.setHidden(True)
 
                 # Nasconde la Label di info sulla modifica e sull'annullamento dell'ordine al layout
                 self._view.order_changes_info_label.setHidden(True)
