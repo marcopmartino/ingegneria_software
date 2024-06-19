@@ -111,7 +111,7 @@ class ProfileView(SubInterfaceWidget):
                     self.controller.initialize_user()
 
                     # Imposta l'osservatore sul singolo utente anziché sulla repository
-                    self.controller.detach_users_repositor_observer(self.observer)
+                    self.controller.detach_users_repository_observer(self.observer)
                     self.observer = self.controller.observe_user(self.messageReceived.emit)
 
                     # Inserisce i dati dell'utente nella tabella

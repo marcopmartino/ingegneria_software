@@ -11,7 +11,7 @@ class ProfileController:
     def __init__(self):
         super().__init__()
 
-        # Respository
+        # Repository
         self.__users_repository = UsersRepository()
         self.__orders_repository = OrdersRepository()
 
@@ -31,7 +31,7 @@ class ProfileController:
         return self.__users_repository.observe(callback)
 
     # Imposta un osservatore sui dati di un utente
-    def detach_users_repositor_observer(self, observer: Observer):
+    def detach_users_repository_observer(self, observer: Observer):
         return self.__users_repository.detach(observer)
 
     # Restituisce l'utente
