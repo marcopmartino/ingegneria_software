@@ -15,9 +15,9 @@ from lib.repository.StorageRepository import StorageRepository
 from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter, TableAdapter
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
-from lib.utility.gui.widget.CustomPushButton import CustomPushButton
-from lib.utility.gui.widget.Separators import VerticalSpacer, HorizontalLine
-from lib.utility.gui.widget.TableWidgets import SingleRowStandardTable, StandardTable
+from lib.utility.ui.widget.CustomPushButton import CustomPushButton
+from lib.utility.ui.widget.Separators import VerticalSpacer, HorizontalLine
+from lib.utility.ui.widget.TableWidgets import SingleRowStandardTable, StandardTable
 from res import Styles
 from res.Dimensions import FontSize, FontWeight
 

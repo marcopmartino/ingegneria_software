@@ -3,6 +3,7 @@ from typing import Callable
 
 from lib.controller.OrderBaseController import OrderBaseController
 from lib.model.Order import Order, OrderState
+from lib.model.ShoeLastVariety import ShoeLastVariety
 from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.repository.OrdersRepository import OrdersRepository
 
@@ -11,20 +12,18 @@ class OrderListController(OrderBaseController):
 
     def __init__(self):
         super().__init__()
-        self.__orders_repository = OrdersRepository()
-        self.__articles_repository = ArticlesRepository()
 
     # Imposta un osservatore per la repository
     def observe_order_list(self, callback: callable):
-        self.__orders_repository.observe(callback)
+        self._orders_repository.observe(callback)
 
     # Ritorna un ordine in base all'id
     def get_order_by_id(self, order_id: str) -> Order:
-        return self.__orders_repository.get_order_by_id(order_id)
+        return self._orders_repository.get_order_by_id(order_id)
 
     # Ritorna la lista di ordini filtrata
     def get_order_list(self, filters: dict[str, any]) -> list[Order]:
-        return self.filter_orders(filters, *self.__orders_repository.get_order_list())
+        return self.filter_orders(filters, *self._orders_repository.get_order_list())
 
     # Filtra una lista degli ordini
     # noinspection PyMethodMayBeStatic
@@ -93,12 +92,16 @@ class OrderListController(OrderBaseController):
         return filtered_order_list
 
     # Crea un ordine a partire dai dati della form
-    def create_order(self, data: dict[str, any], price: float):
-        # Estrae la quantità (numero di paia di forme) dell'ordine
-        quantity = data.pop("quantity")
+    def create_order(self, shoe_last_variety: ShoeLastVariety, quantity: int, price: float):
 
-        # Se non esiste, crea un nuovo articolo con i dati della form. Ritorna il seriale dell'articolo
-        article_serial = self.__articles_repository.create_article(data)
+        # Controlla se esiste già un articolo con le caratteristiche desiderate
+        article = self._articles_repository.get_article_by_shoe_last_variety(shoe_last_variety)
+
+        # Se non esiste, crea un nuovo articolo con i dati della form. Ottiene il seriale dell'articolo
+        if article is None:
+            article_serial = self._articles_repository.create_article(shoe_last_variety)
+        else:
+            article_serial = article.get_article_serial()
 
         # Crea un nuovo ordine
-        self.__orders_repository.create_order(article_serial, quantity, price)
+        self._orders_repository.create_order(article_serial, quantity, price)

@@ -13,9 +13,9 @@ from lib.utility.validation.FormManager import FormManager
 from lib.utility.validation.ValidationRule import ValidationRule
 from lib.view.cashregister.TransactionFormView import TransactionFormView
 from lib.view.main.SubInterfaces import SubInterfaceWidget
-from lib.utility.gui.widget.CustomPushButton import CustomPushButton
-from lib.utility.gui.widget.Separators import HorizontalLine
-from lib.utility.gui.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
+from lib.utility.ui.widget.CustomPushButton import CustomPushButton
+from lib.utility.ui.widget.Separators import HorizontalLine
+from lib.utility.ui.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
 from res import Styles
 from lib.utility.CustomIcon import CustomIcon
 from res.Dimensions import FontSize

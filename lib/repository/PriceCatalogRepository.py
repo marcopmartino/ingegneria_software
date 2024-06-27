@@ -1,6 +1,7 @@
 from enum import Enum
 
-from lib.model.ShoeLastVariety import Gender, ShoeLastType, PlasticType, CompassType, Processing, Shoeing
+from lib.model.ShoeLastVariety import Gender, ShoeLastType, PlasticType, CompassType, Processing, Shoeing, \
+    ShoeLastVariety
 from lib.network.PriceCatalogNetwork import PriceCatalogNetwork
 from lib.repository.Repository import Repository
 from lib.utility.ObserverClasses import Message
@@ -59,13 +60,17 @@ class PriceCatalogRepository(Repository, metaclass=RepositoryMeta):
 
     # Calcola il prezzo di un certo numero di paia con determinate caratteristiche in base agli attuali prezzi di
     # listino
-    def calculate_price(self, gender: Gender, shoe_last_type: ShoeLastType, plastic_type: PlasticType,
-                        first_compass_type: CompassType, second_compass_type: CompassType, processing: Processing,
-                        shoeing: Shoeing, numbering_antineck: bool, numbering_lateral: bool, numbering_heel: bool,
-                        iron_tip: bool, pivot_under_heel: bool, quantity: int = 1):
+    def calculate_price(self, shoe_last_variety: ShoeLastVariety, quantity: int = 1):
 
+        # Inizializza alcune variabili
         price_list = self.__price_catalog
         article_price: float = 0.00
+
+        gender = shoe_last_variety.get_gender()
+        plastic_type = shoe_last_variety.get_plastic_type()
+        shoe_last_type = shoe_last_variety.get_shoe_last_type()
+        processing = shoe_last_variety.get_processing()
+        shoeing = shoe_last_variety.get_shoeing()
 
         # Prezzo base
         article_price += price_list[f"standard_tipo{str(plastic_type.value)}_{gender.value}_{shoe_last_type.value}"]
@@ -79,28 +84,28 @@ class PriceCatalogRepository(Repository, metaclass=RepositoryMeta):
             article_price += price_list[f"ferratura_{shoeing.value}_{gender.value}_{shoe_last_type.value}"]
 
         # Prima bussola rinforzata
-        if first_compass_type == CompassType.RINFORZATA:
+        if shoe_last_variety.get_first_compass_type() == CompassType.RINFORZATA:
             article_price += price_list["bussola_prima_rinforzata"]
 
         # Seconda bussola
-        if second_compass_type != CompassType.NESSUNA:
-            article_price += price_list[f"bussola_seconda_{second_compass_type.value}"]
+        if shoe_last_variety.get_second_compass_type() != CompassType.NESSUNA:
+            article_price += price_list[f"bussola_seconda_{shoe_last_variety.get_second_compass_type().value}"]
 
         # Segni e linee
-        if numbering_antineck:
+        if shoe_last_variety.get_numbering_antineck():
             article_price += price_list[f"numeratura_anticollo"]
 
-        if numbering_lateral:
+        if shoe_last_variety.get_numbering_lateral():
             article_price += price_list[f"numeratura_laterali"]
 
-        if numbering_heel:
+        if shoe_last_variety.get_numbering_heel():
             article_price += price_list[f"numeratura_tallone"]
 
         # Accessori
-        if iron_tip:
+        if shoe_last_variety.get_iron_tip():
             article_price += price_list["punta_ferrata"]
 
-        if pivot_under_heel:
+        if shoe_last_variety.get_pivot_under_heel():
             article_price += price_list["perno_sotto_tallone"]
 
         return article_price * quantity

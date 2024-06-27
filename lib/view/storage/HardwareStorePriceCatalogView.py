@@ -7,7 +7,7 @@ from lib.model.StoredItems import MaterialDescription
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.StoredItemTradeView import StoredItemTradeView
-from lib.utility.gui.widget.TableWidgets import PriceCatalogTableBuilder, TitleAndSubtitleSection, HorizontalTreeSection, \
+from lib.utility.ui.widget.TableWidgets import PriceCatalogTableBuilder, TitleAndSubtitleSection, HorizontalTreeSection, \
     PriceCatalogTable, NamedTableItem
 from lib.utility.CustomIcon import CustomIcon
 

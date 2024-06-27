@@ -4,14 +4,14 @@ from PyQt5.QtWidgets import QDialog, QSizePolicy, QVBoxLayout, QLabel, QHBoxLayo
 from qfluentwidgets import DoubleSpinBox, LineEdit
 
 from lib.controller.CashRegisterController import CashRegisterController
-from lib.utility.gui.widget.CustomDatePicker import CustomDatePicker
-from lib.utility.gui.layout.FrameLayouts import HFrameLayout
-from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
+from lib.utility.ui.widget.CustomDatePicker import CustomDatePicker
+from lib.utility.ui.layout.FrameLayouts import HFrameLayout
+from lib.utility.ui.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.CashRegisterTransaction import CashRegisterTransaction
 from lib.utility.validation.FormField import LineEditCompositeFormField, SpinBoxFormField, DatePickerFormField
 from lib.utility.validation.FormManager import FormManager
 from lib.utility.validation.ValidationRule import ValidationRule
-from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.ui.widget.CustomPushButton import CustomPushButton
 from res import Styles
 from res.Dimensions import FontWeight, LineEditDimensions, FontSize, GenericDimensions
 from res.Strings import FormStrings

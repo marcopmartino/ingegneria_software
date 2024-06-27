@@ -15,9 +15,9 @@ from lib.utility.validation.ValidationRule import ValidationRule
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.worker.AddWorkerView import AddWorkerView
 from lib.view.worker.EditWorkerView import EditWorkerView
-from lib.utility.gui.widget.CustomPushButton import CustomPushButton
-from lib.utility.gui.widget.Separators import HorizontalLine
-from lib.utility.gui.widget.TableWidgets import StandardTable
+from lib.utility.ui.widget.CustomPushButton import CustomPushButton
+from lib.utility.ui.widget.Separators import HorizontalLine
+from lib.utility.ui.widget.TableWidgets import StandardTable
 from lib.utility.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 

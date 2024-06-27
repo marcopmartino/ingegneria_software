@@ -4,7 +4,7 @@ from typing import Callable
 
 from PyQt5.QtWidgets import QTableWidgetItem
 
-from lib.utility.gui.widget.TableWidgets import ExtendedTableWidget
+from lib.utility.ui.widget.TableWidgets import ExtendedTableWidget
 
 
 # Classe astratta rappresentante un adattatore per tabelle. Si tratta di un'interfaccia per interagire con una tabella

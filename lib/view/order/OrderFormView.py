@@ -7,11 +7,11 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSpacerItem, QSizePolicy, QVBo
 from qfluentwidgets import ComboBox, SpinBox, CheckBox
 
 from lib.controller.OrderBaseController import OrderBaseController
-from lib.utility.gui.layout.FrameLayouts import HFrameLayout, VFrameLayout
+from lib.utility.ui.layout.FrameLayouts import HFrameLayout, VFrameLayout
 from lib.model.ShoeLastVariety import Gender, ShoeLastType, PlasticType, CompassType, Processing, Shoeing
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.utility.validation.FormManager import FormManager
-from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.ui.widget.CustomPushButton import CustomPushButton
 from res.Dimensions import FontWeight, FontSize
 
 
@@ -364,7 +364,8 @@ class OrderFormView(QDialog, ABC, metaclass=OrderFormViewMeta):
 
     # Aggiorna il prezzo indicato
     def refresh_price(self):
-        new_price: float = self.controller.calculate_order_price(self.form_manager.data())
+        # Calcola la varietà di forma e il prezzo dell'ordine
+        new_price: float = self.controller.get_shoe_last_variety_and_price(self.form_manager.data())[1]
         self.price_label.setText(f"Prezzo finale: € {PriceFormatter.format(new_price)}")
 
     # Aggiorna il ComboBox con le taglie in base al genere di forma selezionato

@@ -3,7 +3,7 @@ from requests import ConnectionError
 from requests import HTTPError
 
 from lib.controller.AccessController import AccessController
-from lib.utility.gui.layout.LineEditLayouts import LineEditLayout
+from lib.utility.ui.layout.LineEditLayouts import LineEditLayout
 from lib.utility.ErrorHelpers import InvalidEmailException, MissingPasswordException, \
     InvalidLoginCredentialsException
 from lib.utility.validation.FormField import LineEditValidatableFormField

@@ -1,4 +1,3 @@
-# coding:utf-8
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, QWidget, QMessageBox, QWIDGETSIZE_MAX
