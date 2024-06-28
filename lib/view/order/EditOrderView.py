@@ -125,7 +125,7 @@ class EditOrderView(OrderFormView):
                 self.shoeing_combo_box.setCurrentIndex(3)
 
         # Prepara lo SpinBox con il numero di paia
-        self.quantity_spin_box.setProperty("value", self.controller.get_order().get_quantity())
+        self.quantity_spin_box.setProperty("value", self.controller.get_order_quantity())
 
         # Prepara il Checkgroup con la numeratura
         self.antineck_check_box.setChecked(shoe_last_variety.get_numbering_antineck())

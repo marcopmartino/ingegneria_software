@@ -34,6 +34,9 @@ class OrderController(OrderBaseController):
     def get_order_article(self):
         return self._articles_repository.get_article_by_id(self.__order.get_article_serial())
 
+    def get_order_quantity(self):
+        return self.__order.get_quantity()
+
     def get_order_article_serial(self):
         return self.__order.get_article_serial()
 

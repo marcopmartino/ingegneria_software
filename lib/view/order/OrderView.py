@@ -188,7 +188,7 @@ class OrderView(SubInterfaceChildWidget):
 
         # Label sul completamento dell'ordine
         self.order_completion_number_label = QLabel(f"{str(self.controller.get_produced_order_shoe_lasts())}/"
-                                                    f"{str(self.controller.get_order().get_quantity())}")
+                                                    f"{str(self.controller.get_order_quantity())}")
         font = QFont()
         font.setPointSize(FontSize.SUBTITLE)
         self.order_completion_number_label.setFont(font)
@@ -283,7 +283,7 @@ class OrderView(SubInterfaceChildWidget):
     # Aggiorna la label sul completamento dell'ordine
     def refresh_order_completion_progress(self):
         produced_order_shoe_lasts = self.controller.get_produced_order_shoe_lasts()
-        required_quantity = self.controller.get_order().get_quantity()
+        required_quantity = self.controller.get_order_quantity()
 
         # Aggiorna la Label
         self.order_completion_number_label.setText(f"{str(produced_order_shoe_lasts)}/{str(required_quantity)}")
