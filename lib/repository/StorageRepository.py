@@ -338,6 +338,10 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
         # Salva il prodotto nel database e ritorna il nuovo seriale
         return self.__storage_network.insert_product(product_data)
 
+    # Cerca il prodotto assegnato all'ordine il cui seriale è "order_id" e lo elimina
+    def delete_assigned_product(self, order_id: str):
+        self.__storage_network.delete_product(self.get_assigned_product_by_order_id(order_id).get_item_id())
+
     def update_product_quantity(self, product_id: str, quantity: int):
         self.__storage_network.update_product_amount(product_id, quantity)
 
@@ -346,6 +350,3 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
 
     def update_waste_quantity(self, waste_id: str, quantity: int):
         self.__storage_network.update_waste_amount(waste_id, quantity)
-
-    def delete_product(self, product_id: str):
-        self.__storage_network.delete_product(product_id)

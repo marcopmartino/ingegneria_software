@@ -97,12 +97,8 @@ class OrderController(OrderBaseController):
         # Aggiorna lo stato dell'ordine
         self._orders_repository.update_order_state_by_id(self.get_order_serial(), OrderStateStrings.DELIVERED)
 
-        # Cerca il prodotto
-        product = self.__storage_repository.get_assigned_product_by_order_id(
-            self.get_order_serial())
-
         # Rimuove le forme assegnate dal magazzino
-        self.__storage_repository.delete_product(product.get_item_id())
+        self.__storage_repository.delete_assigned_product(self.get_order_serial())
 
         # Genera una transazione con l'incasso dell'ordine
         self.__cash_register_repository.create_transaction(
