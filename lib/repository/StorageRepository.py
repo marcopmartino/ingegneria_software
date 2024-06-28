@@ -240,7 +240,7 @@ class StorageRepository(Repository, metaclass=RepositoryMeta):
                 return product
 
     # Ritorna un prodotto assegnato in base al seriale dell'ordine associato
-    def get_assigned_product_by_order_id(self, order_serial: str) -> StoredShoeLastVariety:
+    def get_assigned_product_by_order_id(self, order_serial: str) -> AssignedShoeLastVariety:
         for product in self.__product_list:
             if (isinstance(product, AssignedShoeLastVariety) and
                     product.get_assigned_order_id() == order_serial):
