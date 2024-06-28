@@ -187,8 +187,13 @@ class OrderView(SubInterfaceChildWidget):
         self.delete_order_button.clicked.connect(self.show_confirm_deletion_dialog)
 
         # Label sul completamento dell'ordine
-        self.order_completion_number_label = QLabel(f"{str(self.controller.get_produced_order_shoe_lasts())}/"
-                                                    f"{str(self.controller.get_order_quantity())}")
+        self.order_completion_number_label = QLabel()
+
+        # Mostra il progresso di completamento solo se l'ordine è in lavorazione
+        if self.controller.get_order_state() == OrderState.PROCESSING:
+            self.order_completion_number_label.setText(f"{str(self.controller.get_produced_order_shoe_lasts())}/"
+                                                       f"{str(self.controller.get_order_quantity())}")
+
         font = QFont()
         font.setPointSize(FontSize.SUBTITLE)
         self.order_completion_number_label.setFont(font)
