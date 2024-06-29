@@ -11,12 +11,12 @@ class StorageNetwork:
         return Firebase.database.child("storage").stream(stream_handler)
 
     @staticmethod
-    def update_product_amount(serial_id: str, product_amount: int):
-        Firebase.database.child("storage").child("products").child(serial_id).update({"amount": product_amount})
+    def update_product_amount(product_id: str, product_amount: int):
+        Firebase.database.child("storage").child("products").child(product_id).update({"amount": product_amount})
 
     @staticmethod
-    def update_material_amount(serial_id: str, material_amount: int):
-        Firebase.database.child("storage").child("materials").child(serial_id).update({"amount": material_amount})
+    def update_material_amount(material_id: str, material_amount: int):
+        Firebase.database.child("storage").child("materials").child(material_id).update({"amount": material_amount})
 
     @staticmethod
     def update_waste_amount(waste_id: str, waste_amount: int):
