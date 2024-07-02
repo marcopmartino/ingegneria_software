@@ -162,9 +162,9 @@ class MachineController:
         self.__operation_list = operation_list
 
     # Esegue le operazioni di avvio del macchinario
-    def start_machine(self, order_serial: str):
+    def start_machine(self, operation_id: str):
         # Ottiene i dati dell'operazione
-        operation_data = self.get_operation_by_order_serial(order_serial)
+        operation_data = self.get_operation_by_id(operation_id)
 
         # Aggiorna la quantità della forma richiesta in input
         stored_shoe_last_variety = self.__storage_repository.get_unassigned_product_by_shoe_last_variety(
@@ -185,7 +185,7 @@ class MachineController:
         # Avvia il macchinario
         self.__machines_repository.start_machine_by_id(
             self.__machine.get_machine_serial(),
-            order_serial,
+            operation_id,
             operation_data.get_output_shoe_last_variety(),
             operation_data.get_required_to_start_shoe_lasts(),
             self.__machine.calculate_duration(operation_data.get_output_shoe_last_variety())
