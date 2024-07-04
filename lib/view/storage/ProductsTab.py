@@ -203,7 +203,7 @@ class ProductsTab(SubInterfaceChildWidget):
         self.table.setColumnWidth(2, 200)
 
         # Table Adapter
-        self.table_adapter = StorageListAdapter(self.table)
+        self.table_adapter = ProductListAdapter(self.table)
         self.table_adapter.setColumnItemClass(2, IntegerTableItem)
         self.table_adapter.hideKeyColumn()
         self.table_adapter.onDoubleClick(self.show_product_edit_dialog)
@@ -288,7 +288,7 @@ class ProductsTab(SubInterfaceChildWidget):
         )
 
 
-class StorageListAdapter(TableAdapter):
+class ProductListAdapter(TableAdapter):
     def adaptData(self, product: StoredShoeLastVariety) -> list[str]:
         return [product.get_item_id(),
                 product.get_description(),

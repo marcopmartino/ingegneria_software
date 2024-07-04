@@ -180,7 +180,7 @@ class MaterialsTab(SubInterfaceChildWidget):
         self.table.setHeaders(headers)
 
         # Table Adapter
-        self.table_adapter = StorageListAdapter(self.table)
+        self.table_adapter = MaterialListAdapter(self.table)
         self.table_adapter.setColumnItemClass(3, IntegerTableItem)
         self.table_adapter.hideKeyColumn()
         self.table_adapter.onDoubleClick(self.show_material_edit_dialog)
@@ -239,7 +239,7 @@ class MaterialsTab(SubInterfaceChildWidget):
             self.controller.update_material_quantity(serial, new_quantity)
 
 
-class StorageListAdapter(TableAdapter):
+class MaterialListAdapter(TableAdapter):
     def adaptData(self, product: StoredMaterial) -> list[str]:
         return [product.get_item_id(),
                 product.get_description(),

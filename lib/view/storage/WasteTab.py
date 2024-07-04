@@ -175,7 +175,7 @@ class WasteTab(SubInterfaceChildWidget):
         self.table.hideColumn(0)
 
         # Table Adapter
-        self.table_adapter = StorageListAdapter(self.table)
+        self.table_adapter = WasteListAdapter(self.table)
         self.table_adapter.setColumnItemClass(2, IntegerTableItem)
         self.table_adapter.hideKeyColumn()
         self.table_adapter.onDoubleClick(self.show_waste_edit_dialog)
@@ -238,7 +238,7 @@ class WasteTab(SubInterfaceChildWidget):
             self.controller.update_waste_quantity(serial, new_quantity)
 
 
-class StorageListAdapter(TableAdapter):
+class WasteListAdapter(TableAdapter):
     def adaptData(self, waste: StoredWaste) -> list[str]:
         return [waste.get_item_id(),
                 waste.get_description(),
