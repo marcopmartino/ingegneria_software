@@ -1,4 +1,3 @@
-from datetime import datetime
 from unittest import TestCase
 
 from PyQt5.QtCore import QDate

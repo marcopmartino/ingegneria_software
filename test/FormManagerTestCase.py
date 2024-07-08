@@ -37,7 +37,7 @@ class FormManagerTestCase(TestCase):
         self.combo_box.setObjectName("combo box widget")
 
         self.date_picker = DatePicker()
-        self.date_picker.setDate(DatetimeUtils.format("17/05/2024"))
+        self.date_picker.setDate(DatetimeUtils.format_date("17/05/2024"))
         self.date_picker.setObjectName("date picker widget")
 
         # Inizializza il FormManager

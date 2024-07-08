@@ -29,11 +29,11 @@ class ShoeLastVarietyTestCase(TestCase):
 
         # Inizializza la lista di descrizioni
         self.description_list: list[str] = [
-            "Abbozzo, bambino, polacco, tipo 1",
-            "Abbozzo sgrossato, donna, polacco, tipo 2, 40, snodo alfa",
-            "Forma finita, bambino, bassa, tipo 2, 28, bussola standard, tacco ferrato",
-            "Forma numerata, uomo, bassa, tipo 1, 43, cuneo, bussola rinforzata, seconda bussola standard, "
-            "perno sotto tallone, tutta ferrata, segno anticollo, segni laterali"
+            "Abbozzo da bambino, polacco, plastica tipo 1",
+            "Abbozzo sgrossato da donna, polacco, plastica tipo 2, taglia 40, lavorazione snodo alfa",
+            "Forma finita da bambino, bassa, plastica tipo 2, taglia 28, bussola standard, tacco ferrato",
+            "Forma numerata da uomo, bassa, plastica tipo 1, taglia 43, lavorazione cuneo, bussola rinforzata, "
+            "seconda bussola standard, perno sotto tallone, tutta ferrata, segno anticollo, segni laterali"
         ]
 
     def test_shoe_last_variety_description(self) -> None:

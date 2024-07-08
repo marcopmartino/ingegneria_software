@@ -1,7 +1,6 @@
 from unittest import TestCase
 
 from lib.repository.ArticlesRepository import ArticlesRepository
-from lib.utility.ObserverClasses import AnonymousObserver
 
 
 class ObserverTestCase(TestCase):
