@@ -16,9 +16,9 @@ from lib.utility.UtilityClasses import DatetimeUtils
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.profile.EditCustomerView import EditCustomerView
 from lib.view.profile.EditManagerView import EditManagerView
-from lib.utility.ui.widget.CustomPushButton import CustomPushButton
-from lib.utility.ui.widget.Separators import VerticalSpacer
-from lib.utility.ui.widget.TableWidgets import SingleColumnStandardTable
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.Separators import VerticalSpacer
+from lib.utility.gui.widget.TableWidgets import SingleColumnStandardTable
 from res import Styles
 from lib.utility.CustomIcon import CustomIcon
 from res.Strings import FormStrings, ProfileStrings

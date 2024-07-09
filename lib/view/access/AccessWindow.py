@@ -2,7 +2,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QWidget, QSizePolicy
 
 from lib.controller.AccessController import AccessController
-from lib.utility.ui.layout.FrameLayouts import FrameLayout
+from lib.utility.gui.layout.FrameLayouts import FrameLayout
 from lib.view.access.LoginView import LoginView
 from lib.view.access.SignUpView import SignUpView
 from res import Styles

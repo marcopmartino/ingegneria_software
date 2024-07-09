@@ -11,10 +11,10 @@ from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter
 from lib.utility.UtilityClasses import SerialNumberFormatter
 from lib.view.main.SubInterfaces import SubInterfaceChildWidget, SubInterfaceWidget
-from lib.utility.ui.widget.CustomPushButton import CustomPushButton
-from lib.utility.ui.widget.Separators import VerticalSpacer
-from lib.utility.ui.widget.TableWidgets import SingleRowStandardTable
-from lib.utility.ui.widget.TreeWidgets import AutoResizableTreeWidget, DefaultFontTreeItemDelegate
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.Separators import VerticalSpacer
+from lib.utility.gui.widget.TableWidgets import SingleRowStandardTable
+from lib.utility.gui.widget.TreeWidgets import AutoResizableTreeWidget, DefaultFontTreeItemDelegate
 from res.Dimensions import FontSize
 
 

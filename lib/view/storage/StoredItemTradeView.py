@@ -3,9 +3,9 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QDialog, QLabel, QSizePolicy, QWidget, QVBoxLayout, QHBoxLayout, QMessageBox
 from qfluentwidgets import SpinBox
 
-from lib.utility.ui.layout.FrameLayouts import HFrameLayout
+from lib.utility.gui.layout.FrameLayouts import HFrameLayout
 from lib.utility.UtilityClasses import PriceFormatter
-from lib.utility.ui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from res import Styles
 from res.Dimensions import GenericDimensions, FontSize, FontWeight
 

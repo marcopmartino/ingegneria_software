@@ -17,9 +17,9 @@ from lib.utility.validation.ValidationRule import ValidationRule
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.order.CreateOrderView import CreateOrderView
 from lib.view.order.OrderView import OrderView
-from lib.utility.ui.widget.CustomPushButton import CustomPushButton
-from lib.utility.ui.widget.Separators import HorizontalLine
-from lib.utility.ui.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.Separators import HorizontalLine
+from lib.utility.gui.widget.TableWidgets import StandardTable, DateTableItem, PriceTableItem, IntegerTableItem
 from res.Dimensions import FontSize
 
 

@@ -5,9 +5,9 @@ from qfluentwidgets import SpinBox
 
 from lib.model.ShoeLastVariety import ProductType
 from lib.model.StoredItems import MaterialDescription
-from lib.utility.ui.layout.FrameLayouts import HFrameLayout
-from lib.utility.ui.widget.CustomPushButton import CustomPushButton
-from lib.utility.ui.widget.Separators import HorizontalLine, VerticalSpacer
+from lib.utility.gui.layout.FrameLayouts import HFrameLayout
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.Separators import HorizontalLine, VerticalSpacer
 from res import Styles
 from res.Dimensions import GenericDimensions, FontSize, FontWeight
 

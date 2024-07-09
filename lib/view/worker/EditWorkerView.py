@@ -5,13 +5,13 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, Q
 from qfluentwidgets import LineEdit
 
 from lib.controller.WorkerListController import WorkerListController
-from lib.utility.ui.widget.CustomDatePicker import CustomDatePicker
-from lib.utility.ui.layout.LineEditLayouts import LineEditCompositeLayout
+from lib.utility.gui.widget.CustomDatePicker import CustomDatePicker
+from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.Employee import Employee
 from lib.utility.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.utility.validation.FormManager import FormManager
 from lib.utility.validation.ValidationRule import ValidationRule
-from lib.utility.ui.widget.CustomPushButton import CustomPushButton
+from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from res import Styles, Dimensions
 from res.Dimensions import LineEditDimensions, FontWeight, FontSize, GenericDimensions
 from res.Strings import FormStrings, Config, ValidationStrings, WorkerStrings

@@ -8,7 +8,7 @@ from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.controller.PriceCatalogController import PriceCatalogController
-from lib.utility.ui.widget.TableWidgets import PriceCatalogTable, PriceCatalogTableBuilder, TitleAndSubtitleSection, \
+from lib.utility.gui.widget.TableWidgets import PriceCatalogTable, PriceCatalogTableBuilder, TitleAndSubtitleSection, \
     SixColumnsHeaderSection, SixColumnsDataSection, HorizontalTreeSection, NamedTableItem
 from res import Styles
 from lib.utility.CustomIcon import CustomIcon

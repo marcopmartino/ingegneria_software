@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QWidget, QLineEdit
 from requests import ConnectionError
 
 from lib.controller.AccessController import AccessController
-from lib.utility.ui.layout.LineEditLayouts import LineEditCompositeLayout
+from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.utility.ErrorHelpers import HTTPErrorHelper, EmailExistsException
 from lib.utility.validation.FormField import LineEditCompositeFormField
 from lib.utility.validation.ValidationRule import ValidationRule
