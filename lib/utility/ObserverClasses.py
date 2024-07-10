@@ -21,9 +21,9 @@ class AnonymousObserver(Observer):
         self.__callback(message)
 
 
-# Classe astratta Osservabile
+# Classe base Osservabile
 # noinspection PyPep8Naming
-class Observable(ABC):
+class Observable:
 
     def __init__(self):
         self.__observers: list[Observer] = []

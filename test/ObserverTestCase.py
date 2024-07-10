@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from lib.repository.ArticlesRepository import ArticlesRepository
+from lib.utility.ObserverClasses import Observable
 
 
 class ObserverTestCase(TestCase):
@@ -15,7 +15,7 @@ class ObserverTestCase(TestCase):
         self.received_message = None
 
         # Inizializzo l'osservato e l'osservatore
-        self.observable_object = ArticlesRepository()
+        self.observable_object = Observable()
         self.observer = self.observable_object.observe(on_message_received)
 
     def test_observer(self) -> None:
