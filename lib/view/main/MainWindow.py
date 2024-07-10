@@ -23,7 +23,7 @@ from lib.view.profile.ProfileView import ProfileView
 from lib.view.storage.StorageView import StorageView
 from lib.view.worker.WorkerListView import WorkerListView
 # from lib.view.storage.StoragePage import StoragePage
-from lib.utility.CustomIcon import CustomIcon as CustomFIF
+from lib.utility.gui.widget.CustomIcon import CustomIcon as CustomFIF
 from res.Strings import Config
 
 

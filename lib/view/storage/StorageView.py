@@ -1,9 +1,8 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget
-from qfluentwidgets import SegmentedWidget, FluentIconBase, FluentIcon
+from PyQt5.QtWidgets import QWidget, QStackedWidget
+from qfluentwidgets import SegmentedWidget, FluentIconBase
 
 from lib.controller.StorageController import StorageController
-from lib.utility.CustomIcon import CustomIcon
+from lib.utility.gui.widget.CustomIcon import CustomIcon
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.HardwareStorePriceCatalogView import HardwareStorePriceCatalogView
 from lib.view.storage.MaterialsTab import MaterialsTab

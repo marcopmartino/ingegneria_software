@@ -9,7 +9,7 @@ from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.StoredItemTradeView import StoredItemTradeView
 from lib.utility.gui.widget.TableWidgets import PriceCatalogTableBuilder, TitleAndSubtitleSection, HorizontalTreeSection, \
     PriceCatalogTable, NamedTableItem
-from lib.utility.CustomIcon import CustomIcon
+from lib.utility.gui.widget.CustomIcon import CustomIcon
 
 
 class HardwareStorePriceCatalogView(SubInterfaceWidget):

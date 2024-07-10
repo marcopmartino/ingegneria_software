@@ -15,7 +15,7 @@ from lib.view.article.ArticleView import ArticleView
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.utility.gui.widget.CustomPushButton import CustomPushButton
 from lib.utility.gui.widget.TableWidgets import StandardTable, IntegerTableItem, DateTableItem
-from lib.utility.CustomIcon import CustomIcon
+from lib.utility.gui.widget.CustomIcon import CustomIcon
 from res.Dimensions import FontSize
 
 
