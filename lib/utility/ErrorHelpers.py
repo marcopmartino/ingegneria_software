@@ -1,8 +1,7 @@
 import json
 import traceback
-from abc import ABC, abstractmethod
 
-from requests import HTTPError, RequestException
+from requests import HTTPError
 
 
 class ErrorHelper:

@@ -244,7 +244,7 @@ class OrderView(SubInterfaceChildWidget):
                     # Aggiorna la tabella dell'ordine
                     self.order_table_adapter.updateDataColumns(self.controller.get_order(), [0, 3, 4])
 
-                    # Aaggiorna il titolo della tabella dei dettagli dell'articolo
+                    # Aggiorna il titolo della tabella dei dettagli dell'articolo
                     self.article_details_title.setText(
                         f"Dettagli articolo {self.controller.get_order_article_serial()}")
 
