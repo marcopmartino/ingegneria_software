@@ -19,9 +19,8 @@ DEFAULT_MAX_LENGTH = ValidationDimensions.DEFAULT_MAX_LENGTH
 # si tratti. A questo scopo definiamo una serie di classi "wrapper" dei campi di input di Qt che fungono da adattatori.
 
 # Classi Target (interfacce\classi astratte per le classi Adapter)
-# Classe astratta che rappresenta un generico campo di una form
+# Classe astratta che rappresenta un adattatore per un generico campo di una form
 class IFormField(ABC):
-
     # Il costruttore prende come argomento il solo campo di input (un oggetto di tipo QObject)
     # Il campo di input è un QObject per poter includere i ButtonGroup
     def __init__(self, input_field: QObject):
@@ -32,7 +31,7 @@ class IFormField(ABC):
         return self.input_field.objectName().split("_")[0]  # Nome dell'oggetto fino al primo "_"
 
     # Ritorna il dato\contenuto del campo.
-    # Questo è il primo metodo adattato: è possibile estrarre il dato del campo indipendentemente dal tipo
+    # Questo è il primo metodo adattatore: è possibile estrarre il dato del campo indipendentemente dal tipo
     @abstractmethod
     def data(self) -> any:
         pass
@@ -42,14 +41,14 @@ class IFormField(ABC):
         return {self.field_name(): self.data()}
 
     # Esegue la validazione del campo.
-    # Questo è il secondo metodo adattato: è possibile validare un campo indipendentemente dal tipo, anche se in realtà
-    # è privo di validazione (per assenza di necessità o di possibilità)
+    # Questo è il secondo metodo adattatore: è possibile validare un campo indipendentemente dal tipo, anche se in
+    # realtà è privo di validazione (per assenza di necessità o di possibilità)
     def validate(self) -> bool:
         # Trattandosi di un campo non necessariamente\non possibilmente validabile, esso passa sempre la validazione
         return True
 
     # Esegue il reset del campo.
-    # Questo è il terzo metodo adattato: è possibile eseguire il reset di un campo senza conoscerne il tipo
+    # Questo è il terzo metodo adattatore: è possibile eseguire il reset di un campo senza conoscerne il tipo
     @abstractmethod
     def clear(self):
         pass
