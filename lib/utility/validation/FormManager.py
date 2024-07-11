@@ -7,8 +7,6 @@ from lib.utility.validation.FormField import IFormField, CheckBoxFormField, Spin
 
 # Classe per la gestione delle form. Automatizza il processo di validazione dei campi e di estrazione dei loro dati.
 class FormManager(QObject):
-    # Segnale emesso quando i dati inseriti nei campi della form cambiano
-    dataChanged = pyqtSignal()
 
     def __init__(self, field_list: list[IFormField] = None, form_token: any = None):
         super().__init__()
@@ -52,7 +50,6 @@ class FormManager(QObject):
     # Aggiunge elementi alla lista dei campi
     def add_fields(self, *form_fields: IFormField):
         for form_field in form_fields:
-            form_field.data_changed().connect(lambda: self.dataChanged.emit())
             self.add_field(form_field)
 
     # Aggiunge un elemento alla lista dei campi

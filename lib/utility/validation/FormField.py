@@ -41,22 +41,15 @@ class IFormField(ABC):
     def data_dict(self) -> dict[str: any]:
         return {self.field_name(): self.data()}
 
-    # Ritorna il segnale che viene normalmente emesso quando il dato del campo cambia.
-    # Questo è il secondo metodo adattato: è possibile rispondere al segnale sempre allo stesso modo, nonostante esso
-    # assuma nomi diversi in campi diversi
-    @abstractmethod
-    def data_changed(self):
-        pass
-
     # Esegue la validazione del campo.
-    # Questo è il terzo metodo adattato: è possibile validare un campo indipendentemente dal tipo, anche se in realtà
+    # Questo è il secondo metodo adattato: è possibile validare un campo indipendentemente dal tipo, anche se in realtà
     # è privo di validazione (per assenza di necessità o di possibilità)
     def validate(self) -> bool:
         # Trattandosi di un campo non necessariamente\non possibilmente validabile, esso passa sempre la validazione
         return True
 
     # Esegue il reset del campo.
-    # Questo è il quarto metodo adattato: è possibile eseguire il reset di un campo senza conoscerne il tipo
+    # Questo è il terzo metodo adattato: è possibile eseguire il reset di un campo senza conoscerne il tipo
     @abstractmethod
     def clear(self):
         pass
@@ -180,9 +173,6 @@ class ComboBoxFormField(IFormField):
         data = self.input_field.currentData()
         return data if data is not None else self.input_field.currentText()
 
-    def data_changed(self):
-        return self.input_field.currentIndexChanged
-
     def clear(self):
         self.input_field.setCurrentIndex(0)
 
@@ -196,9 +186,6 @@ class CheckBoxFormField(IFormField):
     def data(self):
         return self.input_field.isChecked()
 
-    def data_changed(self):
-        return self.input_field.stateChanged
-
     def clear(self):
         self.input_field.setChecked(False)
 
@@ -210,9 +197,6 @@ class SpinBoxFormField(IFormField):
 
     def data(self):
         return self.input_field.value()
-
-    def data_changed(self):
-        return self.input_field.valueChanged
 
     def clear(self):
         self.input_field.setValue(self.input_field.minimum())
@@ -226,9 +210,6 @@ class RadioGroupFormField(IFormField):
     def data(self):
         return self.input_field.checkedButton().text()
 
-    def data_changed(self):
-        return self.input_field.buttonClicked
-
     def clear(self):
         pass
 
@@ -240,9 +221,6 @@ class DatePickerFormField(IFormField):
 
     def data(self):
         return DatetimeUtils.unformat_date(self.input_field.date)
-
-    def data_changed(self):
-        return self.input_field.dateChanged
 
     def clear(self):
         self.input_field.setDate(QDate.currentDate())
@@ -256,9 +234,6 @@ class LineEditFormField(IFormField):
 
     def data(self):
         return self.input_field.text()
-
-    def data_changed(self):
-        return self.input_field.textChanged
 
     # Costruttore secondario che istanza la classe impostando il QLineEdit di un LineEditLayout
     @classmethod
