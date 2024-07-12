@@ -147,15 +147,15 @@ class SubInterfaceWidget(QWidget):
     def setSubtitleText(self, text):
         self.header_subtitle_label.setText(text)
 
-    # Nascone il sottotitolo
+    # Nasconde il sottotitolo
     def hideSubtitle(self):
         self.header_subtitle_label.setHidden(True)
 
-    # Nascone l'header
+    # Nasconde l'header
     def hideHeader(self):
         self.header_frame.setHidden(True)
 
-    # Nascone il sottotitolo
+    # Nasconde il sottotitolo
     def hideSidebar(self):
         self.sidebar_frame.setHidden(True)
 
