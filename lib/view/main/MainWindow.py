@@ -280,7 +280,7 @@ class MainWindow(FramelessWindow):
         # Informazioni sull'utente
         self.insertUserInfoItem("Manager", 2)
 
-    # Funzione per aggiungere le pagine ai pulsanti della sidebar
+    # Funzione per aggiungere un SubInterfaceWidget allo stack e al menù
     def addSubInterface(self,
                         interface: SubInterfaceWidget,
                         text: str = "Nuova interfaccia",
@@ -299,7 +299,7 @@ class MainWindow(FramelessWindow):
             tooltip=text
         )
 
-    # Funzione per inserire le pagine ai pulsanti della sidebar
+    # Funzione per inserire un SubInterfaceWidget nello stack e nel menù
     def insertSubInterface(self,
                            index,
                            interface: SubInterfaceWidget,
@@ -364,17 +364,18 @@ class MainWindow(FramelessWindow):
         interface.close()
         interface.deleteLater()
 
-    # Per la navigazione tra i Widget dello stack. Aggiorna sia l'interfaccia che la voce selezionata nel menù.
+    # Eseguito al click su una voce del menù. Aggiorna il widget dello stack visualizzato, e lo stack emette il segnale
+    # "currentChanged"
     def switchTo(self, widget):
         self.stackedWidget.setCurrentWidget(widget)
 
-    # Eseguito dopo "switchTo", quando si naviga tra i Widget dello stack, per tenere uno storico della navigazione
+    # Eseguito dopo "switchTo", quando viene emesso "currentChanged". Aggiorna la voce del menù selezionata
     def onCurrentInterfaceChanged(self, index):
         # Controllo per prevenire un crash in caso in cui lo stack sia vuoto
         if index != -1:
             widget = self.stackedWidget.widget(index)  # Ottengo il widget alla posizione "index"
             self.navigationInterface.setCurrentItem(widget.objectName())  # Aggiorna la voce selezionata nel menù
-            qrouter.push(self.stackedWidget, widget.objectName())  # Per salvare la voce selezionata
+            qrouter.push(self.stackedWidget, widget.objectName())  # Aggiunge la voce selezionata alla cronologia
 
     # Mostra la schermata di accesso dopo aver effettuato il logout
     def show_access_window(self):
