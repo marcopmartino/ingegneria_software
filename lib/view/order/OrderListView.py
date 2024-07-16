@@ -155,8 +155,8 @@ class OrderListView(SubInterfaceWidget):
 
         # Table Adapter
         self.table_adapter = OrderListAdapter(self.table)
-        self.table_adapter.setColumnItemClass(0, IntegerTableItem)  # Per un corretto ordinamento degli ordini
-        self.table_adapter.setColumnItemClass(1, IntegerTableItem)  # Per un corretto ordinamento degli articoli
+        self.table_adapter.setColumnItemClass(0, IntegerTableItem)  # Per un corretto ordinamento degli id ordine
+        self.table_adapter.setColumnItemClass(1, IntegerTableItem)  # Per un corretto ordinamento degli id articolo
         self.table_adapter.setColumnItemClass(2, DateTableItem)  # Per un corretto ordinamento delle date
         self.table_adapter.setColumnItemClass(4, IntegerTableItem)  # Per un corretto ordinamento delle quantità
         self.table_adapter.setColumnItemClass(5, PriceTableItem)  # Per un corretto ordinamento dei prezzi

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from abc import abstractmethod, ABC
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QBrush, QColor, QFont
 from PyQt5.QtWidgets import QTableWidget, QWidget, QFrame, QAbstractItemView, QHeaderView, QStyledItemDelegate, \
     QTableWidgetItem, QAbstractScrollArea
 
-from lib.repository.PriceCatalogRepository import PriceCatalogRepository
 from lib.utility.Singleton import Singleton
 from lib.utility.UtilityClasses import PriceFormatter
 from res import Styles
@@ -97,7 +97,7 @@ class PriceTableItem(QTableWidgetItem):
     def __init__(self, text: str = ''):
         super().__init__(text)
 
-    # Stabilisce se un numero è più piccolo di un altro
+    # Stabilisce se un prezzo è inferiore a un altro
     def __lt__(self, other: PriceTableItem):
         return PriceFormatter.unformat(self.text()) < PriceFormatter.unformat(other.text())
 

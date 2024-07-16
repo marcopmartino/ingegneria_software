@@ -371,7 +371,7 @@ class MainWindow(FramelessWindow):
 
     # Eseguito dopo "switchTo", quando viene emesso "currentChanged". Aggiorna la voce del menù selezionata
     def onCurrentInterfaceChanged(self, index):
-        # Controllo per prevenire un crash in caso in cui lo stack sia vuoto
+        # Controllo per prevenire un crash nel caso in cui lo stack sia vuoto
         if index != -1:
             widget = self.stackedWidget.widget(index)  # Ottengo il widget alla posizione "index"
             self.navigationInterface.setCurrentItem(widget.objectName())  # Aggiorna la voce selezionata nel menù
