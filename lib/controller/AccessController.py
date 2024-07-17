@@ -1,7 +1,4 @@
-from lib.firebaseData import Firebase
-from lib.utility.ErrorHelpers import HTTPErrorHelper
 from lib.repository.UsersRepository import UsersRepository
-from lib.utility.UtilityClasses import PhoneFormatter
 
 
 class AccessController:

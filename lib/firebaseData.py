@@ -4,9 +4,8 @@ import json
 import threading
 
 import firebase_admin
-from PyQt5.QtCore import pyqtSignal
-from firebase_admin import auth as admin_auth
 import pyrebase
+from firebase_admin import auth as admin_auth
 from pyrebase import initialize_app
 from pyrebase.pyrebase import ClosableSSEClient
 from requests import ConnectionError
@@ -112,7 +111,7 @@ class Firebase(metaclass=Singleton):
 
     @classmethod
     def initialize_app(cls):
-        # Inizializzo Firebase
+        # Inizializzo Pyrebase
         firebase: pyrebase.pyrebase.Firebase = initialize_app(firebaseConfig)
 
         # Inizializzo FirebaseAdmin

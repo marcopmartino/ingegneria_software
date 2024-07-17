@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QWidget, QLineEdit
-from requests import ConnectionError
+from requests import ConnectionError, HTTPError
 
 from lib.controller.AccessController import AccessController
+from lib.utility.ErrorHelpers import EmailExistsException
 from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
-from lib.utility.ErrorHelpers import HTTPErrorHelper, EmailExistsException
 from lib.utility.validation.FormField import LineEditCompositeFormField
 from lib.utility.validation.ValidationRule import ValidationRule
 from lib.view.access.AccessView import AccessView
@@ -86,7 +86,7 @@ class SignUpView(AccessView):
         except ConnectionError:
             self.on_connection_error()
 
-        except HTTPErrorHelper:
+        except HTTPError:
             self.on_unexpected_error()
 
         except Exception as e:
