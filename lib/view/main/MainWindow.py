@@ -4,13 +4,16 @@ from PyQt5.QtWidgets import QApplication, QStackedWidget, QHBoxLayout, QLabel, Q
 from qfluentwidgets import FluentIcon as FIF, InfoBar, InfoBarPosition
 from qfluentwidgets import (NavigationInterface, NavigationItemPosition, qrouter)
 from qframelesswindow import FramelessWindow, TitleBar
+from requests import ConnectionError
 
 from lib.controller.MainController import MainController
 from lib.firebaseData import Firebase
 from lib.repository.CashRegisterRepository import CashRegisterRepository
+from lib.utility.ErrorHelpers import ErrorHelper
 from lib.utility.ObserverClasses import Message
 from lib.utility.ResourceManager import ResourceManager
 from lib.utility.UtilityClasses import PriceFormatter
+from lib.utility.gui.widget.CustomIcon import CustomIcon as CustomFIF
 from lib.view.article.ArticleListView import ArticleListView
 from lib.view.cashregister.CashRegisterView import CashRegisterView
 from lib.view.machine.MachineListView import MachineListView
@@ -22,8 +25,6 @@ from lib.view.pricecatalog.PriceCatalogView import PriceCatalogView
 from lib.view.profile.ProfileView import ProfileView
 from lib.view.storage.StorageView import StorageView
 from lib.view.worker.WorkerListView import WorkerListView
-# from lib.view.storage.StoragePage import StoragePage
-from lib.utility.gui.widget.CustomIcon import CustomIcon as CustomFIF
 from res.Strings import Config
 
 
@@ -116,7 +117,7 @@ class MainWindow(FramelessWindow):
     # Inizializza i segnali
     def initSignals(self):
         self.loading_window.initialization_completed.connect(self.show)
-        self.logout.connect(Firebase.auth.sign_out)
+        self.logout.connect(lambda: ErrorHelper.suppress(Firebase.auth.sign_out, ConnectionError))
         self.connection_lost.connect(self.on_connection_lost)
         Firebase.register_connection_lost_callback(self.connection_lost.emit)
 

@@ -4,6 +4,7 @@ from qfluentwidgets import FluentIconBase
 
 from lib.firebaseData import Firebase
 from lib.repository.PriceCatalogRepository import PriceCatalogRepository
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.ObserverClasses import Message
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
@@ -163,4 +164,5 @@ class PriceCatalogView(SubInterfaceWidget):
 
                 # Aggiorno il valore se è diverso
                 if new_value != current_value:
-                    self.controller.update_price_list({item.itemName: new_value})
+                    ConnectionErrorHelper.handle(lambda: self.controller.update_price_list({item.itemName: new_value}),
+                                                 self.window())

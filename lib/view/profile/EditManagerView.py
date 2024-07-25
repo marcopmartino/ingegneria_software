@@ -8,7 +8,7 @@ from lib.firebaseData import Firebase
 from lib.utility.gui.widget.CustomDatePicker import CustomDatePicker
 from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.Employee import Employee
-from lib.utility.ErrorHelpers import InvalidLoginCredentialsException
+from lib.utility.ErrorHelpers import InvalidLoginCredentialsException, ConnectionErrorHelper
 from lib.utility.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.utility.validation.FormManager import FormManager
 from lib.utility.validation.ValidationRule import ValidationRule
@@ -223,7 +223,7 @@ class EditManagerView(QDialog):
         # Se i controlli sono passati, prosegue con l'aggiornamento
         if continue_submit:
             try:
-                self.controller.update_user(form_data)
+                ConnectionErrorHelper.handle(lambda: self.controller.update_user(form_data), self.window())
                 self.close()
             except InvalidLoginCredentialsException:
                 self.passwordLayout.error_label.setText("Password non corretta")

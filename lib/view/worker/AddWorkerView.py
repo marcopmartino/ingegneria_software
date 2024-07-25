@@ -6,7 +6,7 @@ from qfluentwidgets import LineEdit
 from lib.controller.WorkerListController import WorkerListController
 from lib.utility.gui.widget.CustomDatePicker import CustomDatePicker
 from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
-from lib.utility.ErrorHelpers import EmailExistsException
+from lib.utility.ErrorHelpers import EmailExistsException, ConnectionErrorHelper
 from lib.utility.validation.FormField import LineEditCompositeFormField, DatePickerFormField
 from lib.utility.validation.FormManager import FormManager
 from lib.utility.validation.ValidationRule import ValidationRule
@@ -205,7 +205,7 @@ class AddWorkerView(QDialog):
         # Se i controlli sono passati, prosegue con l'aggiornamento
         if continue_submit:
             try:
-                self.controller.create_worker(form_data)
+                ConnectionErrorHelper.handle(lambda: self.controller.create_worker(form_data), self.window())
                 self.close()
             except EmailExistsException:
                 self.emailExistsLabel.setHidden(False)

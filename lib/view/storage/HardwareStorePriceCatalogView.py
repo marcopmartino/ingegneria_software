@@ -4,6 +4,7 @@ from qfluentwidgets import FluentIconBase
 
 from lib.controller.StorageController import StorageController
 from lib.model.StoredItems import MaterialDescription
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.StoredItemTradeView import StoredItemTradeView
@@ -128,10 +129,10 @@ class HardwareStorePriceCatalogView(SubInterfaceWidget):
                 measurement_unit = liter_string if material_description == MaterialDescription.INCHIOSTRO else "pezzi"
 
                 # Effettua l'acquisto dei materiali
-                self.controller.purchase_material(
+                ConnectionErrorHelper.handle(lambda: self.controller.purchase_material(
                     material_description=material_description,
                     purchased_quantity=actual_purchased_quantity,
                     transaction_description=f"Acquisto \"{material_description.value}\" "
                                             f"({str(actual_purchased_quantity)} {measurement_unit})",
                     transaction_amount=total_price * -1,
-                )
+                ), self.window())

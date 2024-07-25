@@ -7,6 +7,7 @@ from lib.controller.StorageController import StorageController
 from lib.firebaseData import Firebase
 from lib.model.StoredItems import StoredMaterial, MaterialDescription
 from lib.repository.StorageRepository import StorageRepository
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.utility.validation.FormManager import FormManager
@@ -236,7 +237,8 @@ class MaterialsTab(SubInterfaceChildWidget):
             new_quantity = dialog.value()
 
             # Aggiorna la quantità
-            self.controller.update_material_quantity(serial, new_quantity)
+            ConnectionErrorHelper.handle(lambda: self.controller.update_material_quantity(serial, new_quantity),
+                                         self.window())
 
 
 class MaterialListAdapter(TableAdapter):

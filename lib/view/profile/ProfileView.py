@@ -10,6 +10,7 @@ from lib.controller.ProfileController import ProfileController
 from lib.model.Customer import Customer
 from lib.model.Employee import Employee
 from lib.repository.UsersRepository import UsersRepository
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import SingleColumnTableAdapter
 from lib.utility.UtilityClasses import DatetimeUtils
@@ -149,7 +150,7 @@ class ProfileView(SubInterfaceWidget):
 
         # In caso di conferma, elimina l'utente e chiude la finestra
         if clicked_button == QMessageBox.Yes:
-            self.controller.delete_user()
+            ConnectionErrorHelper.handle(lambda: self.controller.delete_user(), self.window())
 
     # Mostra un Dialog per informare che l'account non può essere eliminato
     def show_unable_to_delete_account_dialog(self):

@@ -5,7 +5,7 @@ from qfluentwidgets import LineEdit
 from lib.controller.ProfileController import ProfileController
 from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.Customer import Customer
-from lib.utility.ErrorHelpers import InvalidLoginCredentialsException
+from lib.utility.ErrorHelpers import InvalidLoginCredentialsException, ConnectionErrorHelper
 from lib.utility.validation.FormField import LineEditCompositeFormField
 from lib.utility.validation.FormManager import FormManager
 from lib.utility.validation.ValidationRule import ValidationRule
@@ -211,7 +211,7 @@ class EditCustomerView(QDialog):
         # Se i controlli sono passati, prosegue con l'aggiornamento
         if continue_submit:
             try:
-                self.controller.update_user(form_data)
+                ConnectionErrorHelper.handle(lambda: self.controller.update_user(form_data), self.window())
                 self.close()
             except InvalidLoginCredentialsException:
                 self.passwordLayout.error_label.setText("Password non corretta")

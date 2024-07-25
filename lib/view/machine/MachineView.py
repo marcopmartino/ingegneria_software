@@ -12,6 +12,7 @@ from lib.model.StoredItems import MaterialDescription
 from lib.repository.MachinesRepository import MachinesRepository
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.StorageRepository import StorageRepository
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.TableAdapters import SingleRowTableAdapter, TableAdapter
 from lib.view.main.SubInterfaces import SubInterfaceWidget, SubInterfaceChildWidget
@@ -196,7 +197,9 @@ class MachineView(SubInterfaceChildWidget):
         self.start_machine_button = CustomPushButton.cyan(text="Avvia macchinario", point_size=FontSize.FLUENT_DEFAULT)
         self.start_machine_button.clicked.connect(lambda: {
             self.start_machine_button.setDisabled(True),
-            self.controller.start_machine(self.operation_list_table_adapter.getSelectedItemKey())
+            ConnectionErrorHelper.handle(lambda: self.controller.start_machine(
+                self.operation_list_table_adapter.getSelectedItemKey()), self.window(),
+                                         on_exception=lambda: self.start_machine_button.setEnabled(True))
         })
 
         self.operation_completed_label = BodyLabel(
@@ -235,7 +238,8 @@ class MachineView(SubInterfaceChildWidget):
         self.emergency_stop_button.setContentsMargins(0, 6, 0, 0)
         self.emergency_stop_button.clicked.connect(lambda: {
             self.emergency_stop_button.setDisabled(True),
-            self.controller.emergency_stop_machine()
+            ConnectionErrorHelper.handle(lambda: self.controller.emergency_stop_machine(), self.window(),
+                                         on_exception=lambda: self.emergency_stop_button.setEnabled(True))
         })
 
         self.running_machine_layout = QVBoxLayout()

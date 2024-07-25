@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QDialog, QSizePolicy, QVBoxLayout, QLabel, QHBoxLayo
 from qfluentwidgets import DoubleSpinBox, LineEdit
 
 from lib.controller.CashRegisterController import CashRegisterController
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.gui.widget.CustomDatePicker import CustomDatePicker
 from lib.utility.gui.layout.FrameLayouts import HFrameLayout
 from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
@@ -226,7 +227,7 @@ class TransactionFormView(QDialog):
 
             # In caso di conferma, crea la transazione e chiude la finestra
             if clicked_button == QMessageBox.Yes:
-                self.controller.create_transaction(form_data)
+                ConnectionErrorHelper.handle(lambda: self.controller.create_transaction(form_data), self.window())
                 self.close()
 
     # Eseguito al click sul pulsante di modifica
@@ -246,7 +247,8 @@ class TransactionFormView(QDialog):
 
             # In caso di conferma, aggiorna la transazione e chiude la finestra
             if clicked_button == QMessageBox.Yes:
-                self.controller.update_transaction_by_id(form_data.pop("form_token"), form_data)
+                ConnectionErrorHelper.handle(lambda: self.controller.update_transaction_by_id(
+                    form_data.pop("form_token"), form_data), self.window())
                 self.close()
 
     # Eseguito al click sul pulsante di eliminazione
@@ -263,5 +265,5 @@ class TransactionFormView(QDialog):
 
         # In caso di conferma, elimina la transazione e chiude la finestra
         if clicked_button == QMessageBox.Yes:
-            self.controller.delete_transaction_by_id(form_token)
+            ConnectionErrorHelper.handle(lambda: self.controller.delete_transaction_by_id(form_token), self.window())
             self.close()

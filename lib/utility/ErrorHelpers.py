@@ -1,7 +1,8 @@
 import json
 import traceback
 
-from requests import HTTPError
+from PyQt5.QtWidgets import QMessageBox, QWidget
+from requests import HTTPError, ConnectionError
 
 
 class ErrorHelper:
@@ -20,6 +21,25 @@ class ErrorHelper:
         except exception_type:
             if debug:
                 traceback.print_exc()
+
+
+class ConnectionErrorHelper(ErrorHelper):
+
+    @staticmethod
+    def handle(request: callable, parent: QWidget = None, show_dialog: bool = True, on_exception: callable = None):
+        try:
+            return request()
+        except ConnectionError:
+            if show_dialog:
+                # Imposta e mostra il dialog
+                QMessageBox.information(
+                    parent,
+                    "Connessione al database fallita",
+                    "Connessione di rete assente: controlla la tua connessione a Internet e riprova.",
+                    QMessageBox.Ok
+                )
+            if on_exception is not None:
+                on_exception()
 
 
 class HTTPErrorHelper(ErrorHelper):

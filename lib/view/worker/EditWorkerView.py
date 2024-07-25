@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QLabel, QWidget, QHBoxLayout, Q
 from qfluentwidgets import LineEdit
 
 from lib.controller.WorkerListController import WorkerListController
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.gui.widget.CustomDatePicker import CustomDatePicker
 from lib.utility.gui.layout.LineEditLayouts import LineEditCompositeLayout
 from lib.model.Employee import Employee
@@ -219,7 +220,7 @@ class EditWorkerView(QDialog):
 
         # Se i controlli sono passati, prosegue con l'aggiornamento
         if continue_submit:
-            self.controller.update_worker(form_data)
+            ConnectionErrorHelper.handle(lambda: self.controller.update_worker(form_data), self.window())
             self.close()
 
     # Eseguito al click sul pulsante di eliminazione
@@ -236,5 +237,5 @@ class EditWorkerView(QDialog):
 
         # In caso di conferma, elimina la transazione e chiude la finestra
         if clicked_button == QMessageBox.Yes:
-            self.controller.delete_worker_by_id(form_token)
+            ConnectionErrorHelper.handle(lambda: self.controller.delete_worker_by_id(form_token), self.window())
             self.close()

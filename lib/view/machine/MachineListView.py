@@ -6,6 +6,7 @@ from qfluentwidgets import CheckBox, SearchLineEdit, FluentIconBase
 from lib.controller.MachineListController import MachineListController
 from lib.model.Machine import Machine
 from lib.repository.MachinesRepository import MachinesRepository
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.utility.validation.FormManager import FormManager
@@ -174,7 +175,8 @@ class MachineListView(SubInterfaceWidget):
                     self.table_adapter.updateDataColumns(data, [3])
 
                 case MachinesRepository.Event.THREAD_MACHINE_STOPPED:
-                    self.controller.stop_machine(data)
+                    ConnectionErrorHelper.handle(lambda: self.controller.stop_machine(data), self.window(),
+                                                 False, self.window().connection_lost.emit)
 
             # Controlla se la tabella è vuota; se lo è, mostra la label che informa di ciò
             self.check_empty_table()

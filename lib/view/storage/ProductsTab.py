@@ -7,6 +7,7 @@ from lib.controller.StorageController import StorageController
 from lib.firebaseData import Firebase
 from lib.model.StoredItems import StoredShoeLastVariety, AssignedShoeLastVariety
 from lib.repository.StorageRepository import StorageRepository
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.ObserverClasses import Message
 from lib.utility.TableAdapters import TableAdapter
 from lib.utility.validation.FormManager import FormManager
@@ -275,7 +276,8 @@ class ProductsTab(SubInterfaceChildWidget):
                 new_quantity = dialog.value()
 
                 # Aggiorna la quantità
-                self.controller.update_product_quantity(serial, new_quantity)
+                ConnectionErrorHelper.handle(lambda: self.controller.update_product_quantity(serial, new_quantity),
+                                             self.window())
 
     # Mostra un Dialog che informa dell'impossibilità di modificare la quantità di un prodotto
     def show_product_edit_denied_dialog(self):

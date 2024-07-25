@@ -13,6 +13,7 @@ from lib.model.Customer import Customer
 from lib.model.Order import Order, OrderState
 from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.StorageRepository import StorageRepository
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.ObserverClasses import Observer, Message
 from lib.utility.ResourceManager import ResourceManager
 from lib.utility.TableAdapters import SingleRowTableAdapter
@@ -310,7 +311,7 @@ class OrderView(SubInterfaceChildWidget):
 
         # In caso di conferma, elimina l'ordine e chiude la finestra
         if clicked_button == QMessageBox.Yes:
-            self.controller.delete_order()
+            ConnectionErrorHelper.handle(lambda: self.controller.delete_order(), self.window())
             self.window().removeSubInterface(self)
 
     # Mostra un Dialog che informa dell'eliminazione dell'ordine
@@ -337,7 +338,8 @@ class OrderView(SubInterfaceChildWidget):
 
     # Esegue la transizione dell'ordine verso il nuovo stato
     def transition_to_next_state(self):
-        self.state.transition_to_next_state()
+        ConnectionErrorHelper.handle(lambda: self.state.transition_to_next_state(), self.window(),
+                                     on_exception=lambda: self.state_transition_button.setEnabled(True))
 
     # Eseguito dopo che l'ordine ha subito una transizione di stato (callback)
     def on_transition_to_next_state(self):

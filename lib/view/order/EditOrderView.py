@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QMessageBox
 from lib.controller import OrderController
 from lib.model.ShoeLastVariety import Gender, ShoeLastType, CompassType, Processing, Shoeing
 from lib.repository.OrdersRepository import OrdersRepository
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.ObserverClasses import Message, Observer
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.order.OrderFormView import OrderFormView
@@ -152,5 +153,6 @@ class EditOrderView(OrderFormView):
 
         # In caso di conferma, crea l'ordine e chiude la finestra
         if clicked_button == QMessageBox.Yes:
-            self.controller.update_order(shoe_last_variety, form_data["quantity"], final_price)
+            ConnectionErrorHelper.handle(lambda: self.controller.update_order(shoe_last_variety, form_data["quantity"],
+                                                                              final_price), self.window())
             self.close()

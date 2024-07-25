@@ -4,6 +4,7 @@ from qfluentwidgets import FluentIconBase
 
 from lib.controller.StorageController import StorageController
 from lib.model.ShoeLastVariety import ShoeLastVariety, ProductType, Gender, ShoeLastType, PlasticType
+from lib.utility.ErrorHelpers import ConnectionErrorHelper
 from lib.utility.UtilityClasses import PriceFormatter
 from lib.view.main.SubInterfaces import SubInterfaceWidget
 from lib.view.storage.StoredItemTradeView import StoredItemTradeView
@@ -110,13 +111,13 @@ class RawShoeLastCenterPriceCatalogView(SubInterfaceWidget):
                     pair_string = "paio" if purchased_quantity == 1 else "paia"
 
                     # Effettua l'acquisto di abbozzi
-                    self.controller.purchase_product(
+                    ConnectionErrorHelper.handle(lambda: self.controller.purchase_product(
                         shoe_last_variety=shoe_last_variety,
                         purchased_quantity=purchased_quantity,
                         transaction_description=f"Acquisto \"{shoe_last_variety_description}\" "
                                                 f"({str(purchased_quantity)} {pair_string})",
                         transaction_amount=total_price * -1,
-                    )
+                    ), self.window())
 
             else:
                 # Determina il tipo di plastica
@@ -158,10 +159,10 @@ class RawShoeLastCenterPriceCatalogView(SubInterfaceWidget):
                         total_price = sold_quantity * price_per_purchase
 
                         # Effettua la vendita degli scarti
-                        self.controller.sell_waste(
+                        ConnectionErrorHelper.handle(lambda: self.controller.sell_waste(
                             stored_waste=stored_waste,
                             sold_quantity=sold_quantity,
                             transaction_description=f"Vendita \"Scarti di lavorazione in plastica tipo "
                                                     f"{str(plastic_type.value)}\" ({str(sold_quantity)} kg)",
                             transaction_amount=total_price,
-                        )
+                        ), self.window())
