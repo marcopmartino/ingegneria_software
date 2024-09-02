@@ -14,7 +14,7 @@ class OrderBaseController(ABC):
         self.__price_catalog_repository = PriceCatalogRepository()
 
     # Determina la varietà di forma e il prezzo dell'ordine in base ai dati della form
-    def get_shoe_last_variety_and_price(self, data: dict[str, any]) -> (float, ShoeLastVariety):
+    def get_shoe_last_variety_and_price(self, data: dict[str, any]) -> (ShoeLastVariety, float):
         shoe_last_variety = ShoeLastVariety(
             ProductType.FORMA_NUMERATA, data["gender"], data["type"], data["plastic"], data["size"],
             data["processing"], data["first"], data["second"], data["pivot"], data["shoeing"], data["shoetip"],

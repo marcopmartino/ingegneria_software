@@ -1,9 +1,7 @@
 from lib.controller.OrderBaseController import OrderBaseController
 from lib.model.Order import Order
 from lib.model.ShoeLastVariety import ShoeLastVariety
-from lib.repository.ArticlesRepository import ArticlesRepository
 from lib.repository.CashRegisterRepository import CashRegisterRepository
-from lib.repository.OrdersRepository import OrdersRepository
 from lib.repository.StorageRepository import StorageRepository
 from lib.repository.UsersRepository import UsersRepository
 from lib.utility.ObserverClasses import Observer, AnonymousObserver

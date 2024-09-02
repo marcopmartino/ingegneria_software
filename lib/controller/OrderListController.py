@@ -4,8 +4,6 @@ from typing import Callable
 from lib.controller.OrderBaseController import OrderBaseController
 from lib.model.Order import Order, OrderState
 from lib.model.ShoeLastVariety import ShoeLastVariety
-from lib.repository.ArticlesRepository import ArticlesRepository
-from lib.repository.OrdersRepository import OrdersRepository
 
 
 class OrderListController(OrderBaseController):

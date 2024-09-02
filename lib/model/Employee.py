@@ -3,7 +3,7 @@ from PyQt5.QtCore import QDate
 from lib.model.User import User
 
 
-# noinspection PyPep8Naming
+# noinspection PyPep8Naming,DuplicatedCode
 class Employee(User):
     def __init__(self, uid: str, mail: str, phone: str, name: str, CF: str, birth_date: QDate, is_manager: bool):
         super().__init__(uid, mail, phone)
