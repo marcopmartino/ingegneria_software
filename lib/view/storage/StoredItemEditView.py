@@ -242,7 +242,7 @@ class StoredItemEditView(QDialog):
                 clicked_button = QMessageBox.question(
                     self,
                     "Conferma modifiche",
-                    f"Sei sicuro di voler modifica \"{object_description}\" da {current_quantity} a {new_quantity}?",
+                    f"Sei sicuro di voler modificare \"{object_description}\" da {current_quantity} a {new_quantity}?",
                     QMessageBox.Yes | QMessageBox.No
                 )
 
