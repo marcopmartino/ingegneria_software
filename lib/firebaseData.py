@@ -10,6 +10,7 @@ from pyrebase import initialize_app
 from pyrebase.pyrebase import ClosableSSEClient
 from requests import ConnectionError
 
+from lib.utility.ResourceManager import ResourceManager
 from lib.utility.Singleton import Singleton
 
 # Firebase Config data
@@ -115,7 +116,7 @@ class Firebase(metaclass=Singleton):
         firebase: pyrebase.pyrebase.Firebase = initialize_app(firebaseConfig)
 
         # Inizializzo FirebaseAdmin
-        credentials = firebase_admin.credentials.Certificate('lib/firebaseKey.json')
+        credentials = firebase_admin.credentials.Certificate(ResourceManager.file_path('lib/firebaseKey.json'))
         firebase_admin.initialize_app(credentials, {
             'database_url': firebaseConfig.get('databaseURL')})
 

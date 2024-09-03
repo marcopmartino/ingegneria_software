@@ -2,6 +2,7 @@ from enum import Enum
 
 from qfluentwidgets import Theme, FluentIconBase
 
+from lib.utility.ResourceManager import ResourceManager
 from res.Strings import Config
 
 
@@ -18,4 +19,4 @@ class CustomIcon(FluentIconBase, Enum):
     USER_INFO = "user_info"
 
     def path(self, theme=Theme.AUTO):
-        return f'{Config.SVG_ICONS_PATH}{self.value}_black_icon.svg'
+        return ResourceManager.svg_icon_path(f'{self.value}_black_icon.svg')

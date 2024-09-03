@@ -25,6 +25,8 @@ ACCESS_LINE_EDIT = """/* Set style for QLineEdit */\n
                     border-bottom: 2px solid #28A2A2\n
                 }\n"""
 
+print(ResourceManager.image_path("access_background.jpg"))
+
 ACCESS_MAIN_WINDOW = """/* Set style for MainWindow */\n
                 QMainWindow {\n
                     border-image: url(""" + ResourceManager.image_path("access_background.jpg") + """);\n
